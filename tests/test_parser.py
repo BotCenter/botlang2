@@ -1,5 +1,5 @@
 import unittest
-from core.parser import Parser
+from botcenterdsl.parser import Parser
 
 
 class ParserTestCase(unittest.TestCase):

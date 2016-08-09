@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from core.bot_configuration import BotConfiguration
-from core.botcenter_dsl import BotcenterDSL
+from botcenterdsl.bot_configuration import BotConfiguration
+from botcenterdsl.botcenter_dsl import BotcenterDSL
 
 
 class TestBots(unittest.TestCase):

@@ -1,5 +1,5 @@
-from core.botcenter_dsl import BotcenterDSL
-from core.parser import Parser
+from botcenterdsl.botcenter_dsl import BotcenterDSL
+from botcenterdsl.parser import Parser
 
 
 class BotcenterREPL(object):

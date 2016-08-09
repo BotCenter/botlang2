@@ -1,9 +1,9 @@
 import unittest
 
-from core.bot_configuration import BotConfiguration
-from core.botcenter_dsl import BotcenterDSL
-from core.evaluation.evaluator import Primitive
-from core.evaluation.values import BotResultValue
+from botcenterdsl.bot_configuration import BotConfiguration
+from botcenterdsl.botcenter_dsl import BotcenterDSL
+from botcenterdsl.evaluation.evaluator import Primitive
+from botcenterdsl.evaluation.values import BotResultValue
 
 
 class BotcenterDSLTestCase(unittest.TestCase):
