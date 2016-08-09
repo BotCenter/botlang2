@@ -1,4 +1,4 @@
-from botcenterdsl.dsl import BotcenterDSL
+from botcenterdsl.interpreter import BotcenterDSL
 from botcenterdsl.parser import Parser
 
 

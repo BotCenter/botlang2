@@ -1,7 +1,7 @@
 import unittest
 
 from botcenterdsl.bot_configuration import BotConfiguration
-from botcenterdsl.dsl import BotcenterDSL
+from botcenterdsl.interpreter import BotcenterDSL
 from botcenterdsl.evaluation.evaluator import Primitive
 from botcenterdsl.evaluation.values import BotResultValue
 

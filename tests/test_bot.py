@@ -2,7 +2,7 @@
 import unittest
 
 from botcenterdsl.bot_configuration import BotConfiguration
-from botcenterdsl.dsl import BotcenterDSL
+from botcenterdsl.interpreter import BotcenterDSL
 
 
 class TestBots(unittest.TestCase):
