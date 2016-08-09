@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from botcenterdsl.bot_configuration import BotConfiguration
 from botcenterdsl.interpreter import BotcenterDSL
 
 
@@ -83,27 +82,19 @@ class TestBots(unittest.TestCase):
 
     def test_example_bot(self):
 
-        def hook(node_result):
-            if not node_result.next_node.is_bot_node():
-                node_result.next_node()
-            return node_result
-
         def validate_rut(rut):
             if rut == '16926695-6':
                 return True
             return False
 
-        test_dict = {'bot_ended': False}
-
-        bot_config = BotConfiguration(
-            result_hook=hook,
-            functions={
+        environment = BotcenterDSL.create_base_environment().add_primitives(
+            {
                 'validate-rut': validate_rut,
-                'end-node': (lambda: test_dict.update(bot_ended=True))
+                'end-node': lambda: 'BOT_ENDED'
             }
         )
 
-        first_result = BotcenterDSL(bot_config=bot_config).eval(
+        first_result = BotcenterDSL(environment).eval(
             self.example_bot_code
         )
 
@@ -114,7 +105,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(first_result.data, {})
 
         second_node = first_result.next_node
-        second_result = BotcenterDSL(bot_config=bot_config).resume_execution(
+        second_result = BotcenterDSL(environment).resume_execution(
             second_node,
             first_result.data,
             'Juanito'
@@ -127,7 +118,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(second_result.data.get('name'), 'Juanito')
 
         third_node = second_result.next_node
-        third_result = BotcenterDSL(bot_config=bot_config).resume_execution(
+        third_result = BotcenterDSL(environment).resume_execution(
             third_node,
             second_result.data,
             '17098131-2'
@@ -140,7 +131,7 @@ class TestBots(unittest.TestCase):
         )
 
         fourth_node = third_result.next_node
-        fourth_result = BotcenterDSL(bot_config=bot_config).resume_execution(
+        fourth_result = BotcenterDSL(environment).resume_execution(
             fourth_node,
             third_result.data,
             '16926695-6'
@@ -154,7 +145,7 @@ class TestBots(unittest.TestCase):
         )
 
         fifth_node = fourth_result.next_node
-        fifth_result = BotcenterDSL(bot_config=bot_config).resume_execution(
+        fifth_result = BotcenterDSL(environment).resume_execution(
             fifth_node,
             fourth_result.data,
             'bla'
@@ -164,19 +155,17 @@ class TestBots(unittest.TestCase):
             'Debe responder si o no. ¿Tiene perro?'
         )
 
-        self.assertFalse(test_dict['bot_ended'])
+        self.assertEqual(fifth_result.execution_state, 'WAITING_INPUT')
         sixth_node = fifth_result.next_node
-        sixth_result = BotcenterDSL(bot_config=bot_config).resume_execution(
+        sixth_result = BotcenterDSL(environment).resume_execution(
             sixth_node,
             fifth_result.data,
             'no'
         )
         self.assertEqual(sixth_result.message, 'Miau :3')
-        self.assertTrue(test_dict['bot_ended'])
+        self.assertEqual(sixth_result.execution_state, 'BOT_ENDED')
 
-        alternative_sixth_result = BotcenterDSL(
-            bot_config=bot_config
-        ).resume_execution(
+        alternative_sixth_result = BotcenterDSL(environment).resume_execution(
             sixth_node,
             fifth_result.data,
             'si'

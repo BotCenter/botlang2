@@ -47,19 +47,17 @@ class BotcenterDSL(object):
         'add-data': add_data
     }
 
-    def __init__(self, environment=None, bot_config=None):
+    def __init__(self, environment=None):
         if not environment:
             environment = self.create_base_environment()
         self.data = {}
         self.environment = environment
-        self.bot_config = bot_config
-        if bot_config is not None:
-            self.environment.add_primitives(bot_config.functions)
 
-    def create_base_environment(self):
+    @classmethod
+    def create_base_environment(cls):
         env = Environment()
-        env.add_primitives(self.MATH_BINDINGS)
-        env.add_primitives(self.OP_BINDINGS)
+        env.add_primitives(cls.MATH_BINDINGS)
+        env.add_primitives(cls.OP_BINDINGS)
         return env
 
     def eval(self, code_string):
@@ -78,8 +76,7 @@ class BotcenterDSL(object):
         return bot_node.apply(data)
 
     def reached_bot_result(self, result):
-        assert self.bot_config is not None
-        return self.bot_config.result_hook(result)
+        return result
 
     @classmethod
     def run(cls, code_string, environment=None):

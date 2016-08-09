@@ -73,7 +73,15 @@ class BotNodeValue(Closure):
 
 class BotResultValue(object):
 
+    BOT_WAITING_INPUT = 'WAITING_INPUT'
+
     def __init__(self, data, message, next_node):
         self.data = data
         self.message = message
-        self.next_node = next_node
+        if not next_node.is_bot_node():
+            self.next_node = None
+            self.execution_state = next_node()
+        else:
+            self.next_node = next_node
+            self.execution_state = self.BOT_WAITING_INPUT
+

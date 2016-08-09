@@ -1,6 +1,5 @@
 import unittest
 
-from botcenterdsl.bot_configuration import BotConfiguration
 from botcenterdsl.interpreter import BotcenterDSL
 from botcenterdsl.evaluation.evaluator import Primitive
 from botcenterdsl.evaluation.values import BotResultValue
@@ -186,19 +185,12 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 )
             )
         """
-
-        def hook(result):
-            if not result.next_node.is_bot_node():
-                result.next_node()
-            return result
-
         test = {'value': 0}
         self.assertEqual(test['value'], 0)
 
         node_result = BotcenterDSL(
-            bot_config=BotConfiguration(
-                result_hook=hook,
-                functions={'end-node': (lambda: test.update(value=1))}
+            BotcenterDSL.create_base_environment().add_primitives(
+                {'end-node': (lambda: test.update(value=1))}
             )
         ).eval(code)
         self.assertTrue(isinstance(node_result, BotResultValue))
