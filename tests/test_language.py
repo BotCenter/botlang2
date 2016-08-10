@@ -192,7 +192,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
             BotcenterDSL.create_base_environment().add_primitives(
                 {'end-node': (lambda: test.update(value=1))}
             )
-        ).eval(code)
+        ).eval_bot(code)
         self.assertTrue(isinstance(node_result, BotResultValue))
         self.assertTrue(isinstance(node_result.data, dict))
         self.assertEqual(node_result.message, 'Holi, soy Botcito')

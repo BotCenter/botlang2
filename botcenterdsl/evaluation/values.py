@@ -59,6 +59,10 @@ class BotNodeValue(Closure):
     """
     Bot node (also a lexical closure)
     """
+    def __init__(self, params, body, env, evaluator):
+        super(BotNodeValue, self).__init__(params, body, env, evaluator)
+        self.node_id = None
+
     def __repr__(self):
         name = self.env.get_name(self)
 
@@ -70,18 +74,25 @@ class BotNodeValue(Closure):
     def is_bot_node(self):
         return True
 
+    def to_stub(self):
+
+        return {
+            'node_id': self.node_id,
+            'bindings': self.env.bindings
+        }
+
 
 class BotResultValue(object):
 
     BOT_WAITING_INPUT = 'WAITING_INPUT'
 
     def __init__(self, data, message, next_node):
+
         self.data = data
         self.message = message
-        if not next_node.is_bot_node():
-            self.next_node = None
-            self.execution_state = next_node()
-        else:
+        if next_node.is_bot_node():
             self.next_node = next_node
             self.execution_state = self.BOT_WAITING_INPUT
-
+        else:
+            self.next_node = None
+            self.execution_state = next_node()

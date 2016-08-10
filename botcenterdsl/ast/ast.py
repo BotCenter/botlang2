@@ -133,6 +133,7 @@ class BotNode(ASTNode):
     def __init__(self, data, body):
         self.data = data
         self.body = body
+        self.node_hash = None
 
     def accept(self, visitor, env):
         return visitor.visit_bot_node(self, env)

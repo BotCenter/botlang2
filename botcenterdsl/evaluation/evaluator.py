@@ -60,15 +60,16 @@ class Evaluator(Visitor):
 
     def visit_bot_result(self, bot_result, env):
         """
-        Bot result evaluation. Calls the DSL instance to trigger the
-        appropriate hooks
+        Bot result evaluation. Returns a BotResultValue which can be used
+        to resume execution in the future.
         """
+        next_node = bot_result.next_node
         bot_result_value = BotResultValue(
             bot_result.data.accept(self, env),
             bot_result.message.accept(self, env),
-            bot_result.next_node.accept(self, env)
+            next_node.accept(self, env)
         )
-        return self.dsl_instance.reached_bot_result(bot_result_value)
+        return bot_result_value
 
     def visit_app(self, app_node, env):
         """
