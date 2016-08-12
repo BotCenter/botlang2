@@ -189,7 +189,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
         self.assertEqual(test['value'], 0)
 
         node_result = BotcenterDSL(
-            BotcenterDSL.create_base_environment().add_primitives(
+            BotcenterDSL.base_environment().add_primitives(
                 {'end-node': (lambda: test.update(value=1))}
             )
         ).eval_bot(code, 'mensaje inicial')
@@ -225,7 +225,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
             )
         """
 
-        environment = BotcenterDSL.create_base_environment().add_primitives(
+        environment = BotcenterDSL.base_environment().add_primitives(
             {
                 'test-primitive': test_primitive,
                 'end-node': lambda: 'fin'

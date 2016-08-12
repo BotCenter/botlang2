@@ -1,66 +1,24 @@
-from __future__ import print_function
-
-import math
-import operator as op
-
 from botcenterdsl.environment import Environment
 from botcenterdsl.evaluation.evaluator import Evaluator
 from botcenterdsl.evaluation.values import BotNodeValue
 from botcenterdsl.parser import Parser
-
-
-def append(*values):
-    return reduce(op.add, values)
-
-
-def add_data(data_dict, key, value):
-    data = data_dict.copy()
-    data[key] = value
-    return data
+from botcenterdsl.primitives import BotcenterDSLPrimitives
 
 
 class BotcenterDSL(object):
 
-    MATH_BINDINGS = vars(math)
-    OP_BINDINGS = {
-        '+': op.add,
-        '-': op.sub,
-        '*': op.mul,
-        '/': lambda x, y: x / y,
-        '>': op.gt,
-        '<': op.lt,
-        '>=': op.ge,
-        '<=': op.le,
-        '=': op.eq,
-        'abs': abs,
-        'append': append,
-        'equal?': op.eq,
-        'head': lambda x: x[0],
-        'tail': lambda x: x[1:],
-        'length': len,
-        'list': lambda *x: list(x),
-        'map': lambda f, l: list(map(f, l)),
-        'max': max,
-        'min': min,
-        'not': op.not_,
-        'print': print,
-        'add-data': add_data
-    }
-
     def __init__(self, environment=None):
 
         if not environment:
-            environment = self.create_base_environment()
+            environment = self.base_environment()
         self.data = {}
         self.environment = environment
 
     @classmethod
-    def create_base_environment(cls):
+    def base_environment(cls):
 
         env = Environment()
-        env.add_primitives(cls.MATH_BINDINGS)
-        env.add_primitives(cls.OP_BINDINGS)
-        return env
+        return BotcenterDSLPrimitives.populate_environment(env)
 
     def eval(self, code_string):
 
@@ -81,13 +39,6 @@ class BotcenterDSL(object):
                 'input-message': lambda: input_msg
             })
         return ast.accept(Evaluator(evaluation_state), self.environment)
-
-    @classmethod
-    def execute_from_node(cls, bot_node, data, input_msg):
-
-        assert isinstance(bot_node, BotNodeValue)
-        bot_node.env = bot_node.env.add_primitives({'input-message': lambda: input_msg})
-        return bot_node.apply(data)
 
     @classmethod
     def run(cls, code_string, environment=None):

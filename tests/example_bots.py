@@ -9,7 +9,7 @@ class ExampleBots(object):
                         (define rut [input-message])
                         (define valid-rut? [validate-rut rut])
                         (if valid-rut?
-                            (next-node-fun (add-data data 'rut rut))
+                            (next-node-fun (put data 'rut rut))
                             (node-result
                                 data
                                 "Rut inválido. Intente nuevamente."
@@ -39,13 +39,13 @@ class ExampleBots(object):
                     )
                     [if (equal? [input-message] "si")
                         (node-result
-                            (add-data data 'dog #t)
-                            "Wauf!"
+                            (put data 'dog #t)
+                            (append "Wauf, " (get data 'name) "!")
                             end-node
                         )
                         (node-result
-                            (add-data data 'dog #f)
-                            "Miau :3"
+                            (put data 'dog #f)
+                            (append "Miau, " (get data 'name) " :3")
                             end-node
                         )
                     ]
@@ -60,7 +60,7 @@ class ExampleBots(object):
                 (bot-node (data)
                     (define name [input-message])
                     [ask-rut
-                        (add-data data 'name name)
+                        (put data 'name name)
                         (append "Mucho gusto " name ". Indíqueme su RUT, por favor.")
                         (function (data)
                             (node-result

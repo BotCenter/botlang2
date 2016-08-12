@@ -14,7 +14,7 @@ class TestBots(unittest.TestCase):
                 return True
             return False
 
-        environment = BotcenterDSL.create_base_environment().add_primitives(
+        environment = BotcenterDSL.base_environment().add_primitives(
             {
                 'validate-rut': validate_rut,
                 'end-node': lambda: 'BOT_ENDED'
@@ -90,7 +90,7 @@ class TestBots(unittest.TestCase):
             'no',
             fifth_evaluation_state
         )
-        self.assertEqual(sixth_result.message, 'Miau :3')
+        self.assertEqual(sixth_result.message, 'Miau, Juanito :3')
         self.assertEqual(sixth_result.execution_state, 'BOT_ENDED')
 
         alternative_sixth_result = BotcenterDSL(environment).eval_bot(
@@ -98,4 +98,4 @@ class TestBots(unittest.TestCase):
             'si',
             fifth_evaluation_state
         )
-        self.assertEqual(alternative_sixth_result.message, 'Wauf!')
+        self.assertEqual(alternative_sixth_result.message, 'Wauf, Juanito!')
