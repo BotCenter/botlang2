@@ -5,13 +5,18 @@ from botcenterdsl.node_hasher import NodeHasher
 from tests.example_bots import ExampleBots
 
 
-class NodeHasherTestCase(unittest.TestCase):
+class RuntimeStateSerializationTestCase(unittest.TestCase):
 
-    def test_node_hashing(self):
+    def test_deterministic_node_hashing(self):
 
         ast = Parser.parse(ExampleBots.dog_bot_code)
-        node_hasher = NodeHasher()
-        ast.accept(node_hasher, Environment())
-        bot_nodes = node_hasher.ast_nodes
+        node_hasher1 = NodeHasher()
+        node_hasher2 = NodeHasher()
 
-        # self.assertEqual(len(bot_nodes.values()), 4)
+        ast.accept(node_hasher1, Environment())
+        bot_nodes1 = node_hasher1.ast_nodes
+
+        ast.accept(node_hasher2, Environment())
+        bot_nodes2 = node_hasher2.ast_nodes
+
+        self.assertDictEqual(bot_nodes1, bot_nodes2)

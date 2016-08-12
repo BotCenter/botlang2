@@ -6,7 +6,7 @@ class ExampleBots(object):
             [function (data ask-rut-message next-node-fun)
                 (define validate-rut-node
                     [bot-node (data)
-                        (define rut input-message)
+                        (define rut [input-message])
                         (define valid-rut? [validate-rut rut])
                         (if valid-rut?
                             (next-node-fun (add-data data 'rut rut))
@@ -29,7 +29,7 @@ class ExampleBots(object):
         (define has-dog-node
             (bot-node (data)
                 (define valid-answer
-                    [or (equal? input-message "si") (equal? input-message "no")]
+                    [or (equal? [input-message] "si") (equal? [input-message] "no")]
                 )
                 (if (not valid-answer)
                     (node-result
@@ -37,7 +37,7 @@ class ExampleBots(object):
                         "Debe responder si o no. ¿Tiene perro?"
                         has-dog-node
                     )
-                    [if (equal? input-message "si")
+                    [if (equal? [input-message] "si")
                         (node-result
                             (add-data data 'dog #t)
                             "Wauf!"
@@ -58,7 +58,7 @@ class ExampleBots(object):
                 data
                 "Bienvenido a Botcenter! ¿Con quién tengo el gusto de hablar?"
                 (bot-node (data)
-                    (define name input-message)
+                    (define name [input-message])
                     [ask-rut
                         (add-data data 'name name)
                         (append "Mucho gusto " name ". Indíqueme su RUT, por favor.")

@@ -131,9 +131,8 @@ class BotNode(ASTNode):
     Bot node expression
     """
     def __init__(self, data, body):
-        self.data = data
+        self.params = data
         self.body = body
-        self.node_hash = None
 
     def accept(self, visitor, env):
         return visitor.visit_bot_node(self, env)

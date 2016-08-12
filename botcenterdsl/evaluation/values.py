@@ -11,6 +11,9 @@ class FunVal(object):
     def is_bot_node(self):
         return False
 
+    def is_primitive(self):
+        return False
+
 
 class Primitive(FunVal):
     """
@@ -26,16 +29,20 @@ class Primitive(FunVal):
     def __repr__(self):
         return '<built-in function {0}>'.format(self.env.get_name(self))
 
+    def is_primitive(self):
+        return True
+
 
 class Closure(FunVal):
     """
     Lexical closure
     """
-    def __init__(self, params, body, env, evaluator):
-        self.params = params
-        self.body = body
+    def __init__(self, ast_node, env, evaluator):
+        self.params = ast_node.params
+        self.body = ast_node.body
         self.env = env
         self.evaluator = evaluator
+        self.ast_node = ast_node
 
     def apply(self, *values):
         new_bindings = {
@@ -59,10 +66,6 @@ class BotNodeValue(Closure):
     """
     Bot node (also a lexical closure)
     """
-    def __init__(self, params, body, env, evaluator):
-        super(BotNodeValue, self).__init__(params, body, env, evaluator)
-        self.node_id = None
-
     def __repr__(self):
         name = self.env.get_name(self)
 
@@ -74,22 +77,23 @@ class BotNodeValue(Closure):
     def is_bot_node(self):
         return True
 
-    def to_stub(self):
-
-        return {
-            'node_id': self.node_id,
-            'bindings': self.env.bindings
-        }
-
 
 class BotResultValue(object):
 
     BOT_WAITING_INPUT = 'WAITING_INPUT'
 
-    def __init__(self, data, message, next_node):
+    def __init__(
+            self,
+            data,
+            message,
+            next_node,
+            evaluation_state
+    ):
 
         self.data = data
         self.message = message
+        self.evaluation_state = evaluation_state
+
         if next_node.is_bot_node():
             self.next_node = next_node
             self.execution_state = self.BOT_WAITING_INPUT

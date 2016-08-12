@@ -192,9 +192,65 @@ class BotcenterDSLTestCase(unittest.TestCase):
             BotcenterDSL.create_base_environment().add_primitives(
                 {'end-node': (lambda: test.update(value=1))}
             )
-        ).eval_bot(code)
+        ).eval_bot(code, 'mensaje inicial')
         self.assertTrue(isinstance(node_result, BotResultValue))
         self.assertTrue(isinstance(node_result.data, dict))
         self.assertEqual(node_result.message, 'Holi, soy Botcito')
         self.assertEqual(test['value'], 1)
 
+    def test_evaluation_state(self):
+
+        test_dict = {'value': 0}
+
+        def test_primitive():
+            test_dict['value'] += 1
+            return 'holi'
+
+        code = """
+            (bot-node (data)
+                (test-primitive)
+                (test-primitive)
+                (node-result
+                    data
+                    "Holi"
+                    (bot-node (data)
+                        (test-primitive)
+                        (node-result
+                            data
+                            "Chau"
+                            end-node
+                        )
+                    )
+                )
+            )
+        """
+
+        environment = BotcenterDSL.create_base_environment().add_primitives(
+            {
+                'test-primitive': test_primitive,
+                'end-node': lambda: 'fin'
+            }
+        )
+        first_node_result = BotcenterDSL(environment).eval_bot(code, 'oli bot')
+        self.assertEqual(first_node_result.message, 'Holi')
+        self.assertEqual(test_dict['value'], 2)
+
+        evaluation_state = first_node_result.evaluation_state
+        bot_node_steps = evaluation_state.bot_node_steps
+        primitives_evaluations = evaluation_state.primitives_values
+        self.assertEqual(bot_node_steps, 1)
+        self.assertEqual(len(primitives_evaluations), 2)
+
+        second_node_result = BotcenterDSL(environment).eval_bot(
+            code,
+            'otro mensaje',
+            evaluation_state
+        )
+        self.assertEqual(second_node_result.message, 'Chau')
+        self.assertEqual(test_dict['value'], 3)
+
+        evaluation_state = second_node_result.evaluation_state
+        bot_node_steps = evaluation_state.bot_node_steps
+        primitives_evaluations = evaluation_state.primitives_values
+        self.assertEqual(bot_node_steps, 2)
+        self.assertEqual(len(primitives_evaluations), 3)

@@ -45,14 +45,14 @@ class NodeHasher(Visitor):
     def visit_fun(self, fun_node, env):
 
         hash_val = self.hash_function_node(fun_node.params, fun_node.body)
-        fun_node.node_hash = hash_val
+        fun_node.node_id = hash_val
         self.ast_nodes[hash_val] = fun_node
         return hash_val
 
     def visit_bot_node(self, bot_node, env):
 
-        hash_val = self.hash_function_node(bot_node.data, bot_node.body)
-        bot_node.node_hash = hash_val
+        hash_val = self.hash_function_node(bot_node.params, bot_node.body)
+        bot_node.node_id = hash_val
         self.ast_nodes[hash_val] = bot_node
         return hash_val
 
@@ -103,7 +103,7 @@ class NodeHasher(Visitor):
     def hash_and_store(self, string, node):
 
         hash_val = self.hash_function(string)
-        node.node_hash = hash_val
+        node.node_id = hash_val
         self.ast_nodes[hash_val] = node
         return hash_val
 

@@ -1,4 +1,4 @@
-from botcenterdsl.evaluation.evaluator import Primitive
+from botcenterdsl.evaluation.values import *
 
 
 class Environment(object):

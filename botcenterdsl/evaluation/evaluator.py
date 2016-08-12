@@ -2,12 +2,29 @@ from botcenterdsl.ast.visitor import Visitor
 from botcenterdsl.evaluation.values import *
 
 
+class EvaluationState(object):
+
+    def __init__(self, primitives_values, bot_node_steps):
+
+        self.primitives_values = primitives_values
+        self.bot_node_steps = bot_node_steps
+
+
 class Evaluator(Visitor):
     """
     AST visitor for evaluation
     """
-    def __init__(self, dsl_instance):
-        self.dsl_instance = dsl_instance
+    def __init__(self, evaluation_state=None):
+
+        if evaluation_state is not None:
+            self.primitives_evaluations = evaluation_state.primitives_values[:]
+            self.bot_result_skips = evaluation_state.bot_node_steps
+        else:
+            self.primitives_evaluations = []
+            self.bot_result_skips = 0
+
+        self.primitive_step = 0
+        self.bot_node_step = 0
 
     def visit_val(self, val_node, env):
         """
@@ -49,34 +66,63 @@ class Evaluator(Visitor):
         Function expression evaluation.
         Returns closure
         """
-        return Closure(fun_node.params, fun_node.body, env, self)
+        return Closure(fun_node, env, self)
 
     def visit_bot_node(self, bot_node, env):
         """
         Bot node expression evaluation.
         Returns bot-node closure
         """
-        return BotNodeValue(bot_node.data, bot_node.body, env, self)
+        return BotNodeValue(bot_node, env, self)
 
     def visit_bot_result(self, bot_result, env):
         """
         Bot result evaluation. Returns a BotResultValue which can be used
         to resume execution in the future.
+
+        If the bot_result_skips number configured for this evaluator is
+        greater or equal than the current bot_node_step, instead of returning
+        a BotResultValue the next node is evaluated immediately.
         """
-        next_node = bot_result.next_node
-        bot_result_value = BotResultValue(
-            bot_result.data.accept(self, env),
-            bot_result.message.accept(self, env),
-            next_node.accept(self, env)
-        )
-        return bot_result_value
+        data = bot_result.data.accept(self, env)
+        message = bot_result.message.accept(self, env)
+        next_node = bot_result.next_node.accept(self, env)
+        self.bot_node_step += 1
+
+        if self.bot_node_step <= self.bot_result_skips:
+            return next_node.apply(data)
+        else:
+            evaluation_state = EvaluationState(
+                self.primitives_evaluations,
+                self.bot_node_step
+            )
+            return BotResultValue(
+                data,
+                message,
+                next_node,
+                evaluation_state
+            )
 
     def visit_app(self, app_node, env):
         """
-        Function application evaluation
+        Function application evaluation. If the function being applied is a
+        primitive we check if its value is already stored in this evaluator.
+        If it's not, then the value is computed and stored in the
+        primitives_evaluation list.
         """
         fun_val = app_node.fun_expr.accept(self, env)
         arg_vals = [arg.accept(self, env) for arg in app_node.arg_exprs]
+        if fun_val.is_primitive():
+            if self.primitive_step == len(self.primitives_evaluations):
+                return_value = fun_val.apply(*arg_vals)
+                self.primitives_evaluations.append(return_value)
+                self.primitive_step += 1
+                return return_value
+            else:
+                return_value = self.primitives_evaluations[self.primitive_step]
+                self.primitive_step += 1
+                return return_value
+
         return fun_val.apply(*arg_vals)
 
     def visit_body(self, body_node, env):
