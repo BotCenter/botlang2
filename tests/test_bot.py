@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from botcenterdsl.examples.example_bots import ExampleBots
 from botcenterdsl.interpreter import BotcenterDSL
-from tests.example_bots import ExampleBots
 
 
 class TestBots(unittest.TestCase):
