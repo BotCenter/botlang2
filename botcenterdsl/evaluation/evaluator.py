@@ -2,7 +2,7 @@ from botcenterdsl.ast.visitor import Visitor
 from botcenterdsl.evaluation.values import *
 
 
-class EvaluationState(object):
+class ExecutionState(object):
 
     def __init__(self, primitives_values, bot_node_steps):
 
@@ -92,7 +92,7 @@ class Evaluator(Visitor):
         if self.bot_node_step <= self.bot_result_skips:
             return next_node.apply(data)
         else:
-            evaluation_state = EvaluationState(
+            evaluation_state = ExecutionState(
                 self.primitives_evaluations,
                 self.bot_node_step
             )

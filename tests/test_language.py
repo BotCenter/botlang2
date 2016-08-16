@@ -235,22 +235,22 @@ class BotcenterDSLTestCase(unittest.TestCase):
         self.assertEqual(first_node_result.message, 'Holi')
         self.assertEqual(test_dict['value'], 2)
 
-        evaluation_state = first_node_result.evaluation_state
-        bot_node_steps = evaluation_state.bot_node_steps
-        primitives_evaluations = evaluation_state.primitives_values
+        execution_state = first_node_result.execution_state
+        bot_node_steps = execution_state.bot_node_steps
+        primitives_evaluations = execution_state.primitives_values
         self.assertEqual(bot_node_steps, 1)
         self.assertEqual(len(primitives_evaluations), 2)
 
         second_node_result = BotcenterDSL(environment).eval_bot(
             code,
             'otro mensaje',
-            evaluation_state
+            execution_state
         )
         self.assertEqual(second_node_result.message, 'Chau')
         self.assertEqual(test_dict['value'], 3)
 
-        evaluation_state = second_node_result.evaluation_state
-        bot_node_steps = evaluation_state.bot_node_steps
-        primitives_evaluations = evaluation_state.primitives_values
+        execution_state = second_node_result.execution_state
+        bot_node_steps = execution_state.bot_node_steps
+        primitives_evaluations = execution_state.primitives_values
         self.assertEqual(bot_node_steps, 2)
         self.assertEqual(len(primitives_evaluations), 3)

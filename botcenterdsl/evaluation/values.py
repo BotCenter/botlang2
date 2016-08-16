@@ -92,11 +92,11 @@ class BotResultValue(object):
 
         self.data = data
         self.message = message
-        self.evaluation_state = evaluation_state
+        self.execution_state = evaluation_state
 
         if next_node.is_bot_node():
             self.next_node = next_node
-            self.execution_state = self.BOT_WAITING_INPUT
+            self.bot_state = self.BOT_WAITING_INPUT
         else:
             self.next_node = None
-            self.execution_state = next_node()
+            self.bot_state = next_node()

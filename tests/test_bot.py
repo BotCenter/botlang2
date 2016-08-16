@@ -29,11 +29,11 @@ class TestBots(unittest.TestCase):
         )
         self.assertEqual(first_result.data, {})
 
-        first_evaluation_state = first_result.evaluation_state
+        first_execution_state = first_result.execution_state
         second_result = BotcenterDSL(environment).eval_bot(
             code,
             'Juanito',
-            first_evaluation_state
+            first_execution_state
         )
         self.assertEqual(
             second_result.message,
@@ -42,11 +42,11 @@ class TestBots(unittest.TestCase):
         self.assertEqual(len(second_result.data.items()), 1)
         self.assertEqual(second_result.data.get('name'), 'Juanito')
 
-        second_evaluation_state = second_result.evaluation_state
+        second_execution_state = second_result.execution_state
         third_result = BotcenterDSL(environment).eval_bot(
             code,
             '17098131-2',
-            second_evaluation_state
+            second_execution_state
         )
 
         self.assertEqual(len(third_result.data.items()), 1)
@@ -55,11 +55,11 @@ class TestBots(unittest.TestCase):
             'Rut inválido. Intente nuevamente.'
         )
 
-        third_evaluation_state = third_result.evaluation_state
+        third_execution_state = third_result.execution_state
         fourth_result = BotcenterDSL(environment).eval_bot(
             code,
             '16926695-6',
-            third_evaluation_state
+            third_execution_state
         )
 
         self.assertEqual(len(fourth_result.data.items()), 2)
@@ -69,33 +69,33 @@ class TestBots(unittest.TestCase):
             'Muchas gracias. ¿Tiene perro? (si/no)'
         )
 
-        fourth_evaluation_state = fourth_result.evaluation_state
-        self.assertEqual(fourth_evaluation_state.bot_node_steps, 4)
+        fourth_execution_state = fourth_result.execution_state
+        self.assertEqual(fourth_execution_state.bot_node_steps, 4)
         fifth_result = BotcenterDSL(environment).eval_bot(
             code,
             'bla',
-            fourth_evaluation_state
+            fourth_execution_state
         )
         self.assertEqual(
             fifth_result.message,
             'Debe responder si o no. ¿Tiene perro?'
         )
 
-        self.assertEqual(fifth_result.execution_state, 'WAITING_INPUT')
+        self.assertEqual(fifth_result.bot_state, 'WAITING_INPUT')
 
-        fifth_evaluation_state = fifth_result.evaluation_state
-        self.assertEqual(fifth_evaluation_state.bot_node_steps, 5)
+        fifth_execution_state = fifth_result.execution_state
+        self.assertEqual(fifth_execution_state.bot_node_steps, 5)
         sixth_result = BotcenterDSL(environment).eval_bot(
             code,
             'no',
-            fifth_evaluation_state
+            fifth_execution_state
         )
         self.assertEqual(sixth_result.message, 'Miau, Juanito :3')
-        self.assertEqual(sixth_result.execution_state, 'BOT_ENDED')
+        self.assertEqual(sixth_result.bot_state, 'BOT_ENDED')
 
         alternative_sixth_result = BotcenterDSL(environment).eval_bot(
             code,
             'si',
-            fifth_evaluation_state
+            fifth_execution_state
         )
         self.assertEqual(alternative_sixth_result.message, 'Wauf, Juanito!')
