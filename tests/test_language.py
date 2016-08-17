@@ -254,3 +254,16 @@ class BotcenterDSLTestCase(unittest.TestCase):
         primitives_evaluations = execution_state.primitives_values
         self.assertEqual(bot_node_steps, 2)
         self.assertEqual(len(primitives_evaluations), 3)
+
+    def test_add_code_definition(self):
+
+        environment = BotcenterDSL.base_environment()
+        environment.add_code_definition('f', '(fun (n) [fun (x) (+ n x)])')
+        code = """
+            (begin
+                (define g (f 3))
+
+                (+ (g 3) (g 2))
+            )
+        """
+        self.assertEqual(BotcenterDSL.run(code, environment), 11)

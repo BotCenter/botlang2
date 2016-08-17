@@ -35,6 +35,12 @@ class Environment(object):
             {k: Primitive(v, self) for k, v in bindings.items()}
         )
 
+    def add_code_definition(self, name, code):
+        from botcenterdsl import Parser, Evaluator
+        return self.update(
+            {name: Parser.parse(code).accept(Evaluator(), self)}
+        )
+
     def new_environment(self, bindings=None):
         return Environment(
             bindings if bindings is not None else {},
