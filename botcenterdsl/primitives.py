@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import math
 import operator as op
+from collections import OrderedDict
 
 
 def append(*values):
@@ -16,6 +17,10 @@ def dict_put(data_dict, key, value):
 
 def dict_get(data_dict, key):
     return data_dict[key]
+
+
+def dict_has_key(data_dict, key):
+    return data_dict.get(key) is not None
 
 
 class BotcenterDSLPrimitives(object):
@@ -49,8 +54,10 @@ class BotcenterDSLPrimitives(object):
     }
 
     DICT_OPERATIONS = {
+        'make-dict': lambda: OrderedDict(),
         'put': dict_put,
-        'get': dict_get
+        'get': dict_get,
+        'has-key': dict_has_key
     }
 
     SIDE_EFFECTS = {

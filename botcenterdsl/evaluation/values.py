@@ -27,7 +27,7 @@ class Primitive(FunVal):
         return self.proc(*args)
 
     def __repr__(self):
-        return '<built-in function {0}>'.format(self.env.get_name(self))
+        return '<built-in function {0}>'.format(self.env.get_function_name(self))
 
     def is_primitive(self):
         return True
@@ -54,7 +54,7 @@ class Closure(FunVal):
         )
 
     def __repr__(self):
-        name = self.env.get_name(self)
+        name = self.env.get_function_name(self)
 
         if name is None:
             return '<anonymous function>'
@@ -67,7 +67,7 @@ class BotNodeValue(Closure):
     Bot node (also a lexical closure)
     """
     def __repr__(self):
-        name = self.env.get_name(self)
+        name = self.env.get_function_name(self)
 
         if name is None:
             return '<anonymous bot-node>'

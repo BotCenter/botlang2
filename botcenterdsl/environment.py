@@ -8,7 +8,7 @@ class Environment(object):
     def __init__(self, bindings=None, previous=None):
         self.previous = previous
         self.bindings = bindings if bindings is not None else {}
-        self.names = {id(obj): name for name, obj in self.bindings.items()}
+        self.function_names = {id(obj): name for name, obj in self.bindings.items()}
 
     def lookup(self, var_name):
         result = self.bindings.get(var_name, None)
@@ -18,16 +18,19 @@ class Environment(object):
             return self.previous.lookup(var_name)
         raise NameError("name '{0}' is not defined".format(var_name))
 
-    def get_name(self, obj):
-        name = self.names.get(obj)
+    def get_function_name(self, obj):
+        name = self.function_names.get(obj)
         if name is not None:
             return name
         if self.previous:
-            return self.previous.get_name(obj)
+            return self.previous.get_function_name(obj)
 
     def update(self, bindings):
         self.bindings.update(bindings)
-        self.names.update({obj: name for name, obj in bindings.items()})
+        self.function_names.update({
+            obj: name for name, obj in bindings.items()
+            if isinstance(obj, FunVal)
+        })
         return self
 
     def add_primitives(self, bindings):
