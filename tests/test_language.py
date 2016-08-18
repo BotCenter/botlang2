@@ -257,8 +257,6 @@ class BotcenterDSLTestCase(unittest.TestCase):
 
     def test_add_code_definition(self):
 
-        environment = BotcenterDSL.base_environment()
-        environment.add_code_definition('f', '(fun (n) [fun (x) (+ n x)])')
         code = """
             (begin
                 (define g (f 3))
@@ -266,4 +264,8 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 (+ (g 3) (g 2))
             )
         """
-        self.assertEqual(BotcenterDSL.run(code, environment), 11)
+        dsl = BotcenterDSL().add_code_definition(
+            'f',
+            '(fun (n) [fun (x) (+ n x)])'
+        )
+        self.assertEqual(dsl.eval(code), 11)
