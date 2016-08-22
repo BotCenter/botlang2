@@ -51,6 +51,7 @@ class BotcenterDSLPrimitives(object):
         'map': lambda f, l: list(map(f, l)),
         'max': max,
         'min': min,
+        'in-list': lambda lst, elem: elem in lst
     }
 
     DICT_OPERATIONS = {
