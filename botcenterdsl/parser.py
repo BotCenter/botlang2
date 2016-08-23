@@ -188,10 +188,6 @@ class Parser(object):
         :param code: BotcenterDSL code string to parse
         :rtype: list[ASTNode]
         """
-        balanced, failure_index = cls.balanced_parens(code)
-        if not balanced:
-            raise SyntaxError('unbalanced parentheses')
-
         s_expressions = Parser(code).s_expressions()
         abstract_syntax_trees = [s_expr.to_ast() for s_expr in s_expressions]
         return abstract_syntax_trees
@@ -231,6 +227,19 @@ class Parser(object):
             return restored_token
         return token
 
+    @classmethod
+    def parens_match(cls, open_paren, closed_paren):
+
+        return SExpression.OPENING_PARENS.index(open_paren) ==\
+            SExpression.CLOSING_PARENS.index(closed_paren)
+
+    @classmethod
+    def raise_unbalanced_parens(cls, line):
+
+        raise SyntaxError(
+            'unbalanced parentheses, line {0}'.format(line)
+        )
+
     def s_expressions_from_string(self, s_expr_string, current_line=1):
 
         s_expressions = []
@@ -253,10 +262,16 @@ class Parser(object):
                 current_line += 1
 
             if char in SExpression.OPENING_PARENS:
-                parens_stack.append((index, current_line))
+                parens_stack.append((index, current_line, char))
 
             if char in SExpression.CLOSING_PARENS:
-                start_index, start_line = parens_stack.pop()
+                try:
+                    start_index, start_line, paren = parens_stack.pop()
+                    if not self.parens_match(paren, char):
+                        self.raise_unbalanced_parens(current_line)
+                except IndexError:
+                    self.raise_unbalanced_parens(current_line)
+
                 if len(parens_stack) == 0:
                     code = self.restore_code(
                         s_expr_string[start_index:index+1].strip()
@@ -282,34 +297,7 @@ class Parser(object):
                     Atom(self.restore_token(token), current_line)
                 )
 
+        if len(parens_stack) > 0:
+            self.raise_unbalanced_parens(current_line)
+
         return s_expressions
-
-    @classmethod
-    def balanced_parens(cls, string):
-        """
-        Returns a (<balanced>, <index>) tuple in which <balanced> is a
-        boolean that represents whether <string> has balanced parentheses.
-        If <balanced> is true, <index> is None. If <balanced> is false, <index>
-        is an integer value indicating the index in <string> that caused the
-        checking to fail.
-        """
-        stack = []
-        i = 0
-
-        for char in string:
-            if char in SExpression.OPENING_PARENS:
-                stack.append(char)
-
-            if char in SExpression.CLOSING_PARENS:
-                if len(stack) == 0:
-                    return False, i
-
-                paren_index = SExpression.CLOSING_PARENS.index(char)
-                if stack.pop() != SExpression.OPENING_PARENS[paren_index]:
-                    return False, i
-            i += 1
-
-        if len(stack) > 0:
-            return False, i
-
-        return True, None

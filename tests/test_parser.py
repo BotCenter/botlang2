@@ -7,17 +7,15 @@ class ParserTestCase(unittest.TestCase):
 
     def test_balanced_parens(self):
 
-        self.assertTrue(Parser.balanced_parens('()')[0])
-        self.assertFalse(Parser.balanced_parens('(')[0])
-        self.assertFalse(Parser.balanced_parens(')')[0])
-        self.assertTrue(Parser.balanced_parens('(a)')[0])
-        self.assertTrue(Parser.balanced_parens('[][]')[0])
-        self.assertTrue(Parser.balanced_parens('(a [b] (c {d}))')[0])
-        self.assertTrue(Parser.balanced_parens('(ab [c e (e) {a}] [d])')[0])
-        self.assertFalse(Parser.balanced_parens('(a))')[0])
-        self.assertFalse(Parser.balanced_parens('([][]}')[0])
-        self.assertFalse(Parser.balanced_parens('{[[]}')[0])
-        self.assertFalse(Parser.balanced_parens(')ab(')[0])
+        self.assertTrue(Parser('(a)').s_expressions())
+        self.assertTrue(Parser('[][]').s_expressions())
+        self.assertTrue(Parser('(a [b] (c {d}))').s_expressions())
+        self.assertTrue(Parser('(ab [c e (e) {a}] [d])').s_expressions())
+
+        self.assertRaises(SyntaxError, lambda: Parser('(a))').s_expressions())
+        self.assertRaises(SyntaxError, lambda: Parser('([][]}').s_expressions())
+        self.assertRaises(SyntaxError, lambda: Parser('{[[]}').s_expressions())
+        self.assertRaises(SyntaxError, lambda: Parser(')ab(').s_expressions())
 
     def test_separate_sexpr_strings(self):
 
