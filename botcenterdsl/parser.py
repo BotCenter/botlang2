@@ -180,6 +180,12 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
 
+class BotLangSyntaxError(Exception):
+
+    def __init__(self, message):
+        super(Exception, self).__init__(message)
+
+
 class Parser(object):
 
     @classmethod
@@ -236,7 +242,7 @@ class Parser(object):
     @classmethod
     def raise_unbalanced_parens(cls, line):
 
-        raise SyntaxError(
+        raise BotLangSyntaxError(
             'unbalanced parentheses, line {0}'.format(line)
         )
 
