@@ -94,6 +94,7 @@ class Tree(SExpression):
         return self.application_node()
 
     def if_node(self):
+
         return If(
             self.children[1].to_ast(),
             self.children[2].to_ast(),
@@ -101,24 +102,28 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def and_node(self):
+
         return And(
             self.children[1].to_ast(),
             self.children[2].to_ast()
         ).add_code_reference(self)
 
     def or_node(self):
+
         return Or(
             self.children[1].to_ast(),
             self.children[2].to_ast()
         ).add_code_reference(self)
 
     def define_node(self):
+
         return Definition(
             self.children[1].code,
             self.children[2].to_ast()
         ).add_code_reference(self)
 
     def local_node(self):
+
         return Local(
             [
                 Definition(
@@ -132,24 +137,31 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def begin_node(self):
+
         return BodySequence(
             [s_expr.to_ast() for s_expr in self.children[1:]]
         ).add_code_reference(self)
 
     def function_node(self):
+
+        function_body = BodySequence(
+            [s_expr.to_ast() for s_expr in self.children[2:]]
+        ).add_code_reference(self)
+
         return Fun(
             [identifier.code for identifier in self.children[1].children],
-            BodySequence(
-                [s_expr.to_ast() for s_expr in self.children[2:]]
-            ).add_code_reference(self)
+            function_body
         ).add_code_reference(self)
 
     def bot_node(self):
+
+        bot_node_body = BodySequence(
+            [s_expr.to_ast() for s_expr in self.children[2:]]
+        ).add_code_reference(self)
+
         return BotNode(
             [identifier.code for identifier in self.children[1].children],
-            BodySequence(
-                [s_expr.to_ast() for s_expr in self.children[2:]]
-            ).add_code_reference(self)
+            bot_node_body
         ).add_code_reference(self)
 
     def bot_result_node(self):
