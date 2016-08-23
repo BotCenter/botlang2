@@ -33,6 +33,17 @@ class Primitive(FunVal):
         return True
 
 
+class InvalidArgumentsException(Exception):
+
+    def __init__(self, expected, given):
+        super(Exception, self).__init__(
+            'function expects {0} arguments, {1} given'.format(
+                expected,
+                given
+            )
+        )
+
+
 class Closure(FunVal):
     """
     Lexical closure
@@ -45,6 +56,9 @@ class Closure(FunVal):
         self.ast_node = ast_node
 
     def apply(self, *values):
+
+        if len(self.params) != len(values):
+            raise InvalidArgumentsException(len(self.params), len(values))
 
         from botcenterdsl import BotcenterDSL
         new_bindings = {

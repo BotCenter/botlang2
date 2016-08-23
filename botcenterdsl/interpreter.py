@@ -15,8 +15,9 @@ class BotLangException(Exception):
 
     def print_stack_trace(self):
 
-        return '\nStack trace:\n{0}\n\nBotcenterDSL exception:\n{1}'.format(
+        return '\nStack trace:\n{0}\n\n{1}:\n{2}'.format(
             self.stack.print_trace(),
+            type(self.wrapped).__name__,
             self.message
         )
 
