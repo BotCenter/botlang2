@@ -25,16 +25,22 @@ class Atom(SExpression):
     def to_ast(self):
 
         if self.code in ['true', '#t']:
-            return Val(True)
+            return Val(True).add_code_reference(self)
+
         if self.code in ['false', '#f']:
-            return Val(False)
+            return Val(False).add_code_reference(self)
+
         try:
-            return Val(int(self.code))
+            return Val(int(self.code)).add_code_reference(self)
+
         except ValueError:
             try:
-                return Val(float(self.code))
+                return Val(float(self.code)).add_code_reference(self)
+
             except ValueError:
-                return self.string_or_symbol(self.code)
+                return self.string_or_symbol(
+                    self.code
+                ).add_code_reference(self)
 
     def string_or_symbol(self, token):
 
@@ -92,67 +98,72 @@ class Tree(SExpression):
             self.children[1].to_ast(),
             self.children[2].to_ast(),
             self.children[3].to_ast()
-        )
+        ).add_code_reference(self)
 
     def and_node(self):
         return And(
             self.children[1].to_ast(),
             self.children[2].to_ast()
-        )
+        ).add_code_reference(self)
 
     def or_node(self):
         return Or(
             self.children[1].to_ast(),
             self.children[2].to_ast()
-        )
+        ).add_code_reference(self)
 
     def define_node(self):
         return Definition(
-                self.children[1].code,
-                self.children[2].to_ast()
-            )
+            self.children[1].code,
+            self.children[2].to_ast()
+        ).add_code_reference(self)
 
     def local_node(self):
         return Local(
             [
-                Definition(d.children[0].code, d.children[1].to_ast())
-                for d in self.children[1].children],
+                Definition(
+                    d.children[0].code,
+                    d.children[1].to_ast()
+                ).add_code_reference(d)
+
+                for d in self.children[1].children
+            ],
             self.children[2].to_ast()
-        )
+        ).add_code_reference(self)
 
     def begin_node(self):
         return BodySequence(
             [s_expr.to_ast() for s_expr in self.children[1:]]
-        )
+        ).add_code_reference(self)
 
     def function_node(self):
         return Fun(
             [identifier.code for identifier in self.children[1].children],
             BodySequence(
                 [s_expr.to_ast() for s_expr in self.children[2:]]
-            )
-        )
+            ).add_code_reference(self)
+        ).add_code_reference(self)
 
     def bot_node(self):
         return BotNode(
             [identifier.code for identifier in self.children[1].children],
             BodySequence(
                 [s_expr.to_ast() for s_expr in self.children[2:]]
-            )
-        )
+            ).add_code_reference(self)
+        ).add_code_reference(self)
 
     def bot_result_node(self):
         return BotResult(
             self.children[1].to_ast(),
             self.children[2].to_ast(),
             self.children[3].to_ast()
-        )
+        ).add_code_reference(self)
 
     def application_node(self):
         return App(
             self.children[0].to_ast(),
             [s_expr.to_ast() for s_expr in self.children[1:]]
-        )
+        ).add_code_reference(self)
 
 
 class Parser(object):
