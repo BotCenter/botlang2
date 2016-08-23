@@ -45,10 +45,13 @@ class Closure(FunVal):
         self.ast_node = ast_node
 
     def apply(self, *values):
+
+        from botcenterdsl import BotcenterDSL
         new_bindings = {
             self.params[i]: v for i, v in enumerate(values)
         }
-        return self.body.accept(
+        return BotcenterDSL.interpret(
+            [self.body],
             self.evaluator,
             self.env.new_environment(new_bindings)
         )

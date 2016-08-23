@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import re
 
 from botcenterdsl.ast.ast import *
@@ -201,15 +203,15 @@ class Parser(object):
         self.code = code
         self.strings = {}
 
-        string_index = 0
         for match in self.FIND_STRINGS_REGEX.finditer(code):
-            identifier = '__REPLACED_STR__{0}'.format(string_index)
-            self.strings[identifier] = match.group(0)
+            string = match.group(0)
+            str_hash = base64.b64encode(hashlib.md5(string).hexdigest())
+            identifier = '__STR__{0}'.format(str_hash)
+            self.strings[identifier] = string
             self.code = self.code.replace(
-                match.group(0),
+                string,
                 identifier
             )
-            string_index += 1
 
     def s_expressions(self):
 

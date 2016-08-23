@@ -12,7 +12,32 @@ class ExecutionState(object):
 
 class ExecutionStack(list):
 
-    pass
+    def print_trace(self):
+
+        prev_frames = reduce(
+            lambda a, n: a + n + '\n',
+            [self.summarized_frame_message(frame) for frame in self[:-1]],
+            ''
+        )
+
+        return prev_frames + self.detailed_frame_message(self[-1])
+
+    @classmethod
+    def summarized_frame_message(cls, frame):
+
+        return '\t{0}, line {1}'.format(
+            type(frame).__name__,
+            frame.s_expr.start_line
+        )
+
+    @classmethod
+    def detailed_frame_message(cls, frame):
+
+        return '\t{0}, line {1}:\n{2}'.format(
+            type(frame).__name__,
+            frame.s_expr.start_line,
+            frame.s_expr.code
+        )
 
 
 class Evaluator(Visitor):

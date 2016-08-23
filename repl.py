@@ -1,3 +1,4 @@
+from botcenterdsl import Evaluator
 from botcenterdsl.interpreter import BotcenterDSL
 from botcenterdsl.parser import Parser
 
@@ -31,8 +32,12 @@ class BotcenterREPL(object):
 
     def eval(self, code_string):
         try:
-            ast = Parser.parse(code_string)
-            return self.dsl.interpret(ast)
+            ast_seq = Parser.parse(code_string)
+            return BotcenterDSL.interpret(
+                ast_seq,
+                Evaluator(),
+                self.dsl.environment
+            )
         except Exception as e:
             name = e.__class__.__name__
             message = e.args[0]

@@ -1,6 +1,6 @@
 import unittest
 
-from botcenterdsl import Parser, Evaluator, BotcenterDSL, WrappedException
+from botcenterdsl import BotcenterDSL, BotLangException
 
 
 class StackTraceTestCase(unittest.TestCase):
@@ -19,8 +19,10 @@ class StackTraceTestCase(unittest.TestCase):
                 (+ (g 3) (g 2))
             )
         """
-        ast = Parser.parse(code)
         try:
-            BotcenterDSL().interpret(ast, Evaluator())
-        except WrappedException as e:
+            BotcenterDSL().eval(code)
+        except BotLangException as e:
             self.assertEqual(len(e.stack), 6)
+            self.assertTrue(
+                e.print_stack_trace().endswith('3 is not a function')
+            )

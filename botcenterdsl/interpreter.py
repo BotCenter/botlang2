@@ -5,13 +5,20 @@ from botcenterdsl.parser import Parser
 from botcenterdsl.primitives import BotcenterDSLPrimitives
 
 
-class WrappedException(Exception):
+class BotLangException(Exception):
 
     def __init__(self, exception, execution_stack):
 
         self.wrapped = exception
         self.message = exception.message
         self.stack = execution_stack
+
+    def print_stack_trace(self):
+
+        return '\nStack trace:\n{0}\n\nBotcenterDSL exception:\n{1}'.format(
+            self.stack.print_trace(),
+            self.message
+        )
 
 
 class BotcenterDSL(object):
@@ -45,7 +52,7 @@ class BotcenterDSL(object):
     def primitive_eval(self, code_string, evaluator):
 
         ast_seq = Parser.parse(code_string)
-        return self.interpret(ast_seq, evaluator)
+        return self.interpret(ast_seq, evaluator, self.environment)
 
     def eval(self, code_string):
 
@@ -65,14 +72,15 @@ class BotcenterDSL(object):
             return result.apply(self.data)
         return result
 
-    def interpret(self, ast_seq, evaluator):
+    @classmethod
+    def interpret(cls, ast_seq, evaluator, environment):
 
         try:
             for ast in ast_seq[0:-1]:
-                ast.accept(evaluator, self.environment)
-            return ast_seq[-1].accept(evaluator, self.environment)
+                ast.accept(evaluator, environment)
+            return ast_seq[-1].accept(evaluator, environment)
         except Exception as e:
-            raise WrappedException(
+            raise BotLangException(
                 e,
                 evaluator.execution_stack
             )

@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 import unittest
-from botcenterdsl.parser import Parser, SExpression, Tree
+from botcenterdsl.parser import Parser, Tree
 
 
 class ParserTestCase(unittest.TestCase):
@@ -126,3 +127,24 @@ class ParserTestCase(unittest.TestCase):
 
         self.assertEqual(end_node_sexpr.start_line, 6)
         self.assertEqual(end_node_sexpr.end_line, 6)
+
+    def test_code_string_information(self):
+
+        code = """
+        (some-function
+            "String 1"
+            3
+            "String 2"
+            "String 3"
+            some-id
+            "String 4"
+        )
+        """
+
+        function_expr = Parser(code).s_expressions()[0]
+        self.assertEqual(function_expr.children[1].code, '"String 1"')
+        self.assertEqual(function_expr.children[2].code, '3')
+        self.assertEqual(function_expr.children[3].code, '"String 2"')
+        self.assertEqual(function_expr.children[4].code, '"String 3"')
+        self.assertEqual(function_expr.children[5].code, 'some-id')
+        self.assertEqual(function_expr.children[6].code, '"String 4"')
