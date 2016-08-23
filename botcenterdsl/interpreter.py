@@ -5,6 +5,15 @@ from botcenterdsl.parser import Parser
 from botcenterdsl.primitives import BotcenterDSLPrimitives
 
 
+class WrappedException(Exception):
+
+    def __init__(self, exception, execution_stack):
+
+        self.wrapped = exception
+        self.message = exception.message
+        self.stack = execution_stack
+
+
 class BotcenterDSL(object):
 
     def __init__(self, environment=None):
@@ -29,16 +38,20 @@ class BotcenterDSL(object):
     def evaluate_code_definitions(self, evaluator):
 
         return self.environment.update({
-            name: Parser.parse(code).accept(evaluator, self.environment)
+            name: self.primitive_eval(code, evaluator)
             for name, code in self.code_definitions.items()
         })
 
+    def primitive_eval(self, code_string, evaluator):
+
+        ast_seq = Parser.parse(code_string)
+        return self.interpret(ast_seq, evaluator)
+
     def eval(self, code_string):
 
-        ast = Parser.parse(code_string)
         evaluator = Evaluator()
         self.evaluate_code_definitions(evaluator)
-        return self.interpret(ast, evaluator)
+        return self.primitive_eval(code_string, evaluator)
 
     def eval_bot(self, bot_code, input_msg, evaluation_state=None):
 
@@ -47,15 +60,22 @@ class BotcenterDSL(object):
         })
         evaluator = Evaluator(evaluation_state)
         self.evaluate_code_definitions(evaluator)
-        ast = Parser.parse(bot_code)
-        result = self.interpret(ast, evaluator)
+        result = self.primitive_eval(bot_code, evaluator)
         if isinstance(result, BotNodeValue):
             return result.apply(self.data)
         return result
 
-    def interpret(self, ast, evaluator=None):
+    def interpret(self, ast_seq, evaluator):
 
-        return ast.accept(evaluator, self.environment)
+        try:
+            for ast in ast_seq[0:-1]:
+                ast.accept(evaluator, self.environment)
+            return ast_seq[-1].accept(evaluator, self.environment)
+        except Exception as e:
+            raise WrappedException(
+                e,
+                evaluator.execution_stack
+            )
 
     @classmethod
     def run(cls, code_string, environment=None):

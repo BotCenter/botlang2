@@ -184,7 +184,7 @@ class Parser(object):
     def parse(cls, code):
         """
         :param code: BotcenterDSL code string to parse
-        :rtype: ASTNode
+        :rtype: list[ASTNode]
         """
         balanced, failure_index = cls.balanced_parens(code)
         if not balanced:
@@ -192,7 +192,7 @@ class Parser(object):
 
         s_expressions = Parser(code).s_expressions()
         abstract_syntax_trees = [s_expr.to_ast() for s_expr in s_expressions]
-        return BodySequence(abstract_syntax_trees)
+        return abstract_syntax_trees
 
     FIND_STRINGS_REGEX = re.compile('"[^"]*"')
 

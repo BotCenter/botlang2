@@ -9,7 +9,7 @@ class RuntimeStateSerializationTestCase(unittest.TestCase):
 
     def test_deterministic_node_hashing(self):
 
-        ast = Parser.parse(ExampleBots.dog_bot_code)
+        ast = Parser.parse(ExampleBots.dog_bot_code)[0]
         node_hasher1 = NodeHasher()
         node_hasher2 = NodeHasher()
 
