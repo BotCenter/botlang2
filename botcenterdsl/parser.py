@@ -207,13 +207,22 @@ class Parser(object):
 
         for match in self.FIND_STRINGS_REGEX.finditer(code):
             string = match.group(0)
-            str_hash = base64.b64encode(hashlib.md5(string).hexdigest())
+            str_hash = self.generate_string_hash(string)
             identifier = '__STR__{0}'.format(str_hash)
             self.strings[identifier] = string
             self.code = self.code.replace(
                 string,
                 identifier
             )
+
+    @classmethod
+    def generate_string_hash(cls, string):
+
+        try:
+            encoded_str = string.encode('utf-8')
+        except UnicodeDecodeError:
+            encoded_str = string
+        return base64.b64encode(hashlib.md5(encoded_str).hexdigest())
 
     def s_expressions(self):
 

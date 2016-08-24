@@ -101,6 +101,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(alternative_sixth_result.message, 'Wauf, Juanito!')
 
     def test_primitives_caching(self):
+
         environment = BotcenterDSL.base_environment().add_primitives(
             {'end-node': lambda: 'BOT_ENDED'}
         )
