@@ -99,3 +99,59 @@ class TestBots(unittest.TestCase):
             fifth_execution_state
         )
         self.assertEqual(alternative_sixth_result.message, 'Wauf, Juanito!')
+
+    def test_primitives_caching(self):
+        environment = BotcenterDSL.base_environment().add_primitives(
+            {'end-node': lambda: 'BOT_ENDED'}
+        )
+        code = """
+        [define node-two
+            (bot-node (data)
+                [define washo
+                    (append [input-message] "\n" (get data 'mensajito))
+                ]
+                (node-result
+                    (put data 'washo washo)
+                    washo
+                    end-node
+                )
+            )
+        ]
+        [define some-list (list 1 2 3 4)]
+        [define concatenate
+            (fun (list)
+                [reduce
+                    (fun (acc next) [append (str acc) "\n" (str next)])
+                    list
+                ]
+            )
+        ]
+
+        (bot-node (data)
+            (node-result
+                (put data 'mensajito [concatenate some-list])
+                "Hola"
+                node-two
+            )
+        )
+        """
+        first_result = BotcenterDSL(environment).eval_bot(code, 'hola')
+        self.assertEqual(
+            first_result.message,
+            'Hola'
+        )
+        self.assertEqual(
+            first_result.data,
+            {'mensajito': '1\n2\n3\n4'}
+        )
+
+        first_execution_state = first_result.execution_state
+        second_result = BotcenterDSL(environment).eval_bot(
+            code,
+            'Miau',
+            first_execution_state
+        )
+        self.assertEqual(
+            second_result.message,
+            'Miau\n1\n2\n3\n4'
+        )

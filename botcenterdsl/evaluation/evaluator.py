@@ -178,7 +178,7 @@ class Evaluator(Visitor):
 
         arg_vals = [arg.accept(self, env) for arg in app_node.arg_exprs]
 
-        if fun_val.is_primitive():
+        if fun_val.must_be_cached():
             if self.primitive_step == len(self.primitives_evaluations):
                 return_value = fun_val.apply(*arg_vals)
                 self.primitives_evaluations.append(return_value)

@@ -63,7 +63,7 @@ class BotcenterDSL(object):
 
     def eval_bot(self, bot_code, input_msg, evaluation_state=None):
 
-        self.environment.add_primitives({
+        self.environment.add_cachable_primitives({
             'input-message': lambda: input_msg
         })
         evaluator = Evaluator(evaluation_state)

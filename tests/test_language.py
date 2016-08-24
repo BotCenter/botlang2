@@ -239,7 +239,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
             )
         """
 
-        environment = BotcenterDSL.base_environment().add_primitives(
+        environment = BotcenterDSL.base_environment().add_cachable_primitives(
             {
                 'test-primitive': test_primitive,
                 'end-node': lambda: 'fin'

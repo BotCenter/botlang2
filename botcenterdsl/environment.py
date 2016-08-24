@@ -38,6 +38,11 @@ class Environment(object):
             {k: Primitive(v, self) for k, v in bindings.items()}
         )
 
+    def add_cachable_primitives(self, bindings):
+        return self.update(
+            {k: CachablePrimitive(v, self) for k, v in bindings.items()}
+        )
+
     def new_environment(self, bindings=None):
         return Environment(
             bindings if bindings is not None else {},

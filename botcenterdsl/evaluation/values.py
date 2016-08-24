@@ -11,7 +11,7 @@ class FunVal(object):
     def is_bot_node(self):
         return False
 
-    def is_primitive(self):
+    def must_be_cached(self):
         return False
 
 
@@ -27,9 +27,17 @@ class Primitive(FunVal):
         return self.proc(*args)
 
     def __repr__(self):
-        return '<built-in function {0}>'.format(self.env.get_function_name(self))
+        return '<built-in function {0}>'.format(
+            self.env.get_function_name(self)
+        )
 
-    def is_primitive(self):
+
+class CachablePrimitive(Primitive):
+    """
+    Special kind of primitive whose returned values must be cached by the
+    evaluator
+    """
+    def must_be_cached(self):
         return True
 
 

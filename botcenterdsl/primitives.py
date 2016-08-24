@@ -23,6 +23,13 @@ def dict_has_key(data_dict, key):
     return data_dict.get(key) is not None
 
 
+def find_in_list(find_function, lst):
+    for elem in lst:
+        if find_function(elem):
+            return elem
+    raise Exception('element not found in list')
+
+
 class BotcenterDSLPrimitives(object):
 
     MATH = vars(math)
@@ -52,7 +59,8 @@ class BotcenterDSLPrimitives(object):
         'reduce': lambda f, l: reduce(f, l),
         'max': max,
         'min': min,
-        'in-list': lambda lst, elem: elem in lst
+        'in-list': lambda lst, elem: elem in lst,
+        'find': find_in_list
     }
 
     DICT_OPERATIONS = {
