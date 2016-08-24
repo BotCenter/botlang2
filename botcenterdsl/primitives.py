@@ -4,6 +4,8 @@ import math
 import operator as op
 from collections import OrderedDict
 
+from botcenterdsl.evaluation.values import Nil
+
 
 def append(*values):
     return reduce(op.add, values)
@@ -27,14 +29,20 @@ def find_in_list(find_function, lst):
     for elem in lst:
         if find_function(elem):
             return elem
-    raise Exception('element not found in list')
+    return Nil
 
 
 class BotcenterDSLPrimitives(object):
 
     MATH = vars(math)
 
-    OPERATORS = {
+    UNARY_OPERATORS = {
+        'abs': abs,
+        'not': op.not_,
+        'nil?': lambda v: v is Nil
+    }
+
+    BINARY_OPERATORS = {
         '+': op.add,
         '-': op.sub,
         '*': op.mul,
@@ -44,9 +52,7 @@ class BotcenterDSLPrimitives(object):
         '>=': op.ge,
         '<=': op.le,
         '=': op.eq,
-        'abs': abs,
-        'equal?': op.eq,
-        'not': op.not_,
+        'equal?': op.eq
     }
 
     LIST_OPERATIONS = {
@@ -81,8 +87,10 @@ class BotcenterDSLPrimitives(object):
     @classmethod
     def populate_environment(cls, environment):
 
+        environment.update({'nil': Nil})
         environment.add_primitives(cls.MATH)
-        environment.add_primitives(cls.OPERATORS)
+        environment.add_primitives(cls.UNARY_OPERATORS)
+        environment.add_primitives(cls.BINARY_OPERATORS)
         environment.add_primitives(cls.LIST_OPERATIONS)
         environment.add_primitives(cls.DICT_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)

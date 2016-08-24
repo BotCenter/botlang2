@@ -1,3 +1,7 @@
+class Nil(object):
+    pass
+
+
 class FunVal(object):
     """
     First-order function values
