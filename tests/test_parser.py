@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from botcenterdsl.parser import Parser, Tree
+from botcenterdsl.parser import Parser, Tree, BotLangSyntaxError
 
 
 class ParserTestCase(unittest.TestCase):
@@ -12,10 +12,22 @@ class ParserTestCase(unittest.TestCase):
         self.assertTrue(Parser('(a [b] (c {d}))').s_expressions())
         self.assertTrue(Parser('(ab [c e (e) {a}] [d])').s_expressions())
 
-        self.assertRaises(SyntaxError, lambda: Parser('(a))').s_expressions())
-        self.assertRaises(SyntaxError, lambda: Parser('([][]}').s_expressions())
-        self.assertRaises(SyntaxError, lambda: Parser('{[[]}').s_expressions())
-        self.assertRaises(SyntaxError, lambda: Parser(')ab(').s_expressions())
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser('(a))').s_expressions()
+        )
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser('([][]}').s_expressions()
+        )
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser('{[[]}').s_expressions()
+        )
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser(')ab(').s_expressions()
+        )
 
     def test_separate_sexpr_strings(self):
 
