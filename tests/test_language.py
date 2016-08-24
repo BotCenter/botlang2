@@ -117,6 +117,20 @@ class BotcenterDSLTestCase(unittest.TestCase):
         """
         self.assertEqual(BotcenterDSL.run(code), 120)
 
+        code = """
+            [define f
+                (fun (g n)
+                    [fun (x) (g (+ x n))]
+                )
+            ]
+            [define g
+                (f [fun (n) (* n n)] 2)
+            ]
+            [define h (g 3)]
+            h
+        """
+        self.assertEqual(BotcenterDSL.run(code), 25)
+
     def test_begin(self):
 
         code = """
@@ -257,15 +271,15 @@ class BotcenterDSLTestCase(unittest.TestCase):
 
     def test_add_code_definition(self):
 
-        code = """
-            (begin
-                (define g (f 3))
-
-                (+ (g 3) (g 2))
-            )
-        """
         dsl = BotcenterDSL().add_code_definition(
             'f',
             '(fun (n) [fun (x) (+ n x)])'
         )
+        code = """
+            (begin
+                (define g (f 3))
+                (+ (g 3) (g 2))
+            )
+        """
         self.assertEqual(dsl.eval(code), 11)
+
