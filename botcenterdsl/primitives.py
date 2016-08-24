@@ -17,12 +17,15 @@ def dict_put(data_dict, key, value):
     return data
 
 
-def dict_get(data_dict, key):
+def dict_or_list_get(data_dict, key):
     return data_dict[key]
 
 
 def dict_has_key(data_dict, key):
-    return data_dict.get(key) is not None
+    try:
+        return data_dict[key]
+    except:
+        return Nil
 
 
 def find_in_list(find_function, lst):
@@ -72,7 +75,7 @@ class BotcenterDSLPrimitives(object):
     DICT_OPERATIONS = {
         'make-dict': lambda: OrderedDict(),
         'put': dict_put,
-        'get': dict_get,
+        'get': dict_or_list_get,
         'has-key': dict_has_key
     }
 
