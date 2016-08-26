@@ -74,7 +74,7 @@ class BotcenterDSLPrimitives(object):
         'tail': lambda x: x[1:],
         'length': len,
         'list': lambda *x: list(x),
-        'map': lambda f, l: map(f, l),
+        'map': lambda f, l: list(map(f, l)),
         'reduce': lambda f, l: reduce(f, l),
         'max': max,
         'min': min,
