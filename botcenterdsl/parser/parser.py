@@ -2,7 +2,7 @@ import base64
 import hashlib
 import re
 
-from s_expressions import *
+from botcenterdsl.parser.s_expressions import *
 
 
 class BotLangSyntaxError(Exception):
