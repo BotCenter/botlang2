@@ -1,5 +1,5 @@
-from environment import Environment
-from primitives import BotcenterDSLPrimitives
+from botcenterdsl.environment.environment import Environment
+from botcenterdsl.environment.primitives import BotcenterDSLPrimitives
 
 __all__ = [
     'Environment',

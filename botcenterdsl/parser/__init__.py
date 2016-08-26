@@ -1,4 +1,4 @@
-from parser import Parser, BotLangSyntaxError
+from botcenterdsl.parser.parser import Parser, BotLangSyntaxError
 
 __all__ = [
     'Parser',
