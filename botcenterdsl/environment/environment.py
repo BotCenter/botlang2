@@ -38,6 +38,12 @@ class Environment(object):
             {k: Primitive(v, self) for k, v in bindings.items()}
         )
 
+    def add_terminal_nodes(self, node_states):
+
+        return self.add_primitives(
+            {key: lambda: value for key, value in node_states.items()}
+        )
+
     def add_cachable_primitives(self, bindings):
         return self.update(
             {k: CachablePrimitive(v, self) for k, v in bindings.items()}

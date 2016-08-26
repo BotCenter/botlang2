@@ -1,4 +1,5 @@
 from botcenterdsl.environment import *
+from botcenterdsl.environment.bot_helpers import BotHelpers
 from botcenterdsl.evaluation.evaluator import Evaluator
 from botcenterdsl.evaluation.values import BotNodeValue
 from botcenterdsl.parser import Parser
@@ -36,6 +37,13 @@ class BotcenterDSL(object):
 
         env = Environment()
         return BotcenterDSLPrimitives.populate_environment(env)
+
+    @classmethod
+    def bot_instance(cls):
+
+        environment = cls.base_environment()
+        dsl = BotcenterDSL(environment)
+        return BotHelpers.load_on_dsl(dsl)
 
     def add_code_definition(self, name, code):
 

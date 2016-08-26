@@ -100,6 +100,10 @@ class BotcenterDSLPrimitives(object):
         'print': print
     }
 
+    TERMINAL_NODE_STATES = {
+        'end-node': 'BOT_ENDED'
+    }
+
     @classmethod
     def populate_environment(cls, environment):
 
@@ -109,6 +113,9 @@ class BotcenterDSLPrimitives(object):
         environment.add_primitives(cls.BINARY_OPERATORS)
         environment.add_primitives(cls.LIST_OPERATIONS)
         environment.add_primitives(cls.DICT_OPERATIONS)
+        environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
         environment.add_primitives(cls.SIDE_EFFECTS)
+
+        environment.add_terminal_nodes(cls.TERMINAL_NODE_STATES)
         return environment
