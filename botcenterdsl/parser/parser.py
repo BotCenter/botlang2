@@ -47,7 +47,9 @@ class Parser(object):
             encoded_str = string.encode('utf-8')
         except UnicodeDecodeError:
             encoded_str = string
-        return base64.b64encode(hashlib.md5(encoded_str).hexdigest())
+
+        md5_hash = hashlib.md5(encoded_str).hexdigest()
+        return base64.b64encode(md5_hash.encode('utf-8'))
 
     def s_expressions(self):
 
