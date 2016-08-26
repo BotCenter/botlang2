@@ -44,7 +44,7 @@ class Atom(SExpression):
     def string_or_symbol(cls, token):
 
         if token.startswith('"') and token.endswith('"'):
-            return Val(token[1:-1])
+            return Val(token[1:-1].replace('\\n', '\n'))
         if token.startswith("'"):
             return Val(token[1:])
         return Id(token)
