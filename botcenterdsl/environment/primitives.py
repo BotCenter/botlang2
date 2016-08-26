@@ -3,6 +3,7 @@ from __future__ import print_function
 import math
 import operator as op
 from collections import OrderedDict
+from unidecode import unidecode
 
 from botcenterdsl.evaluation.values import Nil
 
@@ -33,6 +34,14 @@ def find_in_list(find_function, lst):
         if find_function(elem):
             return elem
     return Nil
+
+
+def simplify_text(text):
+
+    return unidecode(text)\
+        .lower()\
+        .replace("'", '')\
+        .replace('&', '')
 
 
 class BotcenterDSLPrimitives(object):
@@ -68,7 +77,7 @@ class BotcenterDSLPrimitives(object):
         'reduce': lambda f, l: reduce(f, l),
         'max': max,
         'min': min,
-        'in-list': lambda lst, elem: elem in lst,
+        'in-list?': lambda lst, elem: elem in lst,
         'find': find_in_list
     }
 
@@ -77,6 +86,10 @@ class BotcenterDSLPrimitives(object):
         'put': dict_put,
         'get': dict_or_list_get,
         'has-key': dict_has_key
+    }
+
+    STRING_OPERATIONS = {
+        'plain': simplify_text
     }
 
     TYPE_CONVERSION = {

@@ -1,8 +1,7 @@
-from botcenterdsl.environment import Environment
+from botcenterdsl.environment import *
 from botcenterdsl.evaluation.evaluator import Evaluator
 from botcenterdsl.evaluation.values import BotNodeValue
 from botcenterdsl.parser import Parser
-from botcenterdsl.primitives import BotcenterDSLPrimitives
 
 
 class BotLangException(Exception):
