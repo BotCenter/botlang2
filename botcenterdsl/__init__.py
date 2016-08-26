@@ -1,5 +1,5 @@
-from interpreter import *
-from environment import *
+from botcenterdsl.interpreter import *
+from botcenterdsl.environment import *
 
 __all__ = [
     'BotcenterDSL',
