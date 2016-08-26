@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import math
+from functools import *
 import operator as op
 from collections import OrderedDict
 from unidecode import unidecode
