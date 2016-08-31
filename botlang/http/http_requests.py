@@ -1,4 +1,3 @@
-import json
 import requests
 
 
@@ -9,11 +8,12 @@ def build_response_dict(request_response):
         'status-code': request_response.status_code,
         'headers': request_response.headers,
         'encoding': request_response.encoding,
-        'content': request_response.content
+        'content': request_response.content,
+        'text': request_response.text
     }
     try:
-        response_dict['json'] = json.loads(request_response.content.decode())
-    except:
+        response_dict['json'] = request_response.json()
+    except ValueError:
         pass
 
     return response_dict
