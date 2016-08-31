@@ -27,6 +27,18 @@ class Val(ASTNode):
         return visitor.visit_val(self, env)
 
 
+class ListVal(ASTNode):
+    """
+    Literal list expression
+    """
+    def __init__(self, elements):
+        super(ASTNode, self).__init__()
+        self.elements = elements
+
+    def accept(self, visitor, env):
+        return visitor.visit_list(self, env)
+
+
 class If(ASTNode):
     """
     'If' construct

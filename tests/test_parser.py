@@ -65,6 +65,14 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(args_expr.children[0].code, 'm')
         self.assertEqual(args_expr.children[1].code, 'n')
 
+    def test_symbols(self):
+        code = """
+        '(1 2 3)
+        """
+        list_expr = Parser(code).s_expressions()[0]
+        self.assertTrue(list_expr.is_tree())
+        self.assertTrue(list_expr.quoted)
+
     def test_bot_sexpr(self):
 
         code = """

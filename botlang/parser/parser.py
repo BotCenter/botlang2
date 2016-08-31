@@ -82,6 +82,16 @@ class Parser(object):
             'unbalanced parentheses, line {0}'.format(line)
         )
 
+    @classmethod
+    def is_quoted(cls, string, opening_paren_index):
+
+        try:
+            char = string[opening_paren_index-1]
+        except IndexError:
+            return False
+
+        return char == '\''
+
     def s_expressions_from_string(self, s_expr_string, current_line=1):
 
         s_expressions = []
@@ -125,7 +135,8 @@ class Parser(object):
                         ),
                         code,
                         start_line,
-                        current_line
+                        current_line,
+                        quoted=self.is_quoted(s_expr_string, start_index)
                     )
                     s_expressions.append(s_expr)
                     last_index = index + 1

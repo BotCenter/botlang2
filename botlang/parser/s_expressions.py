@@ -11,6 +11,12 @@ class SExpression(object):
     def to_ast(self):
         raise NotImplementedError
 
+    def is_tree(self):
+        return False
+
+    def is_atom(self):
+        return False
+
 
 class Atom(SExpression):
 
@@ -20,7 +26,11 @@ class Atom(SExpression):
         self.start_line = line
         self.end_line = line
 
-    def to_ast(self):
+    def is_atom(self):
+
+        return True
+
+    def to_ast(self, quoted_parent=False):
 
         if self.code in ['true', '#t']:
             return Val(True).add_code_reference(self)
@@ -36,30 +46,64 @@ class Atom(SExpression):
                 return Val(float(self.code)).add_code_reference(self)
 
             except ValueError:
-                return self.string_or_symbol(
-                    self.code
-                ).add_code_reference(self)
+                if self.is_string(self.code):
+                    return self.as_string_value(self.code)
+                if self.is_symbol(self.code) or quoted_parent:
+                    return self.as_symbol_value(self.code, quoted_parent)
+                return self.as_identifier(self.code)
+
+    def as_quoted(self):
+
+        return self.to_ast(quoted_parent=True)
+
+    def as_string_value(self, token):
+
+        return Val(token[1:-1].replace('\\n', '\n')).add_code_reference(self)
+
+    def as_symbol_value(self, token, quoted_parent):
+
+        symbol = token if quoted_parent else token[1:]
+        return Val(symbol).add_code_reference(self)
+
+    def as_identifier(self, token):
+
+        return Id(token).add_code_reference(self)
 
     @classmethod
-    def string_or_symbol(cls, token):
+    def is_string(cls, token):
 
-        if token.startswith('"') and token.endswith('"'):
-            return Val(token[1:-1].replace('\\n', '\n'))
-        if token.startswith("'"):
-            return Val(token[1:])
-        return Id(token)
+        return token.startswith('"') and token.endswith('"')
+
+    @classmethod
+    def is_symbol(cls, token):
+
+        return token.startswith("'")
 
 
 class Tree(SExpression):
 
-    def __init__(self, children, code, start_line, end_line):
+    def __init__(self, children, code, start_line, end_line, quoted=False):
 
         self.children = children
         self.code = code
         self.start_line = start_line
         self.end_line = end_line
+        self.quoted = quoted
+
+    def is_tree(self):
+
+        return True
+
+    def as_quoted(self):
+
+        return ListVal([
+            child.as_quoted() for child in self.children
+        ])
 
     def to_ast(self):
+
+        if self.quoted:
+            return self.as_quoted()
 
         first = self.children[0].code
 

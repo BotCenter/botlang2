@@ -45,6 +45,13 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('(min (list 3 4 5 2 1))'), 1)
         self.assertEqual(BotlangSystem.run('(map abs (list 1 -2 3))'), [1, 2, 3])
 
+    def test_lists(self):
+
+        self.assertEqual(BotlangSystem.run('(list 1 2 3 4)'), [1, 2, 3, 4])
+        self.assertEqual(BotlangSystem.run('\'(1 2 3 4)'), [1, 2, 3, 4])
+        self.assertEqual(BotlangSystem.run('(list "1" "2")'), ['1', '2'])
+        self.assertEqual(BotlangSystem.run('\'("1" "2")'), ['1', '2'])
+
     def test_closures(self):
 
         self.assertTrue(BotlangSystem.run('((fun (x) x) true)'))
