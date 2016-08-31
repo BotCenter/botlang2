@@ -46,6 +46,13 @@ def simplify_text(text):
         .replace('&', '')
 
 
+def cons(head, tail):
+
+    if isinstance(tail, list):
+        return [head] + tail
+    return [head, tail]
+
+
 class BotlangPrimitives(object):
 
     MATH = vars(math)
@@ -79,11 +86,12 @@ class BotlangPrimitives(object):
         'reduce': lambda f, l: reduce(f, l),
         'max': max,
         'min': min,
-        'find': find_in_list
+        'find': find_in_list,
+        'cons': cons
     }
 
     DICT_OPERATIONS = {
-        'make-dict': lambda: OrderedDict(),
+        'make-dict': lambda bindings: OrderedDict(bindings),
         'put': dict_put,
         'get': dict_or_list_get
     }

@@ -1,4 +1,5 @@
 import unittest
+from collections import OrderedDict
 
 from botlang.interpreter import BotlangSystem
 from botlang.evaluation.evaluator import Primitive
@@ -51,6 +52,48 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('\'(1 2 3 4)'), [1, 2, 3, 4])
         self.assertEqual(BotlangSystem.run('(list "1" "2")'), ['1', '2'])
         self.assertEqual(BotlangSystem.run('\'("1" "2")'), ['1', '2'])
+
+        a_list = BotlangSystem.run('(cons (list 2 3) 1)')
+        self.assertEqual(a_list, [[2, 3], 1])
+        another_list = BotlangSystem.run('(cons 1 (list 2 3))')
+        self.assertEqual(another_list, [1, 2, 3])
+
+    def test_dictionaries(self):
+
+        computed_dict = BotlangSystem.run("""
+        (make-dict '[
+                (holi "chao")
+                (doge "wow")
+                (such "much")
+            ]
+        )
+        """)
+        expected_dict = OrderedDict([
+            ('holi', 'chao'),
+            ('doge', 'wow'),
+            ('such', 'much')
+        ])
+        self.assertEqual(computed_dict, expected_dict)
+
+        computed_dict = BotlangSystem.run("""
+            (make-dict (list
+                    '(holi "chao")
+                    '(doge "wow")
+                    '(such "much")
+                )
+            )
+            """)
+        self.assertEqual(computed_dict, expected_dict)
+
+        computed_dict = BotlangSystem.run("""
+            (make-dict (list
+                    (list 'holi "chao")
+                    (list 'doge "wow")
+                    (list 'such "much")
+                )
+            )
+            """)
+        self.assertEqual(computed_dict, expected_dict)
 
     def test_closures(self):
 
