@@ -7,6 +7,7 @@ from collections import OrderedDict
 from unidecode import unidecode
 
 from botlang.evaluation.values import Nil
+from botlang.http.http_requests import http_get
 
 
 def append(*values):
@@ -103,6 +104,10 @@ class BotlangPrimitives(object):
 
     TERMINAL_NODE_STATES = {
         'end-node': 'BOT_ENDED'
+    }
+
+    HTTP = {
+        'http-get': http_get
     }
 
     @classmethod

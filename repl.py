@@ -21,10 +21,10 @@ class BotlangREPL(object):
 
     @classmethod
     def input(cls, prompt):
-        '''
+        """
         Disgusting trick, because of python's decision of renaming raw_input
         to input in version 3
-        '''
+        """
         if hasattr(__builtins__, 'raw_input'):
             return raw_input(prompt)
         else:
@@ -40,8 +40,35 @@ class BotlangREPL(object):
             )
         except Exception as e:
             name = e.__class__.__name__
-            message = e.args[0]
-            return '{0}: {1}'.format(name, message)
+            return '{0}: {1}'.format(name, e.message)
+
+    @classmethod
+    def balanced_parens(cls, code):
+
+        opening_parens = ['(', '[']
+        closing_parens = [')', ']']
+        parens_stack = []
+
+        for char in code:
+            try:
+                opening_parens.index(char)
+                parens_stack.append(char)
+            except ValueError:
+                pass
+
+            try:
+                closing_index = closing_parens.index(char)
+                matching = parens_stack.pop()
+                opening_index = opening_parens.index(matching)
+                if closing_index != opening_index:
+                    return False
+            except ValueError:
+                pass
+
+        if len(parens_stack) > 0:
+            return False
+
+        return True
 
     @classmethod
     def run(cls):
@@ -57,9 +84,9 @@ class BotlangREPL(object):
             else:
                 prompt = '\t'
 
-            code_input += cls.input(prompt)
-            balanced, fail_index = Parser.balanced_parens(code_input)
-            if not balanced and fail_index == len(code_input):
+            code_input += cls.input(prompt) + ' '
+            balanced = cls.balanced_parens(code_input)
+            if not balanced:
                 line_breaks += 1
                 continue
 
