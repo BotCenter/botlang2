@@ -28,7 +28,7 @@ validate_in_options = """
 [function (options)
     (define simplified-options (map plain options))
     (function (option)
-        (in-list? simplified-options option)
+        (member? simplified-options option)
     )
 ]
 """

@@ -7,7 +7,7 @@ from collections import OrderedDict
 from unidecode import unidecode
 
 from botlang.evaluation.values import Nil
-from botlang.http.http_requests import http_get
+from botlang.http.http_requests import *
 
 
 def append(*values):
@@ -79,15 +79,17 @@ class BotlangPrimitives(object):
         'reduce': lambda f, l: reduce(f, l),
         'max': max,
         'min': min,
-        'in-list?': lambda lst, elem: elem in lst,
         'find': find_in_list
     }
 
     DICT_OPERATIONS = {
         'make-dict': lambda: OrderedDict(),
         'put': dict_put,
-        'get': dict_or_list_get,
-        'has-key': dict_has_key
+        'get': dict_or_list_get
+    }
+
+    PREDICATES = {
+        'member?': lambda collection, element: element in collection
     }
 
     STRING_OPERATIONS = {
@@ -107,7 +109,8 @@ class BotlangPrimitives(object):
     }
 
     HTTP = {
-        'http-get': http_get
+        'http-get': http_get,
+        'http-post': http_post
     }
 
     @classmethod
@@ -122,6 +125,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
         environment.add_primitives(cls.SIDE_EFFECTS)
+        environment.add_primitives(cls.HTTP)
 
         environment.add_terminal_nodes(cls.TERMINAL_NODE_STATES)
         return environment
