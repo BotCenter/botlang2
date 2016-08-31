@@ -1,5 +1,5 @@
-from botcenterdsl.ast.visitor import Visitor
-from botcenterdsl.evaluation.values import *
+from botlang.ast.visitor import Visitor
+from botlang.evaluation.values import *
 
 
 class ExecutionState(object):

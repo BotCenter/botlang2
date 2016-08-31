@@ -1,8 +1,8 @@
-from botcenterdsl.environment import *
-from botcenterdsl.environment.bot_helpers import BotHelpers
-from botcenterdsl.evaluation.evaluator import Evaluator
-from botcenterdsl.evaluation.values import BotNodeValue
-from botcenterdsl.parser import Parser
+from botlang.environment import *
+from botlang.environment.bot_helpers import BotHelpers
+from botlang.evaluation.evaluator import Evaluator
+from botlang.evaluation.values import BotNodeValue
+from botlang.parser import Parser
 
 
 class BotLangException(Exception):
@@ -22,7 +22,7 @@ class BotLangException(Exception):
         )
 
 
-class BotcenterDSL(object):
+class BotlangSystem(object):
 
     def __init__(self, environment=None):
 
@@ -36,13 +36,13 @@ class BotcenterDSL(object):
     def base_environment(cls):
 
         env = Environment()
-        return BotcenterDSLPrimitives.populate_environment(env)
+        return BotlangPrimitives.populate_environment(env)
 
     @classmethod
     def bot_instance(cls):
 
         environment = cls.base_environment()
-        dsl = BotcenterDSL(environment)
+        dsl = BotlangSystem(environment)
         return BotHelpers.load_on_dsl(dsl)
 
     def add_code_definition(self, name, code):
@@ -96,4 +96,4 @@ class BotcenterDSL(object):
     @classmethod
     def run(cls, code_string, environment=None):
 
-        return BotcenterDSL(environment).eval(code_string)
+        return BotlangSystem(environment).eval(code_string)

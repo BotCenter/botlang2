@@ -1,7 +1,7 @@
 import base64
 import hashlib
 
-from botcenterdsl.ast.visitor import Visitor
+from botlang.ast.visitor import Visitor
 
 
 class NodeHasher(Visitor):

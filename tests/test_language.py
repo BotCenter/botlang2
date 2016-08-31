@@ -1,70 +1,70 @@
 import unittest
 
-from botcenterdsl.interpreter import BotcenterDSL
-from botcenterdsl.evaluation.evaluator import Primitive
-from botcenterdsl.evaluation.values import BotResultValue
+from botlang.interpreter import BotlangSystem
+from botlang.evaluation.evaluator import Primitive
+from botlang.evaluation.values import BotResultValue
 
 
-class BotcenterDSLTestCase(unittest.TestCase):
+class BotlangTestCase(unittest.TestCase):
 
     def test_primitive_values(self):
 
-        self.assertTrue(BotcenterDSL.run('true'))
-        self.assertFalse(BotcenterDSL.run('false'))
-        self.assertEqual(BotcenterDSL.run('2'), 2)
-        self.assertEqual(BotcenterDSL.run('3.14'), 3.14)
-        self.assertEqual(BotcenterDSL.run('"hola"'), "hola")
+        self.assertTrue(BotlangSystem.run('true'))
+        self.assertFalse(BotlangSystem.run('false'))
+        self.assertEqual(BotlangSystem.run('2'), 2)
+        self.assertEqual(BotlangSystem.run('3.14'), 3.14)
+        self.assertEqual(BotlangSystem.run('"hola"'), "hola")
 
     def test_and(self):
 
-        self.assertTrue(BotcenterDSL.run('(and true true)'))
-        self.assertFalse(BotcenterDSL.run('(and true false)'))
-        self.assertFalse(BotcenterDSL.run('(and false true)'))
-        self.assertFalse(BotcenterDSL.run('(and false false)'))
+        self.assertTrue(BotlangSystem.run('(and true true)'))
+        self.assertFalse(BotlangSystem.run('(and true false)'))
+        self.assertFalse(BotlangSystem.run('(and false true)'))
+        self.assertFalse(BotlangSystem.run('(and false false)'))
 
     def test_or(self):
 
-        self.assertTrue(BotcenterDSL.run('(or true true)'))
-        self.assertTrue(BotcenterDSL.run('(or true false)'))
-        self.assertTrue(BotcenterDSL.run('(or false true)'))
-        self.assertFalse(BotcenterDSL.run('(or false false)'))
+        self.assertTrue(BotlangSystem.run('(or true true)'))
+        self.assertTrue(BotlangSystem.run('(or true false)'))
+        self.assertTrue(BotlangSystem.run('(or false true)'))
+        self.assertFalse(BotlangSystem.run('(or false false)'))
 
     def test_if(self):
 
-        self.assertEqual(BotcenterDSL.run('(if true 2 3)'), 2)
-        self.assertEqual(BotcenterDSL.run('(if false 2 3)'), 3)
-        self.assertEqual(BotcenterDSL.run('(if (> 4 5) 100 200)'), 200)
+        self.assertEqual(BotlangSystem.run('(if true 2 3)'), 2)
+        self.assertEqual(BotlangSystem.run('(if false 2 3)'), 3)
+        self.assertEqual(BotlangSystem.run('(if (> 4 5) 100 200)'), 200)
 
     def test_primitive_application(self):
 
-        self.assertTrue(BotcenterDSL.run('(not false)'))
-        self.assertEqual(BotcenterDSL.run('(sqrt 4)'), 2)
-        self.assertEqual(BotcenterDSL.run('(* 5 (/ 10 2))'), 25)
-        self.assertEqual(BotcenterDSL.run('(list 3 4 5 2 1)'), [3, 4, 5, 2, 1])
-        self.assertEqual(BotcenterDSL.run('(max (list 3 4 5 2 1))'), 5)
-        self.assertEqual(BotcenterDSL.run('(min (list 3 4 5 2 1))'), 1)
-        self.assertEqual(BotcenterDSL.run('(map abs (list 1 -2 3))'), [1, 2, 3])
+        self.assertTrue(BotlangSystem.run('(not false)'))
+        self.assertEqual(BotlangSystem.run('(sqrt 4)'), 2)
+        self.assertEqual(BotlangSystem.run('(* 5 (/ 10 2))'), 25)
+        self.assertEqual(BotlangSystem.run('(list 3 4 5 2 1)'), [3, 4, 5, 2, 1])
+        self.assertEqual(BotlangSystem.run('(max (list 3 4 5 2 1))'), 5)
+        self.assertEqual(BotlangSystem.run('(min (list 3 4 5 2 1))'), 1)
+        self.assertEqual(BotlangSystem.run('(map abs (list 1 -2 3))'), [1, 2, 3])
 
     def test_closures(self):
 
-        self.assertTrue(BotcenterDSL.run('((fun (x) x) true)'))
-        self.assertEqual(BotcenterDSL.run(
+        self.assertTrue(BotlangSystem.run('((fun (x) x) true)'))
+        self.assertEqual(BotlangSystem.run(
             '((fun (x y) (+ (* x x) (* y y))) 3 4)'
         ), 25)
 
     def test_environment(self):
 
-        runtime = BotcenterDSL()
+        runtime = BotlangSystem()
         bindings = {
             'x': 4,
-            'hola': BotcenterDSL.run('(max (list 1 3 2))'),
+            'hola': BotlangSystem.run('(max (list 1 3 2))'),
             '+': Primitive(lambda x, y: x * y, runtime.environment)
         }
         new_env = runtime.environment.new_environment(bindings)
 
-        self.assertEqual(BotcenterDSL.run('(- 3 x)', new_env), -1)
-        self.assertEqual(BotcenterDSL.run('(- 10 hola)', new_env), 7)
-        self.assertEqual(BotcenterDSL.run('(+ 2 3)', new_env), 6)
+        self.assertEqual(BotlangSystem.run('(- 3 x)', new_env), -1)
+        self.assertEqual(BotlangSystem.run('(- 10 hola)', new_env), 7)
+        self.assertEqual(BotlangSystem.run('(+ 2 3)', new_env), 6)
 
     def test_add_python_functions(self):
 
@@ -77,7 +77,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 return 1
             return fibonacci(n - 1) + fibonacci(n - 2)
 
-        runtime = BotcenterDSL()
+        runtime = BotlangSystem()
         runtime.environment.add_primitives({'fibo': fibonacci})
         self.assertEqual(runtime.eval('(fibo 4)'), 3)
         self.assertEqual(runtime.eval('(fibo 7)'), 13)
@@ -93,7 +93,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 )
              )
         """
-        self.assertTrue(BotcenterDSL.run(code))
+        self.assertTrue(BotlangSystem.run(code))
 
     def test_define(self):
 
@@ -102,7 +102,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
             (define y 3)
             (+ x y)
         """
-        self.assertEqual(BotcenterDSL.run(code), 5)
+        self.assertEqual(BotlangSystem.run(code), 5)
 
         code = """
             (define factorial
@@ -115,7 +115,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
             )
             (factorial 5)
         """
-        self.assertEqual(BotcenterDSL.run(code), 120)
+        self.assertEqual(BotlangSystem.run(code), 120)
 
         code = """
             [define f
@@ -129,7 +129,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
             [define h (g 3)]
             h
         """
-        self.assertEqual(BotcenterDSL.run(code), 25)
+        self.assertEqual(BotlangSystem.run(code), 25)
 
     def test_begin(self):
 
@@ -140,7 +140,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 (+ x y)
             )
         """
-        self.assertEqual(BotcenterDSL.run(code), 3)
+        self.assertEqual(BotlangSystem.run(code), 3)
 
     def test_local_definitions(self):
 
@@ -153,7 +153,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 (f x 2)
             )
         """
-        self.assertEqual(BotcenterDSL.run(code), 12)
+        self.assertEqual(BotlangSystem.run(code), 12)
 
     def test_recursion(self):
 
@@ -170,7 +170,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 (factorial 5)
             )
         """
-        self.assertEqual(BotcenterDSL.run(code), 120)
+        self.assertEqual(BotlangSystem.run(code), 120)
 
     def test_first_order_functions(self):
 
@@ -186,7 +186,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
                 (+ (g 3) (g 2))
             )
         """
-        self.assertEqual(BotcenterDSL.run(code), 11)
+        self.assertEqual(BotlangSystem.run(code), 11)
 
     def test_bot_node(self):
 
@@ -202,8 +202,8 @@ class BotcenterDSLTestCase(unittest.TestCase):
         test = {'value': 0}
         self.assertEqual(test['value'], 0)
 
-        node_result = BotcenterDSL(
-            BotcenterDSL.base_environment().add_primitives(
+        node_result = BotlangSystem(
+            BotlangSystem.base_environment().add_primitives(
                 {'end-node': (lambda: test.update(value=1))}
             )
         ).eval_bot(code, 'mensaje inicial')
@@ -239,13 +239,13 @@ class BotcenterDSLTestCase(unittest.TestCase):
             )
         """
 
-        environment = BotcenterDSL.base_environment().add_cachable_primitives(
+        environment = BotlangSystem.base_environment().add_cachable_primitives(
             {
                 'test-primitive': test_primitive,
                 'end-node': lambda: 'fin'
             }
         )
-        first_node_result = BotcenterDSL(environment).eval_bot(code, 'oli bot')
+        first_node_result = BotlangSystem(environment).eval_bot(code, 'oli bot')
         self.assertEqual(first_node_result.message, 'Holi')
         self.assertEqual(test_dict['value'], 2)
 
@@ -255,7 +255,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
         self.assertEqual(bot_node_steps, 1)
         self.assertEqual(len(primitives_evaluations), 2)
 
-        second_node_result = BotcenterDSL(environment).eval_bot(
+        second_node_result = BotlangSystem(environment).eval_bot(
             code,
             'otro mensaje',
             execution_state
@@ -271,7 +271,7 @@ class BotcenterDSLTestCase(unittest.TestCase):
 
     def test_add_code_definition(self):
 
-        dsl = BotcenterDSL().add_code_definition(
+        dsl = BotlangSystem().add_code_definition(
             'f',
             '(fun (n) [fun (x) (+ n x)])'
         )

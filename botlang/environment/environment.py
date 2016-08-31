@@ -1,4 +1,4 @@
-from botcenterdsl.evaluation.values import *
+from botlang.evaluation.values import *
 
 
 class Environment(object):

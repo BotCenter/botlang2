@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
-from botcenterdsl.parser import Parser, BotLangSyntaxError
-from botcenterdsl.parser.s_expressions import Tree
+from botlang.parser import Parser, BotLangSyntaxError
+from botlang.parser.s_expressions import Tree
 
 
 class ParserTestCase(unittest.TestCase):

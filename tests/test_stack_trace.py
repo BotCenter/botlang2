@@ -1,6 +1,6 @@
 import unittest
 
-from botcenterdsl import BotcenterDSL, BotLangException
+from botlang import BotlangSystem, BotLangException
 
 
 class StackTraceTestCase(unittest.TestCase):
@@ -20,7 +20,7 @@ class StackTraceTestCase(unittest.TestCase):
             )
         """
         try:
-            BotcenterDSL().eval(code)
+            BotlangSystem().eval(code)
         except BotLangException as e:
             self.assertEqual(len(e.stack), 6)
             self.assertTrue(

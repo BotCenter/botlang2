@@ -1,9 +1,9 @@
-from botcenterdsl import Evaluator
-from botcenterdsl.interpreter import BotcenterDSL
-from botcenterdsl.parser import Parser
+from botlang import Evaluator
+from botlang.interpreter import BotlangSystem
+from botlang.parser import Parser
 
 
-class BotcenterREPL(object):
+class BotlangREPL(object):
 
     def exit_function(self):
         def repl_exit():
@@ -14,7 +14,7 @@ class BotcenterREPL(object):
     def __init__(self):
 
         self.active = True
-        self.dsl = BotcenterDSL()
+        self.dsl = BotlangSystem()
         self.dsl.environment.add_primitives(
             {'exit': self.exit_function()}
         )
@@ -33,7 +33,7 @@ class BotcenterREPL(object):
     def eval(self, code_string):
         try:
             ast_seq = Parser.parse(code_string)
-            return BotcenterDSL.interpret(
+            return BotlangSystem.interpret(
                 ast_seq,
                 Evaluator(),
                 self.dsl.environment
@@ -46,7 +46,7 @@ class BotcenterREPL(object):
     @classmethod
     def run(cls):
         print('Welcome to the BotCenter REPL\n')
-        runtime = BotcenterREPL()
+        runtime = BotlangREPL()
         line_breaks = 0
         code_input = ''
 
@@ -71,4 +71,4 @@ class BotcenterREPL(object):
 
 
 if __name__ == '__main__':
-    BotcenterREPL.run()
+    BotlangREPL.run()

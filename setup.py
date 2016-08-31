@@ -9,21 +9,21 @@ https://github.com/pypa/sampleproject
 from setuptools import setup, find_packages
 
 setup(
-    name='BotcenterDSL',
+    name='Botlang',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0.0',
 
-    description='Botcenter DSL',
+    description='Botlang DSL',
     long_description="",
 
     # The project's main homepage.
     url='https://bitbucket.org/adereso/botcenter-dsl',
 
     # Author details
-    author='PostCenter',
+    author='Sergio Maass (BotCenter)',
     author_email='sergio@postcenter.io',
 
     # Choose your license

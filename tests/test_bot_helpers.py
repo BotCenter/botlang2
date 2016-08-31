@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from botcenterdsl.environment.bot_helpers import *
+from botlang.environment.bot_helpers import *
 
 
 class BotHelpersTestCase(TestCase):

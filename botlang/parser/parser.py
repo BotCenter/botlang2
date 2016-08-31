@@ -2,7 +2,7 @@ import base64
 import hashlib
 import re
 
-from botcenterdsl.parser.s_expressions import *
+from botlang.parser.s_expressions import *
 
 
 class BotLangSyntaxError(Exception):
@@ -16,7 +16,7 @@ class Parser(object):
     @classmethod
     def parse(cls, code):
         """
-        :param code: BotcenterDSL code string to parse
+        :param code: BotlangSystem code string to parse
         :rtype: list[ASTNode]
         """
         s_expressions = Parser(code).s_expressions()

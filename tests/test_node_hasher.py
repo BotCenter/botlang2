@@ -1,8 +1,8 @@
 import unittest
 
-from botcenterdsl import Parser, Environment
-from botcenterdsl.examples.example_bots import ExampleBots
-from botcenterdsl.node_hasher import NodeHasher
+from botlang import Parser, Environment
+from botlang.examples.example_bots import ExampleBots
+from botlang.node_hasher import NodeHasher
 
 
 class RuntimeStateSerializationTestCase(unittest.TestCase):

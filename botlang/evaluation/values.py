@@ -72,11 +72,11 @@ class Closure(FunVal):
         if len(self.params) != len(values):
             raise InvalidArgumentsException(len(self.params), len(values))
 
-        from botcenterdsl import BotcenterDSL
+        from botlang import BotlangSystem
         new_bindings = {
             self.params[i]: v for i, v in enumerate(values)
         }
-        return BotcenterDSL.interpret(
+        return BotlangSystem.interpret(
             [self.body],
             self.evaluator,
             self.env.new_environment(new_bindings)

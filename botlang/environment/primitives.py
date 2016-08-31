@@ -6,7 +6,7 @@ import operator as op
 from collections import OrderedDict
 from unidecode import unidecode
 
-from botcenterdsl.evaluation.values import Nil
+from botlang.evaluation.values import Nil
 
 
 def append(*values):
@@ -45,7 +45,7 @@ def simplify_text(text):
         .replace('&', '')
 
 
-class BotcenterDSLPrimitives(object):
+class BotlangPrimitives(object):
 
     MATH = vars(math)
 

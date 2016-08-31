@@ -1,4 +1,4 @@
-from botcenterdsl.ast.ast import *
+from botlang.ast.ast import *
 
 
 class SExpression(object):

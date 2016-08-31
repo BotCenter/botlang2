@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from botcenterdsl.examples.example_bots import ExampleBots
-from botcenterdsl.interpreter import BotcenterDSL
+from botlang.examples.example_bots import ExampleBots
+from botlang.interpreter import BotlangSystem
 
 
 class TestBots(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestBots(unittest.TestCase):
                 return True
             return False
 
-        environment = BotcenterDSL.base_environment().add_primitives(
+        environment = BotlangSystem.base_environment().add_primitives(
             {
                 'validate-rut': validate_rut,
                 'end-node': lambda: 'BOT_ENDED'
@@ -22,7 +22,7 @@ class TestBots(unittest.TestCase):
         )
         code = ExampleBots.dog_bot_code
 
-        first_result = BotcenterDSL(environment).eval_bot(code, 'hola')
+        first_result = BotlangSystem(environment).eval_bot(code, 'hola')
         self.assertEqual(
             first_result.message,
             'Bienvenido a Botcenter! ¿Con quién tengo el gusto de hablar?'
@@ -30,7 +30,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(first_result.data, {})
 
         first_execution_state = first_result.execution_state
-        second_result = BotcenterDSL(environment).eval_bot(
+        second_result = BotlangSystem(environment).eval_bot(
             code,
             'Juanito',
             first_execution_state
@@ -43,7 +43,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(second_result.data.get('name'), 'Juanito')
 
         second_execution_state = second_result.execution_state
-        third_result = BotcenterDSL(environment).eval_bot(
+        third_result = BotlangSystem(environment).eval_bot(
             code,
             '17098131-2',
             second_execution_state
@@ -56,7 +56,7 @@ class TestBots(unittest.TestCase):
         )
 
         third_execution_state = third_result.execution_state
-        fourth_result = BotcenterDSL(environment).eval_bot(
+        fourth_result = BotlangSystem(environment).eval_bot(
             code,
             '16926695-6',
             third_execution_state
@@ -71,7 +71,7 @@ class TestBots(unittest.TestCase):
 
         fourth_execution_state = fourth_result.execution_state
         self.assertEqual(fourth_execution_state.bot_node_steps, 4)
-        fifth_result = BotcenterDSL(environment).eval_bot(
+        fifth_result = BotlangSystem(environment).eval_bot(
             code,
             'bla',
             fourth_execution_state
@@ -85,7 +85,7 @@ class TestBots(unittest.TestCase):
 
         fifth_execution_state = fifth_result.execution_state
         self.assertEqual(fifth_execution_state.bot_node_steps, 5)
-        sixth_result = BotcenterDSL(environment).eval_bot(
+        sixth_result = BotlangSystem(environment).eval_bot(
             code,
             'no',
             fifth_execution_state
@@ -93,7 +93,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(sixth_result.message, 'Miau, Juanito :3')
         self.assertEqual(sixth_result.bot_state, 'BOT_ENDED')
 
-        alternative_sixth_result = BotcenterDSL(environment).eval_bot(
+        alternative_sixth_result = BotlangSystem(environment).eval_bot(
             code,
             'si',
             fifth_execution_state
@@ -102,7 +102,7 @@ class TestBots(unittest.TestCase):
 
     def test_primitives_caching(self):
 
-        environment = BotcenterDSL.base_environment().add_primitives(
+        environment = BotlangSystem.base_environment().add_primitives(
             {'end-node': lambda: 'BOT_ENDED'}
         )
         code = """
@@ -136,7 +136,7 @@ class TestBots(unittest.TestCase):
             )
         )
         """
-        first_result = BotcenterDSL(environment).eval_bot(code, 'hola')
+        first_result = BotlangSystem(environment).eval_bot(code, 'hola')
         self.assertEqual(
             first_result.message,
             'Hola'
@@ -147,7 +147,7 @@ class TestBots(unittest.TestCase):
         )
 
         first_execution_state = first_result.execution_state
-        second_result = BotcenterDSL(environment).eval_bot(
+        second_result = BotlangSystem(environment).eval_bot(
             code,
             'Miau',
             first_execution_state
