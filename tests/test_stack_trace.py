@@ -1,6 +1,6 @@
 import unittest
 
-from botlang import BotlangSystem, BotlangException
+from botlang import BotlangSystem, BotlangErrorException
 
 
 class StackTraceTestCase(unittest.TestCase):
@@ -21,7 +21,7 @@ class StackTraceTestCase(unittest.TestCase):
         """
         try:
             BotlangSystem().eval(code)
-        except BotlangException as e:
+        except BotlangErrorException as e:
             self.assertEqual(len(e.stack), 6)
             self.assertTrue(
                 e.print_stack_trace().endswith('3 is not a function')
