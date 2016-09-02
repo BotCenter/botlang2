@@ -18,7 +18,7 @@ class Parser(object):
     @classmethod
     def parse(cls, code):
         """
-        :param code: BotlangSystem code string to parse
+        :param code: Botlang code string to parse
         :rtype: list[ASTNode]
         """
         code_id = cls.generate_string_hash(code)
