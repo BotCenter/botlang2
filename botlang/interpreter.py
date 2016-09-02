@@ -2,24 +2,8 @@ from botlang.environment import *
 from botlang.environment.bot_helpers import BotHelpers
 from botlang.evaluation.evaluator import Evaluator
 from botlang.evaluation.values import BotNodeValue
+from botlang.exceptions.exceptions import *
 from botlang.parser import Parser
-
-
-class BotLangException(Exception):
-
-    def __init__(self, exception, execution_stack):
-
-        self.wrapped = exception
-        self.message = exception.message
-        self.stack = execution_stack
-
-    def print_stack_trace(self):
-
-        return '\nStack trace:\n{0}\n\n{1}:\n{2}'.format(
-            self.stack.print_trace(),
-            type(self.wrapped).__name__,
-            self.message
-        )
 
 
 class BotlangSystem(object):
@@ -87,8 +71,10 @@ class BotlangSystem(object):
             for ast in ast_seq[0:-1]:
                 ast.accept(evaluator, environment)
             return ast_seq[-1].accept(evaluator, environment)
+        except BotlangAssertionException as failed_assert:
+            raise failed_assert
         except Exception as e:
-            raise BotLangException(
+            raise BotlangErrorException(
                 e,
                 evaluator.execution_stack
             )

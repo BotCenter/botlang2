@@ -97,7 +97,10 @@ class BotlangPrimitives(object):
     }
 
     PREDICATES = {
-        'member?': lambda collection, element: element in collection
+        'member?': lambda collection, element: element in collection,
+        'starts-with?': str.startswith,
+        'ends-with?': str.endswith,
+        'contains?': str.__contains__
     }
 
     STRING_OPERATIONS = {
@@ -130,6 +133,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.BINARY_OPERATORS)
         environment.add_primitives(cls.LIST_OPERATIONS)
         environment.add_primitives(cls.DICT_OPERATIONS)
+        environment.add_primitives(cls.PREDICATES)
         environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
         environment.add_primitives(cls.SIDE_EFFECTS)
