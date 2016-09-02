@@ -13,14 +13,24 @@ class BotLangSyntaxError(Exception):
 
 class Parser(object):
 
+    asts_cache = {}
+
     @classmethod
     def parse(cls, code):
         """
         :param code: BotlangSystem code string to parse
         :rtype: list[ASTNode]
         """
+        code_id = cls.generate_string_hash(code)
+        cached_asts = cls.asts_cache.get(code_id)
+
+        if cached_asts is not None:
+            return cached_asts
+
         s_expressions = Parser(code).s_expressions()
         abstract_syntax_trees = [s_expr.to_ast() for s_expr in s_expressions]
+        cls.asts_cache[code_id] = abstract_syntax_trees
+
         return abstract_syntax_trees
 
     FIND_STRINGS_REGEX = re.compile('"[^"]*"')
