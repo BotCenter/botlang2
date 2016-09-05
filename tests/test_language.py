@@ -10,35 +10,35 @@ class BotlangTestCase(unittest.TestCase):
 
     def test_primitive_values(self):
 
-        self.assertTrue(BotlangSystem.run('true'))
-        self.assertFalse(BotlangSystem.run('false'))
+        self.assertTrue(BotlangSystem.run('#t'))
+        self.assertFalse(BotlangSystem.run('#f'))
         self.assertEqual(BotlangSystem.run('2'), 2)
         self.assertEqual(BotlangSystem.run('3.14'), 3.14)
         self.assertEqual(BotlangSystem.run('"hola"'), "hola")
 
     def test_and(self):
 
-        self.assertTrue(BotlangSystem.run('(and true true)'))
-        self.assertFalse(BotlangSystem.run('(and true false)'))
-        self.assertFalse(BotlangSystem.run('(and false true)'))
-        self.assertFalse(BotlangSystem.run('(and false false)'))
+        self.assertTrue(BotlangSystem.run('(and #t #t)'))
+        self.assertFalse(BotlangSystem.run('(and #t #f)'))
+        self.assertFalse(BotlangSystem.run('(and #f #t)'))
+        self.assertFalse(BotlangSystem.run('(and #f #f)'))
 
     def test_or(self):
 
-        self.assertTrue(BotlangSystem.run('(or true true)'))
-        self.assertTrue(BotlangSystem.run('(or true false)'))
-        self.assertTrue(BotlangSystem.run('(or false true)'))
-        self.assertFalse(BotlangSystem.run('(or false false)'))
+        self.assertTrue(BotlangSystem.run('(or #t #t)'))
+        self.assertTrue(BotlangSystem.run('(or #t #f)'))
+        self.assertTrue(BotlangSystem.run('(or #f #t)'))
+        self.assertFalse(BotlangSystem.run('(or #f #f)'))
 
     def test_if(self):
 
-        self.assertEqual(BotlangSystem.run('(if true 2 3)'), 2)
-        self.assertEqual(BotlangSystem.run('(if false 2 3)'), 3)
+        self.assertEqual(BotlangSystem.run('(if #t 2 3)'), 2)
+        self.assertEqual(BotlangSystem.run('(if #f 2 3)'), 3)
         self.assertEqual(BotlangSystem.run('(if (> 4 5) 100 200)'), 200)
 
     def test_primitive_application(self):
 
-        self.assertTrue(BotlangSystem.run('(not false)'))
+        self.assertTrue(BotlangSystem.run('(not #f)'))
         self.assertEqual(BotlangSystem.run('(sqrt 4)'), 2)
         self.assertEqual(BotlangSystem.run('(* 5 (/ 10 2))'), 25)
         self.assertEqual(BotlangSystem.run('(list 3 4 5 2 1)'), [3, 4, 5, 2, 1])
@@ -97,7 +97,7 @@ class BotlangTestCase(unittest.TestCase):
 
     def test_closures(self):
 
-        self.assertTrue(BotlangSystem.run('((fun (x) x) true)'))
+        self.assertTrue(BotlangSystem.run('((fun (x) x) #t)'))
         self.assertEqual(BotlangSystem.run(
             '((fun (x y) (+ (* x x) (* y y))) 3 4)'
         ), 25)

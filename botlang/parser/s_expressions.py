@@ -32,10 +32,10 @@ class Atom(SExpression):
 
     def to_ast(self, quoted_parent=False):
 
-        if self.code in ['true', '#t']:
+        if self.code == '#t':
             return Val(True).add_code_reference(self)
 
-        if self.code in ['false', '#f']:
+        if self.code == '#f':
             return Val(False).add_code_reference(self)
 
         try:
