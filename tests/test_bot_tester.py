@@ -37,7 +37,7 @@ class BotlangTesterTestCase(TestCase):
                 ]
             )
         """
-        results = BotlangTester(self.bot_code, tests_code).run()
+        results = BotlangTester.run(self.bot_code, tests_code)
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0].is_success())
 
@@ -77,7 +77,7 @@ class BotlangTesterTestCase(TestCase):
                 ]
             )
         """
-        results = BotlangTester(self.bot_code, tests_code).run()
+        results = BotlangTester.run(self.bot_code, tests_code)
         self.assertEqual(len(results), 3)
         self.assertTrue(results[0].is_success())
         self.assertTrue(results[1].is_success())
@@ -93,7 +93,7 @@ class BotlangTesterTestCase(TestCase):
                 ]
             )
         """
-        results = BotlangTester(self.bot_code, tests_code).run()
+        results = BotlangTester.run(self.bot_code, tests_code)
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0].is_failure())
         self.assertEqual(results[0].name, 'test-bot')
@@ -109,7 +109,7 @@ class BotlangTesterTestCase(TestCase):
                 ]
             )
         """
-        results = BotlangTester(self.bot_code, tests_code).run()
+        results = BotlangTester.run(self.bot_code, tests_code)
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0].is_failure())
         self.assertEqual(results[0].name, 'test-2')
@@ -126,7 +126,7 @@ class BotlangTesterTestCase(TestCase):
                 ]
             )
         """
-        results = BotlangTester(self.bot_code, tests_code).run()
+        results = BotlangTester.run(self.bot_code, tests_code)
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0].is_error())
         self.assertEqual(results[0].name, 'test-miau')
@@ -135,3 +135,33 @@ class BotlangTesterTestCase(TestCase):
                 "requires a 'str' object but received a 'dict'"
             )
         )
+
+    def test_mocks(self):
+
+        bot_code = """
+            (bot-node (data)
+                [define response (http-get "http://www.hola.chao")]
+                (node-result
+                    data
+                    response
+                    end-node
+                )
+            )
+        """
+
+        test_code = """
+            [define mock-http-get
+                (function (url)
+                    "Hola"
+                )
+            ]
+            [define test-bot
+                (function (bot)
+                    [define r (send-message bot "hola")]
+                    (assert-equal? (get r 'message) "Hola")
+                )
+            ]
+        """
+        results = BotlangTester.run(bot_code, test_code)
+        self.assertEqual(len(results), 1)
+        self.assertTrue(results[0].is_success())

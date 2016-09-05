@@ -17,50 +17,64 @@ def assert_equals_function(expression, expected):
         )
 
 
-def send_message(bot, message):
-
-    bot_code, evaluation_state = bot
-    result = BotlangSystem.bot_instance().eval_bot(
-        bot_code,
-        message,
-        evaluation_state
-    )
-    return {
-        'bot': (bot_code, result.execution_state),
-        'message': result.message,
-        'data': result.data
-    }
-
-
 class BotlangTester(object):
 
-    def __init__(self, bot_code, tests_code):
+    @classmethod
+    def get_send_message(cls, mocks):
 
-        self.bot_code = bot_code
-        self.tests_code = tests_code
+        if mocks is None:
+            mocks = {}
+
+        def send_message(bot, message):
+            bot_code, evaluation_state = bot
+            system = BotlangSystem.bot_instance()
+            system.environment.update(mocks)
+            result = system.eval_bot(
+                bot_code,
+                message,
+                evaluation_state
+            )
+            return {
+                'bot': (bot_code, result.execution_state),
+                'message': result.message,
+                'data': result.data
+            }
+
+        return send_message
 
     @classmethod
-    def botlang_test_instance(cls, additional_bindings=None):
+    def botlang_test_instance(cls, mocks=None):
 
         environment = BotlangSystem.base_environment()
         environment.add_primitives({
             'assert': assert_function,
             'assert-equal?': assert_equals_function,
-            'send-message': send_message
+            'send-message': cls.get_send_message(mocks)
         })
 
-        if additional_bindings is None:
-            additional_bindings = {}
+        return BotlangSystem(environment.new_environment())
 
-        return BotlangSystem(environment.new_environment(additional_bindings))
+    @classmethod
+    def get_mocks(cls, tests_code):
 
-    def post_setup_test_instance(self):
+        mock_system = BotlangSystem()
+        mock_system.eval(tests_code)
+        mock_bindings = {
+            name[5:]: value
+            for name, value in mock_system.environment.bindings.items()
+            if name.startswith('mock-')
+        }
+        return mock_bindings
 
-        setup_system = self.botlang_test_instance()
-        setup_system.eval(self.tests_code)
+    @classmethod
+    def post_setup_test_instance(cls, tests_code, bot_code):
+
+        mock_bindings = cls.get_mocks(tests_code)
+        setup_system = cls.botlang_test_instance(mock_bindings)
+        setup_system.eval(tests_code)
 
         setup_bindings = {
-            name[6:]: function.apply((self.bot_code, ExecutionState([], 0)))
+            name[6:]: function.apply((bot_code, ExecutionState([], 0)))
             for name, function in setup_system.environment.bindings.items()
             if name.startswith('setup-')
         }
@@ -68,9 +82,10 @@ class BotlangTester(object):
         setup_system.environment.update(setup_bindings)
         return setup_system
 
-    def run(self):
+    @classmethod
+    def run(cls, bot_code, tests_code):
 
-        test_system = self.post_setup_test_instance()
+        test_system = cls.post_setup_test_instance(tests_code, bot_code)
 
         test_functions = {
             name: function for name, function
@@ -82,7 +97,7 @@ class BotlangTester(object):
         for test_name, test_function in test_functions.items():
             try:
                 test_function.apply(
-                    (self.bot_code, ExecutionState([], 0))
+                    (bot_code, ExecutionState([], 0))
                 )
                 results.append(SuccessfulTestResult(test_name))
 

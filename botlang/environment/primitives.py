@@ -137,7 +137,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
         environment.add_primitives(cls.SIDE_EFFECTS)
-        environment.add_primitives(cls.HTTP)
+        environment.add_cachable_primitives(cls.HTTP)
 
         environment.add_terminal_nodes(cls.TERMINAL_NODE_STATES)
         return environment
