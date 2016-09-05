@@ -52,6 +52,14 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('\'(1 2 3 4)'), [1, 2, 3, 4])
         self.assertEqual(BotlangSystem.run('(list "1" "2")'), ['1', '2'])
         self.assertEqual(BotlangSystem.run('\'("1" "2")'), ['1', '2'])
+        self.assertEqual(
+            BotlangSystem.run('\'(hola chao)'),
+            ['hola', 'chao']
+        )
+        self.assertEqual(
+            BotlangSystem.run('(list "hola" "chao")'),
+            ['hola', 'chao']
+        )
 
         a_list = BotlangSystem.run('(cons (list 2 3) 1)')
         self.assertEqual(a_list, [[2, 3], 1])
