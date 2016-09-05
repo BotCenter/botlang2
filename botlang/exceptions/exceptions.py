@@ -6,8 +6,8 @@ class BotlangErrorException(Exception):
 
     def __init__(self, exception, execution_stack):
 
+        super(BotlangErrorException, self).__init__(exception.message)
         self.wrapped = exception
-        self.message = exception.message
         self.stack = execution_stack
 
     def print_stack_trace(self):
