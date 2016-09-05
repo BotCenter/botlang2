@@ -58,7 +58,9 @@ class Atom(SExpression):
 
     def as_string_value(self, token):
 
-        return Val(token[1:-1].replace('\\n', '\n')).add_code_reference(self)
+        return Val(
+            token[1:-1].replace('\\n', '\n').replace('\\"', '\"')
+        ).add_code_reference(self)
 
     def as_symbol_value(self, token, quoted_parent):
 
