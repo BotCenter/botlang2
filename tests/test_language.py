@@ -340,4 +340,3 @@ class BotlangTestCase(unittest.TestCase):
             )
         """
         self.assertEqual(dsl.eval(code), 11)
-

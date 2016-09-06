@@ -14,10 +14,10 @@ def append(*values):
     return reduce(op.add, values)
 
 
-def dict_put(data_dict, key, value):
-    data = data_dict.copy()
-    data[key] = value
-    return data
+def dict_put(ordered_dict, key, value):
+    return OrderedDict(
+        ordered_dict.items() + [(key, value)]
+    )
 
 
 def dict_or_list_get(data_dict, key):
