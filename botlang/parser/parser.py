@@ -33,7 +33,7 @@ class Parser(object):
 
         return abstract_syntax_trees
 
-    FIND_STRINGS_REGEX = re.compile(ur'"(?:\\"|[^"])*?"')
+    FIND_STRINGS_REGEX = re.compile(r'"(?:\\"|[^"])*?"')
 
     def __init__(self, code):
 
