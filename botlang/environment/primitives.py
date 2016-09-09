@@ -16,7 +16,7 @@ def append(*values):
 
 def dict_put(ordered_dict, key, value):
     return OrderedDict(
-        ordered_dict.items() + [(key, value)]
+        list(ordered_dict.items()) + [(key, value)]
     )
 
 
