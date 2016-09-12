@@ -124,6 +124,9 @@ class TestResult(object):
     def is_error(self):
         return False
 
+    def to_dict(self):
+        raise NotImplementedError
+
 
 class SuccessfulTestResult(TestResult):
 
@@ -132,6 +135,12 @@ class SuccessfulTestResult(TestResult):
 
     def is_success(self):
         return True
+
+    def to_dict(self):
+        return {
+            'test_name': self.name,
+            'result': 'passed'
+        }
 
 
 class FailedTestResult(TestResult):
@@ -143,6 +152,13 @@ class FailedTestResult(TestResult):
     def is_failure(self):
         return True
 
+    def to_dict(self):
+        return {
+            'test_name': self.name,
+            'result': 'failed',
+            'message': self.failed_assert.message
+        }
+
 
 class ErrorTestResult(TestResult):
 
@@ -152,3 +168,10 @@ class ErrorTestResult(TestResult):
 
     def is_error(self):
         return True
+
+    def to_dict(self):
+        return {
+            'test_name': self.name,
+            'result': 'error',
+            'message': self.error.message
+        }

@@ -136,6 +136,58 @@ class BotlangTesterTestCase(TestCase):
             )
         )
 
+    def test_results_to_dict(self):
+
+        tests_code = """
+            (define test-botcito
+                [function (bot)
+                    [define r2 (send-message bot "hola")]
+                    (assert (starts-with? (get r2 'message) "Bienvenido a Botcenter!"))
+                ]
+            )
+        """
+        results = BotlangTester.run(self.bot_code, tests_code)
+        self.assertEqual(len(results), 1)
+        result_dict = results[0].to_dict()
+        self.assertEqual(result_dict['result'], 'passed')
+        self.assertEqual(result_dict['test_name'], 'test-botcito')
+
+        tests_code = """
+            (define test-bot
+                [function (bot)
+                    [define r (send-message bot "hola")]
+                    (assert-equal? (get r 'message) "Holi")
+                ]
+            )
+        """
+        results = BotlangTester.run(self.bot_code, tests_code)
+        self.assertEqual(len(results), 1)
+        result_dict = results[0].to_dict()
+        self.assertEqual(result_dict['result'], 'failed')
+        self.assertEqual(result_dict['test_name'], 'test-bot')
+        self.assertTrue('Holi' in result_dict['message'])
+        self.assertTrue('!=' in result_dict['message'])
+        self.assertTrue('Bienvenido' in result_dict['message'])
+
+        tests_code = """
+            (define test-miau
+                [function (bot)
+                    [define r (send-message bot "hola")]
+                    (assert (starts-with? r "Holi"))
+                ]
+            )
+        """
+        results = BotlangTester.run(self.bot_code, tests_code)
+        self.assertEqual(len(results), 1)
+        result_dict = results[0].to_dict()
+        self.assertEqual(result_dict['result'], 'error')
+        self.assertEqual(result_dict['test_name'], 'test-miau')
+        self.assertTrue(
+            result_dict['message'].__contains__(
+                "requires a 'str' object but received a 'dict'"
+            )
+        )
+
     def test_mocks(self):
 
         bot_code = """
