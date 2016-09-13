@@ -53,6 +53,24 @@ def cons(head, tail):
     return [head, tail]
 
 
+def email_censor(value):
+    if '@' not in value:
+        return value
+    start, end = value.split('@')
+    return "{}@{}".format(
+        word_censor(start),
+        word_censor(end)
+    )
+
+
+def word_censor(value):
+    if len(value) <= 1:
+        return value
+    half = len(value) / 2
+    censored = value[0:half] + '*' * (len(value) - half)
+    return censored
+
+
 class BotlangPrimitives(object):
 
     MATH = vars(math)
@@ -105,7 +123,8 @@ class BotlangPrimitives(object):
 
     STRING_OPERATIONS = {
         'split': str.split,
-        'plain': simplify_text
+        'plain': simplify_text,
+        'email-censor': email_censor
     }
 
     TYPE_CONVERSION = {
