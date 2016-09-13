@@ -12,7 +12,6 @@ class BotlangSystem(object):
 
         if not environment:
             environment = self.base_environment()
-        self.data = {}
         self.environment = environment
         self.code_definitions = {}
 
@@ -52,7 +51,10 @@ class BotlangSystem(object):
         self.evaluate_code_definitions(evaluator)
         return self.primitive_eval(code_string, evaluator)
 
-    def eval_bot(self, bot_code, input_msg, evaluation_state=None):
+    def eval_bot(self, bot_code, input_msg, evaluation_state=None, data=None):
+
+        if data is None:
+            data = {}
 
         self.environment.add_cachable_primitives({
             'input-message': lambda: input_msg
@@ -61,7 +63,7 @@ class BotlangSystem(object):
         self.evaluate_code_definitions(evaluator)
         result = self.primitive_eval(bot_code, evaluator)
         if isinstance(result, BotNodeValue):
-            return result.apply(self.data)
+            return result.apply(data)
         return result
 
     @classmethod

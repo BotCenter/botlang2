@@ -26,16 +26,17 @@ class BotlangTester(object):
             mocks = {}
 
         def send_message(bot, message):
-            bot_code, evaluation_state = bot
+            bot_code, evaluation_state, input_data = bot
             system = BotlangSystem.bot_instance()
             system.environment.update(mocks)
             result = system.eval_bot(
                 bot_code,
                 message,
-                evaluation_state
+                evaluation_state,
+                input_data
             )
             return {
-                'bot': (bot_code, result.execution_state),
+                'bot': (bot_code, result.execution_state, result.data),
                 'message': result.message,
                 'data': result.data
             }
@@ -59,33 +60,36 @@ class BotlangTester(object):
 
         mock_system = BotlangSystem()
         mock_system.eval(tests_code)
+        input_data = mock_system.environment.bindings.get('input-data')
         mock_bindings = {
             name[5:]: value
             for name, value in mock_system.environment.bindings.items()
             if name.startswith('mock-')
         }
-        return mock_bindings
+        return mock_bindings, input_data
 
     @classmethod
     def post_setup_test_instance(cls, tests_code, bot_code):
 
-        mock_bindings = cls.get_mocks(tests_code)
+        mock_bindings, input_data = cls.get_mocks(tests_code)
         setup_system = cls.botlang_test_instance(mock_bindings)
         setup_system.eval(tests_code)
 
         setup_bindings = {
-            name[6:]: function.apply((bot_code, ExecutionState([], 0)))
+            name[6:]: function.apply(
+                (bot_code, ExecutionState([], 0), input_data)
+            )
             for name, function in setup_system.environment.bindings.items()
             if name.startswith('setup-')
         }
 
         setup_system.environment.update(setup_bindings)
-        return setup_system
+        return setup_system, input_data
 
     @classmethod
     def run(cls, bot_code, tests_code):
 
-        test_system = cls.post_setup_test_instance(tests_code, bot_code)
+        test_system, data = cls.post_setup_test_instance(tests_code, bot_code)
 
         test_functions = {
             name: function for name, function
@@ -97,7 +101,7 @@ class BotlangTester(object):
         for test_name, test_function in test_functions.items():
             try:
                 test_function.apply(
-                    (bot_code, ExecutionState([], 0))
+                    (bot_code, ExecutionState([], 0), data)
                 )
                 results.append(SuccessfulTestResult(test_name))
 

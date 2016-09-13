@@ -217,3 +217,30 @@ class BotlangTesterTestCase(TestCase):
         results = BotlangTester.run(bot_code, test_code)
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0].is_success())
+
+    def test_input_data(self):
+
+        bot_code = """
+            (bot-node (data)
+                (node-result
+                    data
+                    (append "Hi, " (get data 'name))
+                    end-node
+                )
+            )
+        """
+
+        test_code = """
+            [define input-data
+                (make-dict '[(name "Pedro")])
+            ]
+            [define test-me
+                (function (bot)
+                    [define r (send-message bot "Holo")]
+                    (assert-equal? (get r 'message) "Hi, Pedro")
+                )
+            ]
+        """
+        results = BotlangTester.run(bot_code, test_code)
+        self.assertEqual(len(results), 1)
+        self.assertTrue(results[0].is_success())

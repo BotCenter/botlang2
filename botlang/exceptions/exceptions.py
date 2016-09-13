@@ -26,6 +26,9 @@ class BotlangErrorException(BotlangException):
             self.message
         )
 
+    def __str__(self):
+        return self.message
+
 
 class BotlangAssertionException(BotlangException):
     pass

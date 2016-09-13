@@ -7,6 +7,28 @@ from botlang.interpreter import BotlangSystem
 
 class TestBots(unittest.TestCase):
 
+    def test_input_data(self):
+
+        code = """
+            (bot-node (data)
+                (node-result
+                    (put data 'bla "da")
+                    "Hi"
+                    end-node
+                )
+            )
+        """
+        input_data = {'some-data': 'hola', 'more-data': 'chao'}
+        result = BotlangSystem.bot_instance().eval_bot(
+            code,
+            'Hola',
+            data=input_data
+        )
+        self.assertDictEqual(
+            result.data,
+            {'some-data': 'hola', 'more-data': 'chao', 'bla': 'da'}
+        )
+
     def test_example_bot(self):
 
         def validate_rut(rut):
