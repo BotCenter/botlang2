@@ -1,12 +1,20 @@
 class BotlangException(Exception):
-    pass
+
+    def __init__(self, message):
+        self.message = message
 
 
-class BotlangErrorException(Exception):
+class BotlangErrorException(BotlangException):
 
     def __init__(self, exception, execution_stack):
 
-        super(BotlangErrorException, self).__init__(exception.message)
+        # Disgusting trick for compatibility with Python 2 and 3
+        try:
+            message = exception.args[0]
+        except IndexError:
+            message = exception.message
+
+        super(BotlangErrorException, self).__init__(message)
         self.wrapped = exception
         self.stack = execution_stack
 

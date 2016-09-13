@@ -1,6 +1,6 @@
-import base64
-import hashlib
+from functools import reduce
 
+from botlang import Parser
 from botlang.ast.visitor import Visitor
 
 
@@ -102,7 +102,7 @@ class NodeHasher(Visitor):
 
     def hash_and_store(self, string, node):
 
-        hash_val = self.hash_function(string)
+        hash_val = str(Parser.generate_string_hash(string))
         node.node_id = hash_val
         self.ast_nodes[hash_val] = node
         return hash_val
@@ -111,8 +111,4 @@ class NodeHasher(Visitor):
 
         params_str = reduce(str.__add__, params, '') if params else ''
         body_hash = body.accept(self, None)
-        return self.hash_function(params_str + body_hash)
-
-    @classmethod
-    def hash_function(cls, string):
-        return base64.b64encode(hashlib.md5(string).hexdigest())
+        return str(Parser.generate_string_hash(params_str + body_hash))

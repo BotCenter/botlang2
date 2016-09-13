@@ -1,3 +1,4 @@
+from functools import reduce
 from botlang.ast.visitor import Visitor
 from botlang.evaluation.values import *
 
