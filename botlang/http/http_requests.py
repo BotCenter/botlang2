@@ -19,13 +19,13 @@ def build_response_dict(request_response):
     return response_dict
 
 
-def http_get(url):
+def http_get(url, headers=None):
 
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
     return build_response_dict(response)
 
 
-def http_post(url, data):
+def http_post(url, data, headers=None):
 
-    response = requests.post(url, data)
+    response = requests.post(url, data, headers=headers)
     return build_response_dict(response)

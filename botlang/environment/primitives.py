@@ -104,6 +104,7 @@ class BotlangPrimitives(object):
     }
 
     STRING_OPERATIONS = {
+        'split': str.split,
         'plain': simplify_text
     }
 
