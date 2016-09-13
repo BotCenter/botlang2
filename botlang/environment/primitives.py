@@ -102,6 +102,7 @@ class BotlangPrimitives(object):
         'list': lambda *x: list(x),
         'map': lambda f, l: list(map(f, l)),
         'reduce': lambda f, l: reduce(f, l),
+        'fold': lambda v, f, l: reduce(f, l, v),
         'max': max,
         'min': min,
         'find': find_in_list,
