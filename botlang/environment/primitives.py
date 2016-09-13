@@ -66,7 +66,7 @@ def email_censor(value):
 def word_censor(value):
     if len(value) <= 1:
         return value
-    half = len(value) / 2
+    half = int(len(value) / 2)
     censored = value[0:half] + '*' * (len(value) - half)
     return censored
 
