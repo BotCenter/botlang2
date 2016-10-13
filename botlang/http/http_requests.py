@@ -4,7 +4,6 @@ import requests
 def build_response_dict(request_response):
 
     response_dict = {
-        'response-object': request_response,
         'status-code': request_response.status_code,
         'headers': request_response.headers,
         'encoding': request_response.encoding,
