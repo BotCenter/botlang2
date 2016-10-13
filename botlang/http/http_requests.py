@@ -7,7 +7,6 @@ def build_response_dict(request_response):
         'status-code': request_response.status_code,
         'headers': request_response.headers,
         'encoding': request_response.encoding,
-        'content': request_response.content,
         'text': request_response.text
     }
     try:
