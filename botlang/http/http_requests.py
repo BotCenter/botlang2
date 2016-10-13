@@ -5,7 +5,7 @@ def build_response_dict(request_response):
 
     response_dict = {
         'status-code': request_response.status_code,
-        'headers': request_response.headers,
+        'headers': dict(request_response.headers),
         'encoding': request_response.encoding,
         'text': request_response.text
     }
