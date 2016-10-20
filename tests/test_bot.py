@@ -37,10 +37,7 @@ class TestBots(unittest.TestCase):
             return False
 
         environment = BotlangSystem.base_environment().add_primitives(
-            {
-                'validate-rut': validate_rut,
-                'end-node': lambda: 'BOT_ENDED'
-            }
+            {'validate-rut': validate_rut}
         )
         code = ExampleBots.dog_bot_code
 
@@ -124,9 +121,7 @@ class TestBots(unittest.TestCase):
 
     def test_primitives_caching(self):
 
-        environment = BotlangSystem.base_environment().add_primitives(
-            {'end-node': lambda: 'BOT_ENDED'}
-        )
+        environment = BotlangSystem.base_environment()
         code = """
         [define node-two
             (bot-node (data)

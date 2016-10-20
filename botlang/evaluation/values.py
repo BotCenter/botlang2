@@ -12,9 +12,6 @@ class FunVal(object):
     def apply(self, *args):
         raise NotImplementedError('Must implement apply(*args)')
 
-    def is_bot_node(self):
-        return False
-
     def must_be_cached(self):
         return False
 
@@ -103,7 +100,16 @@ class BotNodeValue(Closure):
 
         return '<bot-node {0} at {1}>'.format(name, hex(id(self)))
 
-    def is_bot_node(self):
+    def is_terminal(self):
+        return False
+
+
+class TerminalNode(object):
+
+    def __init__(self, state):
+        self.state = state
+
+    def is_terminal(self):
         return True
 
 
@@ -123,9 +129,9 @@ class BotResultValue(object):
         self.message = message
         self.execution_state = evaluation_state
 
-        if next_node.is_bot_node():
+        if next_node.is_terminal():
+            self.next_node = None
+            self.bot_state = next_node.state
+        else:
             self.next_node = next_node
             self.bot_state = self.BOT_WAITING_INPUT
-        else:
-            self.next_node = None
-            self.bot_state = next_node()

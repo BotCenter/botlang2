@@ -253,22 +253,17 @@ class BotlangTestCase(unittest.TestCase):
                 (node-result
                     data
                     "Holi, soy Botcito"
-                    end-node
+                    (terminal-node "HOLA")
                 )
             )
         """
-        test = {'value': 0}
-        self.assertEqual(test['value'], 0)
-
         node_result = BotlangSystem(
-            BotlangSystem.base_environment().add_primitives(
-                {'end-node': (lambda: test.update(value=1))}
-            )
+            BotlangSystem.base_environment()
         ).eval_bot(code, 'mensaje inicial')
         self.assertTrue(isinstance(node_result, BotResultValue))
         self.assertTrue(isinstance(node_result.data, dict))
         self.assertEqual(node_result.message, 'Holi, soy Botcito')
-        self.assertEqual(test['value'], 1)
+        self.assertEqual(node_result.bot_state, 'HOLA')
 
     def test_evaluation_state(self):
 
@@ -299,8 +294,7 @@ class BotlangTestCase(unittest.TestCase):
 
         environment = BotlangSystem.base_environment().add_cachable_primitives(
             {
-                'test-primitive': test_primitive,
-                'end-node': lambda: 'fin'
+                'test-primitive': test_primitive
             }
         )
         first_node_result = BotlangSystem(environment).eval_bot(code, 'oli bot')

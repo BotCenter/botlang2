@@ -6,7 +6,7 @@ import operator as op
 from collections import OrderedDict
 from unidecode import unidecode
 
-from botlang.evaluation.values import Nil
+from botlang.evaluation.values import Nil, TerminalNode
 from botlang.http.http_requests import *
 
 
@@ -69,6 +69,10 @@ def word_censor(value):
     half = int(len(value) / 2)
     censored = value[0:half] + '*' * (len(value) - half)
     return censored
+
+
+def make_terminal_node(end_state):
+    return TerminalNode(end_state)
 
 
 class BotlangPrimitives(object):
@@ -136,8 +140,8 @@ class BotlangPrimitives(object):
         'print': print
     }
 
-    TERMINAL_NODE_STATES = {
-        'end-node': 'BOT_ENDED'
+    TERMINAL_NODES = {
+        'terminal-node': make_terminal_node
     }
 
     HTTP = {
@@ -158,7 +162,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
         environment.add_primitives(cls.SIDE_EFFECTS)
+        environment.add_primitives(cls.TERMINAL_NODES)
+        environment.update({'end-node': make_terminal_node('BOT_ENDED')})
         environment.add_cachable_primitives(cls.HTTP)
-
-        environment.add_terminal_nodes(cls.TERMINAL_NODE_STATES)
         return environment
