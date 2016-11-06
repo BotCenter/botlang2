@@ -116,7 +116,10 @@ class BotlangPrimitives(object):
     DICT_OPERATIONS = {
         'make-dict': lambda bindings: OrderedDict(bindings),
         'put': dict_put,
-        'get': dict_or_list_get
+        'get': dict_or_list_get,
+        'associations': OrderedDict.items,
+        'keys': OrderedDict.keys,
+        'values': OrderedDict.values
     }
 
     PREDICATES = {

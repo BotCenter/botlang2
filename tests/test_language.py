@@ -84,24 +84,60 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(computed_dict, expected_dict)
 
         computed_dict = BotlangSystem.run("""
-            (make-dict (list
-                    '(holi "chao")
-                    '(doge "wow")
-                    '(such "much")
-                )
+        (make-dict (list
+                '(holi "chao")
+                '(doge "wow")
+                '(such "much")
             )
-            """)
+        )
+        """)
         self.assertEqual(computed_dict, expected_dict)
 
         computed_dict = BotlangSystem.run("""
+        (make-dict (list
+                (list 'holi "chao")
+                (list 'doge "wow")
+                (list 'such "much")
+            )
+        )
+        """)
+        self.assertEqual(computed_dict, expected_dict)
+
+        dict_keys = BotlangSystem.run("""
+        (keys
             (make-dict (list
                     (list 'holi "chao")
                     (list 'doge "wow")
                     (list 'such "much")
                 )
             )
-            """)
-        self.assertEqual(computed_dict, expected_dict)
+        )
+        """)
+        self.assertEqual(dict_keys, expected_dict.keys())
+
+        dict_values = BotlangSystem.run("""
+        (values
+            (make-dict (list
+                    (list 'holi "chao")
+                    (list 'doge "wow")
+                    (list 'such "much")
+                )
+            )
+        )
+        """)
+        self.assertEqual(dict_values, expected_dict.values())
+
+        dict_associations = BotlangSystem.run("""
+        (associations
+            (make-dict (list
+                    (list 'holi "chao")
+                    (list 'doge "wow")
+                    (list 'such "much")
+                )
+            )
+        )
+        """)
+        self.assertEqual(dict_associations, expected_dict.items())
 
     def test_closures(self):
 
