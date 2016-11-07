@@ -143,7 +143,8 @@ class BotlangPrimitives(object):
     }
 
     TYPE_CONVERSION = {
-        'str': str
+        'str': str,
+        'num': float
     }
 
     SIDE_EFFECTS = {

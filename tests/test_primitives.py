@@ -52,3 +52,11 @@ class BotlangTestCase(unittest.TestCase):
             sorted_lists['desc-objs'],
             [["shao", 4], ["holi", 1], ["bla", -3], ["lala", -8]]
         )
+
+    def test_type_conversion(self):
+
+        str_to_num = BotlangSystem.run('(num "666")')
+        self.assertEqual(str_to_num, 666)
+
+        num_to_str = BotlangSystem.run('(str 666)')
+        self.assertEqual(num_to_str, "666")
