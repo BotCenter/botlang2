@@ -77,7 +77,7 @@ def make_terminal_node(end_state):
 
 def sort_function(comparator_function, lst):
     cmp_fun = lambda a, b: -1 if comparator_function(a, b) else 1
-    return sorted(lst, cmp=cmp_fun)
+    return list(sorted(lst, key=cmp_to_key(cmp_fun)))
 
 
 class BotlangPrimitives(object):
@@ -112,7 +112,7 @@ class BotlangPrimitives(object):
         'map': lambda f, l: list(map(f, l)),
         'reduce': lambda f, l: reduce(f, l),
         'fold': lambda v, f, l: reduce(f, l, v),
-        'filter': lambda f, l: filter(f, l),
+        'filter': lambda f, l: list(filter(f, l)),
         'sort': sort_function,
         'max': max,
         'min': min,
