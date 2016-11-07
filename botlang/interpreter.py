@@ -3,6 +3,7 @@ from botlang.environment.bot_helpers import BotHelpers
 from botlang.evaluation.evaluator import Evaluator
 from botlang.evaluation.values import BotNodeValue
 from botlang.exceptions.exceptions import *
+from botlang.extensions.cache import CacheExtension
 from botlang.parser import Parser
 
 
@@ -39,6 +40,10 @@ class BotlangSystem(object):
             name: self.primitive_eval(code, evaluator)
             for name, code in self.code_definitions.items()
         })
+
+    def setup_cache_extension(self, cache_implementation):
+
+        return CacheExtension.enable_cache(self, cache_implementation)
 
     def primitive_eval(self, code_string, evaluator):
 
