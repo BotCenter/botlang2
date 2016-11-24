@@ -1,6 +1,7 @@
 import unittest
 from collections import OrderedDict
 
+from botlang import Environment
 from botlang.interpreter import BotlangSystem
 from botlang.evaluation.evaluator import Primitive
 from botlang.evaluation.values import BotResultValue
@@ -35,6 +36,40 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('(if #t 2 3)'), 2)
         self.assertEqual(BotlangSystem.run('(if #f 2 3)'), 3)
         self.assertEqual(BotlangSystem.run('(if (> 4 5) 100 200)'), 200)
+
+    def test_cond(self):
+
+        test_code = """
+            (cond
+                [(equal? sup dawg) 1]
+                [(< sup dawg) 2]
+                [else 3]
+            )
+        """
+
+        environment = BotlangSystem.base_environment().update(
+            {'sup': 3, 'dawg': 4}
+        )
+        self.assertEqual(
+            BotlangSystem(environment).eval(test_code),
+            2
+        )
+
+        environment = BotlangSystem.base_environment().update(
+            {'sup': 4, 'dawg': 4}
+        )
+        self.assertEqual(
+            BotlangSystem(environment).eval(test_code),
+            1
+        )
+
+        environment = BotlangSystem.base_environment().update(
+            {'sup': 5, 'dawg': 4}
+        )
+        self.assertEqual(
+            BotlangSystem(environment).eval(test_code),
+            3
+        )
 
     def test_primitive_application(self):
 
@@ -125,7 +160,7 @@ class BotlangTestCase(unittest.TestCase):
             )
         )
         """)
-        self.assertEqual(dict_values, expected_dict.values())
+        self.assertEqual(list(dict_values), list(expected_dict.values()))
 
         dict_associations = BotlangSystem.run("""
         (associations

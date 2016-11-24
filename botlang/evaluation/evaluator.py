@@ -85,6 +85,41 @@ class Evaluator(Visitor):
             self.execution_stack.pop()
             return if_node.if_false.accept(self, env)
 
+    def visit_cond(self, cond_node, env):
+        """
+        'Cond' conditional evaluation
+        """
+        self.execution_stack.append(cond_node)
+
+        value = None
+        for clause in cond_node.cond_clauses:
+            value = clause.accept(self, env)
+            if value is not None:
+                break
+
+        self.execution_stack.pop()
+        return value
+
+    def visit_cond_predicate_clause(self, predicate_node, env):
+        """
+        'Cond' predicate clause evaluation
+        """
+        self.execution_stack.append(predicate_node)
+        value = None
+        if predicate_node.predicate.accept(self, env):
+            value = predicate_node.then_body.accept(self, env)
+        self.execution_stack.pop()
+        return value
+
+    def visit_cond_else_clause(self, else_node, env):
+        """
+        'Cond' else clause evaluation
+        """
+        self.execution_stack.append(else_node)
+        value = else_node.then_body.accept(self, env)
+        self.execution_stack.pop()
+        return value
+
     def visit_and(self, and_node, env):
         """
         Logical 'and' evaluation

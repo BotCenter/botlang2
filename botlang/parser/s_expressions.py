@@ -112,6 +112,9 @@ class Tree(SExpression):
         if first == 'if':
             return self.if_node()
 
+        if first == 'cond':
+            return self.cond_node()
+
         if first == 'and':
             return self.and_node()
 
@@ -145,6 +148,23 @@ class Tree(SExpression):
             self.children[2].to_ast(),
             self.children[3].to_ast()
         ).add_code_reference(self)
+
+    def cond_node(self):
+
+        return Cond(
+            [child.to_cond_clause_ast_node() for child in self.children[1:]]
+        ).add_code_reference(self)
+
+    def to_cond_clause_ast_node(self):
+
+        first = self.children[0].code
+        if first == 'else':
+            return CondElseClause(self.children[1].to_ast())
+
+        return CondPredicateClause(
+            self.children[0].to_ast(),
+            self.children[1].to_ast()
+        )
 
     def and_node(self):
 

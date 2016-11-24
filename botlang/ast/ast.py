@@ -41,7 +41,7 @@ class ListVal(ASTNode):
 
 class If(ASTNode):
     """
-    'If' construct
+    'If' conditional
     """
     def __init__(self, cond, if_true, if_false):
         super(ASTNode, self).__init__()
@@ -51,6 +51,43 @@ class If(ASTNode):
 
     def accept(self, visitor, env):
         return visitor.visit_if(self, env)
+
+
+class Cond(ASTNode):
+    """
+    'Cond' conditional
+    """
+    def __init__(self, cond_clauses):
+        super(ASTNode, self).__init__()
+        self.cond_clauses = cond_clauses
+
+    def accept(self, visitor, environment):
+        return visitor.visit_cond(self, environment)
+
+
+class CondPredicateClause(ASTNode):
+    """
+    'Cond' predicate clause
+    """
+    def __init__(self, predicate, then_body):
+        super(ASTNode, self).__init__()
+        self.predicate = predicate
+        self.then_body = then_body
+
+    def accept(self, visitor, environment):
+        return visitor.visit_cond_predicate_clause(self, environment)
+
+
+class CondElseClause(ASTNode):
+    """
+    'Cond' else clause
+    """
+    def __init__(self, then_body):
+        super(ASTNode, self).__init__()
+        self.then_body = then_body
+
+    def accept(self, visitor, environment):
+        return visitor.visit_cond_else_clause(self, environment)
 
 
 class And(ASTNode):

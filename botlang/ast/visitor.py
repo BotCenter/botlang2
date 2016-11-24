@@ -11,7 +11,25 @@ class Visitor(object):
 
     def visit_if(self, if_node, env):
         """
-        'If' construct
+        'If' conditional
+        """
+        raise NotImplementedError
+
+    def visit_cond(self, cond_node, env):
+        """
+        'Cond' conditional
+        """
+        raise NotImplementedError
+
+    def visit_cond_predicate_clause(self, predicate_node, env):
+        """
+        'Cond' predicate clause node
+        """
+        raise NotImplementedError
+
+    def visit_cond_else_clause(self, else_node, env):
+        """
+        'Cond' else clause node
         """
         raise NotImplementedError
 
