@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import math
 from functools import *
 import operator as op
@@ -147,9 +145,7 @@ class BotlangPrimitives(object):
         'num': float
     }
 
-    SIDE_EFFECTS = {
-        'print': print
-    }
+    SIDE_EFFECTS = {}
 
     TERMINAL_NODES = {
         'terminal-node': make_terminal_node
