@@ -1,3 +1,4 @@
+import base64
 import math
 from functools import *
 import operator as op
@@ -78,6 +79,14 @@ def sort_function(comparator_function, lst):
     return list(sorted(lst, key=cmp_to_key(cmp_fun)))
 
 
+def base64_encode(text):
+    return base64.b64encode(text.encode('utf-8')).decode('utf-8')
+
+
+def base64_decode(text):
+    return base64.b64decode(text.encode('utf-8')).decode('utf-8')
+
+
 class BotlangPrimitives(object):
 
     MATH = vars(math)
@@ -156,6 +165,11 @@ class BotlangPrimitives(object):
         'http-post': http_post
     }
 
+    BASE64 = {
+        'b64-encode': base64_encode,
+        'b64-decode': base64_decode
+    }
+
     @classmethod
     def populate_environment(cls, environment):
 
@@ -170,6 +184,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.TYPE_CONVERSION)
         environment.add_primitives(cls.SIDE_EFFECTS)
         environment.add_primitives(cls.TERMINAL_NODES)
+        environment.add_primitives(cls.BASE64)
         environment.update({'end-node': make_terminal_node('BOT_ENDED')})
         environment.add_cachable_primitives(cls.HTTP)
         return environment

@@ -60,3 +60,11 @@ class BotlangTestCase(unittest.TestCase):
 
         num_to_str = BotlangSystem.run('(str 666)')
         self.assertEqual(num_to_str, "666")
+
+    def test_base64(self):
+
+        encoded = BotlangSystem.run('(b64-encode "hólá")')
+        self.assertEqual(encoded, 'aMOzbMOh')
+
+        decoded = BotlangSystem.run('(b64-decode "aMOzbMOh")')
+        self.assertEqual(decoded, 'hólá')
