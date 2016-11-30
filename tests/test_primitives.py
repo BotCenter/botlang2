@@ -68,3 +68,26 @@ class BotlangTestCase(unittest.TestCase):
 
         decoded = BotlangSystem.run('(b64-decode "aMOzbMOh")')
         self.assertEqual(decoded, 'hólá')
+
+    def test_string_operations(self):
+
+        lower = BotlangSystem.run('(lowercase "AbCdEfgH")')
+        self.assertEqual(lower, "abcdefgh")
+
+        upper = BotlangSystem.run('(uppercase "AbCdEfgH")')
+        self.assertEqual(upper, "ABCDEFGH")
+
+        capitalized = BotlangSystem.run('(capitalize "aleluya hmno")')
+        self.assertEqual(capitalized, "Aleluya hmno")
+
+        split = BotlangSystem.run('(split "perro,gato,zapallo" ",")')
+        self.assertEqual(split, ['perro', 'gato', 'zapallo'])
+
+        join = BotlangSystem.run(
+            '(join ", " (list "pollos" "pavos" "iguana"))'
+        )
+        self.assertEqual(join, 'pollos, pavos, iguana')
+
+        plain = BotlangSystem.run('(plain "ÉnTérO BellákO")')
+        self.assertEqual(plain, 'entero bellako')
+

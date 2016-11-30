@@ -145,10 +145,12 @@ class BotlangPrimitives(object):
 
     STRING_OPERATIONS = {
         'split': str.split,
+        'join': str.join,
         'plain': simplify_text,
         'email-censor': email_censor,
-        'uppercase': str.lower,
-        'lowercase': str.upper
+        'uppercase': str.upper,
+        'lowercase': str.lower,
+        'capitalize': str.capitalize
     }
 
     TYPE_CONVERSION = {
