@@ -146,7 +146,9 @@ class BotlangPrimitives(object):
     STRING_OPERATIONS = {
         'split': str.split,
         'plain': simplify_text,
-        'email-censor': email_censor
+        'email-censor': email_censor,
+        'uppercase': str.lower,
+        'lowercase': str.upper
     }
 
     TYPE_CONVERSION = {
