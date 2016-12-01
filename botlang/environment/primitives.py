@@ -228,9 +228,9 @@ class BotlangPrimitives(object):
     COMPRESSION = {
         'bz2-compress': lambda string: base64.b64encode(
             bz2.compress(string.encode('utf-8'))
-        ).decode('utf-8'),
+        ).decode('ascii'),
         'bz2-decompress': lambda b64_string: bz2.decompress(
-            base64.b64decode(b64_string.encode('utf-8'))
+            base64.b64decode(b64_string.encode('ascii'))
         ).decode('utf-8')
     }
 
