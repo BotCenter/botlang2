@@ -91,3 +91,23 @@ class BotlangTestCase(unittest.TestCase):
         plain = BotlangSystem.run('(plain "ÉnTérO BellákO")')
         self.assertEqual(plain, 'entero bellako')
 
+    def test_compression(self):
+
+        text = """
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+        mollit anim id est laborum.
+        """
+
+        self.assertEqual(len(text), 511)
+        compressed = BotlangSystem.run('(bz2-compress "{0}")'.format(text))
+        self.assertEqual(len(compressed), 420)
+
+        decompressed = BotlangSystem.run(
+            '(bz2-decompress "{0}")'.format(compressed)
+        )
+        self.assertEqual(len(decompressed), len(text))

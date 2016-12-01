@@ -1,4 +1,5 @@
 import base64
+import bz2
 import math
 from functools import *
 import operator as op
@@ -224,6 +225,15 @@ class BotlangPrimitives(object):
         'b64-decode': base64_decode
     }
 
+    COMPRESSION = {
+        'bz2-compress': lambda string: base64.b64encode(
+            bz2.compress(string.encode('utf-8'))
+        ).decode('utf-8'),
+        'bz2-decompress': lambda b64_string: bz2.decompress(
+            base64.b64decode(b64_string.encode('utf-8'))
+        ).decode('utf-8')
+    }
+
     @classmethod
     def populate_environment(cls, environment):
 
@@ -239,6 +249,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.SIDE_EFFECTS)
         environment.add_primitives(cls.TERMINAL_NODES)
         environment.add_primitives(cls.BASE64)
+        environment.add_primitives(cls.COMPRESSION)
         environment.update({'end-node': make_terminal_node('BOT_ENDED')})
         environment.add_cachable_primitives(cls.HTTP)
         return environment
