@@ -80,3 +80,21 @@ class Visitor(object):
         Local definition
         """
         raise NotImplementedError
+
+    def visit_module_definition(self, module_node, env):
+        """
+        Module definition
+        """
+        raise NotImplementedError
+
+    def visit_module_import(self, require_node, env):
+        """
+        Module import
+        """
+        raise NotImplementedError
+
+    def visit_module_function_export(self, provide_node, env):
+        """
+        Module function's export
+        """
+        raise NotImplementedError

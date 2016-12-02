@@ -4,16 +4,22 @@ from botlang.evaluation.evaluator import Evaluator
 from botlang.evaluation.values import BotNodeValue
 from botlang.exceptions.exceptions import *
 from botlang.extensions.cache import CacheExtension
+from botlang.modules.resolver import ModuleResolver
 from botlang.parser import Parser
 
 
 class BotlangSystem(object):
 
-    def __init__(self, environment=None):
+    def __init__(self, environment=None, module_resolver=None):
 
         if not environment:
             environment = self.base_environment()
+
+        if not module_resolver:
+            module_resolver = ModuleResolver()
+
         self.environment = environment
+        self.module_resolver = module_resolver
         self.code_definitions = {}
 
     @classmethod
@@ -23,10 +29,10 @@ class BotlangSystem(object):
         return BotlangPrimitives.populate_environment(env)
 
     @classmethod
-    def bot_instance(cls):
+    def bot_instance(cls, module_resolver=None):
 
         environment = cls.base_environment()
-        dsl = BotlangSystem(environment)
+        dsl = BotlangSystem(environment, module_resolver)
         return BotHelpers.load_on_dsl(dsl)
 
     def add_code_definition(self, name, code):
@@ -52,7 +58,7 @@ class BotlangSystem(object):
 
     def eval(self, code_string):
 
-        evaluator = Evaluator()
+        evaluator = Evaluator(module_resolver=self.module_resolver)
         self.evaluate_code_definitions(evaluator)
         return self.primitive_eval(code_string, evaluator)
 
@@ -64,7 +70,10 @@ class BotlangSystem(object):
         self.environment.add_cachable_primitives({
             'input-message': lambda: input_msg
         })
-        evaluator = Evaluator(evaluation_state)
+        evaluator = Evaluator(
+            evaluation_state=evaluation_state,
+            module_resolver=self.module_resolver
+        )
         self.evaluate_code_definitions(evaluator)
         result = self.primitive_eval(bot_code, evaluator)
         if isinstance(result, BotNodeValue):
@@ -87,6 +96,6 @@ class BotlangSystem(object):
             )
 
     @classmethod
-    def run(cls, code_string, environment=None):
+    def run(cls, code_string, environment=None, module_resolver=None):
 
-        return BotlangSystem(environment).eval(code_string)
+        return BotlangSystem(environment, module_resolver).eval(code_string)

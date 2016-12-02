@@ -166,6 +166,43 @@ class BodySequence(ASTNode):
         return visitor.visit_body(self, env)
 
 
+class ModuleDefinition(ASTNode):
+    """
+    Module definition
+    """
+    def __init__(self, name, body):
+        super(ASTNode, self).__init__()
+        self.name = name
+        self.body = body
+
+    def accept(self, visitor, environment):
+        return visitor.visit_module_definition(self, environment)
+
+
+class ModuleFunctionExport(ASTNode):
+    """
+    Module function's export
+    """
+    def __init__(self, identifier_to_export):
+        super(ASTNode, self).__init__()
+        self.identifier_to_export = identifier_to_export
+
+    def accept(self, visitor, environment):
+        return visitor.visit_module_function_export(self, environment)
+
+
+class ModuleImport(ASTNode):
+    """
+    Module import
+    """
+    def __init__(self, module_name):
+        super(ASTNode, self).__init__()
+        self.module_name = module_name
+
+    def accept(self, visitor, environment):
+        return visitor.visit_module_import(self, environment)
+
+
 class Definition(ASTNode):
     """
     Definition

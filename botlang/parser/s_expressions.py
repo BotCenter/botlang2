@@ -139,7 +139,39 @@ class Tree(SExpression):
         if first == 'node-result':
             return self.bot_result_node()
 
+        if first == 'module':
+            return self.module_definition_node()
+
+        if first == 'provide':
+            return self.module_export_node()
+
+        if first == 'require':
+            return self.module_import_node()
+
         return self.application_node()
+
+    def module_definition_node(self):
+
+        module_body = BodySequence(
+            [s_expr.to_ast() for s_expr in self.children[2:]]
+        ).add_code_reference(self)
+
+        return ModuleDefinition(
+            self.children[1].to_ast(),
+            module_body
+        ).add_code_reference(self)
+
+    def module_export_node(self):
+
+        return ModuleFunctionExport(
+            self.children[1].to_ast()
+        ).add_code_reference(self)
+
+    def module_import_node(self):
+
+        return ModuleImport(
+            self.children[1].to_ast()
+        ).add_code_reference(self)
 
     def if_node(self):
 

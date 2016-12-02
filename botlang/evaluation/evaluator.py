@@ -45,7 +45,12 @@ class Evaluator(Visitor):
     """
     AST visitor for evaluation
     """
-    def __init__(self, evaluation_state=None):
+    def __init__(self, evaluation_state=None, module_resolver=None):
+
+        if module_resolver is None:
+            from botlang.modules.resolver import ModuleResolver
+            module_resolver = ModuleResolver()
+        self.module_resolver = module_resolver
 
         if evaluation_state is not None:
             self.primitives_evaluations = evaluation_state.primitives_values[:]
@@ -275,3 +280,42 @@ class Evaluator(Visitor):
 
         self.execution_stack.pop()
         return result
+
+    def visit_module_definition(self, module_node, env):
+        """
+        Module definition
+        """
+        self.execution_stack.append(module_node)
+        from botlang.modules.module import Module
+        module = Module(
+            module_node.name.accept(self, env),
+            module_node.body
+        )
+        self.module_resolver.add_module(module)
+        self.execution_stack.pop()
+        return module
+
+    def visit_module_function_export(self, provide_node, env):
+        """
+        Module function's export
+        """
+        raise NotInModuleContextException()
+
+    def visit_module_import(self, require_node, env):
+        """
+        Import a module into scope
+        """
+        self.execution_stack.append(require_node)
+        module_name = require_node.module_name.accept(self, env)
+        bindings = self.module_resolver.get_bindings(module_name)
+        env.update(bindings)
+        self.execution_stack.pop()
+        return Nil
+
+
+class NotInModuleContextException(Exception):
+
+    def __init__(self):
+        super(NotInModuleContextException, self).__init__(
+            'The "provide" keyword must appear in a top-level module context'
+        )
