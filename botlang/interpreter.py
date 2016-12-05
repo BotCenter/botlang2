@@ -1,3 +1,6 @@
+import inspect
+import os
+
 from botlang.environment import *
 from botlang.environment.bot_helpers import BotHelpers
 from botlang.evaluation.evaluator import Evaluator
@@ -27,6 +30,18 @@ class BotlangSystem(object):
 
         env = Environment()
         return BotlangPrimitives.populate_environment(env)
+
+    @classmethod
+    def bot_modules_resolver(cls):
+
+        from botlang.modules import bot_helpers
+        helpers_path = os.path.dirname(inspect.getfile(bot_helpers))
+
+        module_resolver = ModuleResolver()
+        module_resolver.load_modules([
+            '{0}/{1}'.format(helpers_path, 'helpers.bot')
+        ])
+        return module_resolver
 
     @classmethod
     def bot_instance(cls, module_resolver=None):

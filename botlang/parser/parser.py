@@ -59,7 +59,7 @@ class Parser(object):
             encoded_str = string
 
         md5_hash = hashlib.md5(encoded_str).hexdigest()
-        return base64.b64encode(md5_hash.encode('utf-8'))
+        return base64.b64encode(md5_hash.encode('utf-8')).decode('utf-8')
 
     def s_expressions(self):
 

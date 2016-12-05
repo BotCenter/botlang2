@@ -91,6 +91,12 @@ class BotlangTestCase(unittest.TestCase):
         plain = BotlangSystem.run('(plain "ÉnTérO BellákO")')
         self.assertEqual(plain, 'entero bellako')
 
+        replaced = BotlangSystem.run('(replace "muajaja" "j" "h")')
+        self.assertEqual(replaced, 'muahaha')
+
+        trimmed = BotlangSystem.run('(trim "   hola, soy julito  ")')
+        self.assertEqual(trimmed, 'hola, soy julito')
+
     def test_compression(self):
 
         text = """
@@ -111,3 +117,21 @@ class BotlangTestCase(unittest.TestCase):
             '(bz2-decompress "{0}")'.format(compressed)
         )
         self.assertEqual(len(decompressed), len(text))
+
+    def test_reverse(self):
+
+        result = BotlangSystem.run('(reverse (list 1 2 3 4))')
+        self.assertEqual(result, [4, 3, 2, 1])
+
+        result = BotlangSystem.run('(reverse "sergio")')
+        self.assertEqual(result, "oigres")
+
+    def test_enumerate(self):
+
+        result = BotlangSystem.run('(enumerate "abcd")')
+        self.assertEqual(result, [(0, 'a'), (1, 'b'), (2, 'c'), (3, 'd')])
+
+    def test_sum(self):
+
+        result = BotlangSystem.run('(sum (list 1 2 3 4 10))')
+        self.assertEqual(result, 20)

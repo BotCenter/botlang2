@@ -183,9 +183,9 @@ class ModuleFunctionExport(ASTNode):
     """
     Module function's export
     """
-    def __init__(self, identifier_to_export):
+    def __init__(self, identifiers_to_export):
         super(ASTNode, self).__init__()
-        self.identifier_to_export = identifier_to_export
+        self.identifiers_to_export = identifiers_to_export
 
     def accept(self, visitor, environment):
         return visitor.visit_module_function_export(self, environment)

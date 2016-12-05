@@ -20,8 +20,10 @@ class ModulesTestCase(unittest.TestCase):
                 (function () (append (say-i-like) " " (say-cats)))
             ]
 
-            (provide say-sentence)
-            (provide say-cats)
+            (provide
+                say-sentence
+                say-cats
+            )
         )
         """, module_resolver=module_resolver)
         self.assertEqual(module.name, 'my-module')
@@ -38,3 +40,18 @@ class ModulesTestCase(unittest.TestCase):
         """
         result = BotlangSystem.run(code, module_resolver=module_resolver)
         self.assertEqual(result, "i like cats")
+
+    def test_modules_resolver(self):
+
+        resolver = BotlangSystem.bot_modules_resolver()
+        valid_rut = BotlangSystem.run(
+            '(require "bot-helpers") (validate-rut "16926695-6")',
+            module_resolver=resolver
+        )
+        self.assertTrue(valid_rut)
+
+        invalid_rut = BotlangSystem.run(
+            '(require "bot-helpers") (validate-rut "16926695-5")',
+            module_resolver=resolver
+        )
+        self.assertFalse(invalid_rut)

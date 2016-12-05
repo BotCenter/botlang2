@@ -41,9 +41,9 @@ class BotlangTestCase(unittest.TestCase):
 
         test_code = """
             (cond
-                [(equal? sup dawg) 1]
+                [(equal? sup dawg) "1"]
                 [(< sup dawg) 2]
-                [else 3]
+                [else (+ 1 2)]
             )
         """
 
@@ -60,7 +60,7 @@ class BotlangTestCase(unittest.TestCase):
         )
         self.assertEqual(
             BotlangSystem(environment).eval(test_code),
-            1
+            '1'
         )
 
         environment = BotlangSystem.base_environment().update(

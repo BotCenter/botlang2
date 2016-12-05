@@ -158,7 +158,8 @@ class BotlangPrimitives(object):
         '>=': op.ge,
         '<=': op.le,
         '=': op.eq,
-        'equal?': op.eq
+        'equal?': op.eq,
+        'mod': op.mod
     }
 
     LIST_OPERATIONS = {
@@ -175,7 +176,10 @@ class BotlangPrimitives(object):
         'max': max,
         'min': min,
         'find': find_in_list,
-        'cons': cons
+        'cons': cons,
+        'reverse': lambda l: l[::-1],
+        'enumerate': lambda l: list(enumerate(l)),
+        'sum': sum
     }
 
     DICT_OPERATIONS = {
@@ -201,12 +205,15 @@ class BotlangPrimitives(object):
         'email-censor': email_censor,
         'uppercase': str.upper,
         'lowercase': str.lower,
-        'capitalize': str.capitalize
+        'capitalize': str.capitalize,
+        'replace': str.replace,
+        'trim': str.strip
     }
 
     TYPE_CONVERSION = {
         'str': str,
-        'num': float
+        'num': float,
+        'int': int
     }
 
     SIDE_EFFECTS = {}

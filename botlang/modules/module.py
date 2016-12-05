@@ -45,14 +45,11 @@ class ModuleEvaluator(Evaluator):
     def visit_module_function_export(self, provide_node, env):
 
         self.execution_stack.append(provide_node)
-        value = provide_node.identifier_to_export.accept(
-            self.get_evaluator(),
-            env
-        )
-        self.module.add_binding(
-            provide_node.identifier_to_export.identifier,
-            value
-        )
+
+        for identifier in provide_node.identifiers_to_export:
+            value = identifier.accept(self.get_evaluator(), env)
+            self.module.add_binding(identifier.identifier, value)
+
         self.execution_stack.pop()
         return Nil
 

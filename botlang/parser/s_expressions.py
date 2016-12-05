@@ -164,7 +164,7 @@ class Tree(SExpression):
     def module_export_node(self):
 
         return ModuleFunctionExport(
-            self.children[1].to_ast()
+            [identifier.to_ast() for identifier in self.children[1:]]
         ).add_code_reference(self)
 
     def module_import_node(self):
@@ -192,7 +192,6 @@ class Tree(SExpression):
         first = self.children[0].code
         if first == 'else':
             return CondElseClause(self.children[1].to_ast())
-
         return CondPredicateClause(
             self.children[0].to_ast(),
             self.children[1].to_ast()

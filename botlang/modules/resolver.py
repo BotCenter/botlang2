@@ -32,3 +32,13 @@ class ModuleResolver(object):
         if module is None:
             raise ModuleNotFoundException(module_name)
         return module.get_bindings(self)
+
+    def load_modules(self, paths):
+
+        from botlang import BotlangSystem
+
+        for path in paths:
+            module_file = open(path, 'r')
+            module_str = module_file.read()
+            module_file.close()
+            BotlangSystem.run(module_str, module_resolver=self)
