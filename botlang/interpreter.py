@@ -2,7 +2,6 @@ import inspect
 import os
 
 from botlang.environment import *
-from botlang.environment.bot_helpers import BotHelpers
 from botlang.evaluation.evaluator import Evaluator
 from botlang.evaluation.values import BotNodeValue
 from botlang.exceptions.exceptions import *
@@ -23,7 +22,6 @@ class BotlangSystem(object):
 
         self.environment = environment
         self.module_resolver = module_resolver
-        self.code_definitions = {}
 
     @classmethod
     def base_environment(cls):
@@ -47,20 +45,11 @@ class BotlangSystem(object):
     def bot_instance(cls, module_resolver=None):
 
         environment = cls.base_environment()
-        dsl = BotlangSystem(environment, module_resolver)
-        return BotHelpers.load_on_dsl(dsl)
 
-    def add_code_definition(self, name, code):
+        if module_resolver is None:
+            module_resolver = cls.bot_modules_resolver()
 
-        self.code_definitions[name] = code
-        return self
-
-    def evaluate_code_definitions(self, evaluator):
-
-        return self.environment.update({
-            name: self.primitive_eval(code, evaluator)
-            for name, code in self.code_definitions.items()
-        })
+        return BotlangSystem(environment, module_resolver)
 
     def setup_cache_extension(self, cache_implementation):
 
@@ -74,7 +63,6 @@ class BotlangSystem(object):
     def eval(self, code_string):
 
         evaluator = Evaluator(module_resolver=self.module_resolver)
-        self.evaluate_code_definitions(evaluator)
         return self.primitive_eval(code_string, evaluator)
 
     def eval_bot(self, bot_code, input_msg, evaluation_state=None, data=None):
@@ -89,7 +77,6 @@ class BotlangSystem(object):
             evaluation_state=evaluation_state,
             module_resolver=self.module_resolver
         )
-        self.evaluate_code_definitions(evaluator)
         result = self.primitive_eval(bot_code, evaluator)
         if isinstance(result, BotNodeValue):
             return result.apply(data)

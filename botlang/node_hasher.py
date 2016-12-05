@@ -100,6 +100,13 @@ class NodeHasher(Visitor):
             local_node
         )
 
+    def visit_module_import(self, require_node, env):
+
+        return self.hash_and_store(
+            require_node.module_name.accept(self, env),
+            require_node
+        )
+
     def hash_and_store(self, string, node):
 
         hash_val = str(Parser.generate_string_hash(string))

@@ -31,17 +31,9 @@ class TestBots(unittest.TestCase):
 
     def test_example_bot(self):
 
-        def validate_rut(rut):
-            if rut == '16926695-6':
-                return True
-            return False
-
-        environment = BotlangSystem.base_environment().add_primitives(
-            {'validate-rut': validate_rut}
-        )
         code = ExampleBots.dog_bot_code
 
-        first_result = BotlangSystem(environment).eval_bot(code, 'hola')
+        first_result = BotlangSystem.bot_instance().eval_bot(code, 'hola')
         self.assertEqual(
             first_result.message,
             'Bienvenido a Botcenter! ¿Con quién tengo el gusto de hablar?'
@@ -49,7 +41,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(first_result.data, {})
 
         first_execution_state = first_result.execution_state
-        second_result = BotlangSystem(environment).eval_bot(
+        second_result = BotlangSystem.bot_instance().eval_bot(
             code,
             'Juanito',
             first_execution_state
@@ -62,7 +54,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(second_result.data.get('name'), 'Juanito')
 
         second_execution_state = second_result.execution_state
-        third_result = BotlangSystem(environment).eval_bot(
+        third_result = BotlangSystem.bot_instance().eval_bot(
             code,
             '17098131-2',
             second_execution_state
@@ -75,7 +67,7 @@ class TestBots(unittest.TestCase):
         )
 
         third_execution_state = third_result.execution_state
-        fourth_result = BotlangSystem(environment).eval_bot(
+        fourth_result = BotlangSystem.bot_instance().eval_bot(
             code,
             '16926695-6',
             third_execution_state
@@ -90,7 +82,7 @@ class TestBots(unittest.TestCase):
 
         fourth_execution_state = fourth_result.execution_state
         self.assertEqual(fourth_execution_state.bot_node_steps, 4)
-        fifth_result = BotlangSystem(environment).eval_bot(
+        fifth_result = BotlangSystem.bot_instance().eval_bot(
             code,
             'bla',
             fourth_execution_state
@@ -104,7 +96,7 @@ class TestBots(unittest.TestCase):
 
         fifth_execution_state = fifth_result.execution_state
         self.assertEqual(fifth_execution_state.bot_node_steps, 5)
-        sixth_result = BotlangSystem(environment).eval_bot(
+        sixth_result = BotlangSystem.bot_instance().eval_bot(
             code,
             'no',
             fifth_execution_state
@@ -112,7 +104,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(sixth_result.message, 'Miau, Juanito :3')
         self.assertEqual(sixth_result.bot_state, 'BOT_ENDED')
 
-        alternative_sixth_result = BotlangSystem(environment).eval_bot(
+        alternative_sixth_result = BotlangSystem.bot_instance().eval_bot(
             code,
             'si',
             fifth_execution_state

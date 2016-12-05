@@ -2,6 +2,8 @@
 class ExampleBots(object):
 
     dog_bot_code = """
+        (require "bot-helpers")
+
         (define ask-rut
             [function (data ask-rut-message next-node-fun)
                 (define validate-rut-node
