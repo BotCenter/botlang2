@@ -29,6 +29,31 @@ class TestBots(unittest.TestCase):
             {'some-data': 'hola', 'more-data': 'chao', 'bla': 'da'}
         )
 
+    def test_dict_messages(self):
+
+        code = """
+            (bot-node (data)
+                [define message (get [input-message] "message")]
+                (node-result
+                    data
+                    (make-dict
+                        (list
+                            (cons "answer" message)
+                        )
+                    )
+                    end-node
+                )
+            )
+        """
+        result = BotlangSystem.bot_instance().eval_bot(
+            code,
+            {'message': 'Hola'}
+        )
+        self.assertDictEqual(
+            result.message,
+            {'answer': 'Hola'}
+        )
+
     def test_example_bot(self):
 
         code = ExampleBots.dog_bot_code
