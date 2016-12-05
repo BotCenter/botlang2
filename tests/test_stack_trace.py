@@ -22,7 +22,6 @@ class StackTraceTestCase(unittest.TestCase):
         try:
             BotlangSystem().eval(code)
         except BotlangErrorException as e:
-            print(e.print_stack_trace())
             self.assertEqual(len(e.stack), 6)
             self.assertTrue(
                 e.print_stack_trace().endswith('3 is not a function')

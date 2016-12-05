@@ -32,7 +32,7 @@ class BotlangREPL(object):
 
     def eval(self, code_string):
         try:
-            ast_seq = Parser.parse(code_string)
+            ast_seq = Parser.parse(code_string, 'REPL')
             return BotlangSystem.interpret(
                 ast_seq,
                 Evaluator(),
@@ -72,7 +72,7 @@ class BotlangREPL(object):
 
     @classmethod
     def run(cls):
-        print('Welcome to the BotCenter REPL\n')
+        print('Welcome to the Botlang REPL\n')
         runtime = BotlangREPL()
         line_breaks = 0
         code_input = ''
