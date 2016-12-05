@@ -115,18 +115,18 @@ class ParserTestCase(unittest.TestCase):
         """
         sexpr = Parser(code).s_expressions()
         self.assertEqual(len(sexpr), 3)
-        self.assertEqual(sexpr[0].start_line, 2)
-        self.assertEqual(sexpr[0].end_line, 2)
-        self.assertEqual(sexpr[1].start_line, 3)
-        self.assertEqual(sexpr[1].end_line, 3)
-        self.assertEqual(sexpr[2].start_line, 4)
-        self.assertEqual(sexpr[2].end_line, 4)
+        self.assertEqual(sexpr[0].source_reference.start_line, 2)
+        self.assertEqual(sexpr[0].source_reference.end_line, 2)
+        self.assertEqual(sexpr[1].source_reference.start_line, 3)
+        self.assertEqual(sexpr[1].source_reference.end_line, 3)
+        self.assertEqual(sexpr[2].source_reference.start_line, 4)
+        self.assertEqual(sexpr[2].source_reference.end_line, 4)
 
         code1 = "(+ 3 4)"
         sexpr = Parser(code1).s_expressions()
         self.assertEqual(len(sexpr), 1)
-        self.assertEqual(sexpr[0].start_line, 1)
-        self.assertEqual(sexpr[0].end_line, 1)
+        self.assertEqual(sexpr[0].source_reference.start_line, 1)
+        self.assertEqual(sexpr[0].source_reference.end_line, 1)
 
         code2 = """
             (bot-node (data)
@@ -139,25 +139,25 @@ class ParserTestCase(unittest.TestCase):
         """
         sexpr = Parser(code2).s_expressions()
         node_sexpr = sexpr[0]
-        self.assertEqual(node_sexpr.start_line, 2)
-        self.assertEqual(node_sexpr.end_line, 8)
+        self.assertEqual(node_sexpr.source_reference.start_line, 2)
+        self.assertEqual(node_sexpr.source_reference.end_line, 8)
 
         args_sexpr = node_sexpr.children[1]
         result_sexpr = node_sexpr.children[2]
         botcito_sexpr = result_sexpr.children[2]
         end_node_sexpr = result_sexpr.children[3]
 
-        self.assertEqual(args_sexpr.start_line, 2)
-        self.assertEqual(args_sexpr.end_line, 2)
+        self.assertEqual(args_sexpr.source_reference.start_line, 2)
+        self.assertEqual(args_sexpr.source_reference.end_line, 2)
 
-        self.assertEqual(result_sexpr.start_line, 3)
-        self.assertEqual(result_sexpr.end_line, 7)
+        self.assertEqual(result_sexpr.source_reference.start_line, 3)
+        self.assertEqual(result_sexpr.source_reference.end_line, 7)
 
-        self.assertEqual(botcito_sexpr.start_line, 5)
-        self.assertEqual(botcito_sexpr.end_line, 5)
+        self.assertEqual(botcito_sexpr.source_reference.start_line, 5)
+        self.assertEqual(botcito_sexpr.source_reference.end_line, 5)
 
-        self.assertEqual(end_node_sexpr.start_line, 6)
-        self.assertEqual(end_node_sexpr.end_line, 6)
+        self.assertEqual(end_node_sexpr.source_reference.start_line, 6)
+        self.assertEqual(end_node_sexpr.source_reference.end_line, 6)
 
     def test_code_string_information(self):
 

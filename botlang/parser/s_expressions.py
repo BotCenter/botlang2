@@ -20,11 +20,10 @@ class SExpression(object):
 
 class Atom(SExpression):
 
-    def __init__(self, token, line):
+    def __init__(self, token, source_reference):
 
         self.code = token
-        self.start_line = line
-        self.end_line = line
+        self.source_reference = source_reference
 
     def is_atom(self):
 
@@ -84,12 +83,11 @@ class Atom(SExpression):
 
 class Tree(SExpression):
 
-    def __init__(self, children, code, start_line, end_line, quoted=False):
+    def __init__(self, children, code, source_reference, quoted=False):
 
         self.children = children
         self.code = code
-        self.start_line = start_line
-        self.end_line = end_line
+        self.source_reference = source_reference
         self.quoted = quoted
 
     def is_tree(self):

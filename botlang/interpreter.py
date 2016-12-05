@@ -55,17 +55,24 @@ class BotlangSystem(object):
 
         return CacheExtension.enable_cache(self, cache_implementation)
 
-    def primitive_eval(self, code_string, evaluator):
+    def primitive_eval(self, code_string, evaluator, source_id):
 
-        ast_seq = Parser.parse(code_string)
+        ast_seq = Parser.parse(code_string, source_id)
         return self.interpret(ast_seq, evaluator, self.environment)
 
-    def eval(self, code_string):
+    def eval(self, code_string, source_id='<unknown_source>'):
 
         evaluator = Evaluator(module_resolver=self.module_resolver)
-        return self.primitive_eval(code_string, evaluator)
+        return self.primitive_eval(code_string, evaluator, source_id)
 
-    def eval_bot(self, bot_code, input_msg, evaluation_state=None, data=None):
+    def eval_bot(
+            self,
+            bot_code,
+            input_msg,
+            evaluation_state=None,
+            data=None,
+            source_id='<unknown_source>'
+    ):
 
         if data is None:
             data = {}
@@ -77,7 +84,7 @@ class BotlangSystem(object):
             evaluation_state=evaluation_state,
             module_resolver=self.module_resolver
         )
-        result = self.primitive_eval(bot_code, evaluator)
+        result = self.primitive_eval(bot_code, evaluator, source_id)
         if isinstance(result, BotNodeValue):
             return result.apply(data)
         return result

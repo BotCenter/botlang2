@@ -28,7 +28,7 @@ class ExecutionStack(list):
 
         return '\t{0}, line {1}'.format(
             type(frame).__name__,
-            frame.s_expr.start_line
+            frame.s_expr.source_reference.start_line
         )
 
     @classmethod
@@ -36,7 +36,7 @@ class ExecutionStack(list):
 
         return '\t{0}, line {1}:\n{2}'.format(
             type(frame).__name__,
-            frame.s_expr.start_line,
+            frame.s_expr.source_reference.start_line,
             frame.s_expr.code
         )
 

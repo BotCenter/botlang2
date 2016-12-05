@@ -3,6 +3,7 @@ import hashlib
 import re
 
 from botlang.parser.s_expressions import *
+from botlang.parser.source_reference import SourceReference
 
 
 class BotLangSyntaxError(Exception):
@@ -16,9 +17,10 @@ class Parser(object):
     asts_cache = {}
 
     @classmethod
-    def parse(cls, code):
+    def parse(cls, code, source_id):
         """
         :param code: Botlang code string to parse
+        :param source_id: source code identifier (e.g.: filename)
         :rtype: list[ASTNode]
         """
         code_id = cls.generate_string_hash(code)
@@ -27,7 +29,7 @@ class Parser(object):
         if cached_asts is not None:
             return cached_asts
 
-        s_expressions = Parser(code).s_expressions()
+        s_expressions = Parser(code, source_id).s_expressions()
         abstract_syntax_trees = [s_expr.to_ast() for s_expr in s_expressions]
         cls.asts_cache[code_id] = abstract_syntax_trees
 
@@ -35,9 +37,10 @@ class Parser(object):
 
     FIND_STRINGS_REGEX = re.compile(r'"(?:\\"|[^"])*?"')
 
-    def __init__(self, code):
+    def __init__(self, code, source_id='<unknown_source>'):
 
         self.code = code
+        self.source_id = source_id
         self.strings = {}
 
         for match in self.FIND_STRINGS_REGEX.finditer(code):
@@ -116,7 +119,14 @@ class Parser(object):
 
                 if len(token) > 0:
                     s_expressions.append(
-                        Atom(self.restore_token(token), current_line)
+                        Atom(
+                            self.restore_token(token),
+                            SourceReference(
+                                self.source_id,
+                                current_line,
+                                current_line
+                            )
+                        )
                     )
                     last_index = index + 1
 
@@ -144,8 +154,11 @@ class Parser(object):
                             start_line
                         ),
                         code,
-                        start_line,
-                        current_line,
+                        SourceReference(
+                            self.source_id,
+                            start_line,
+                            current_line
+                        ),
                         quoted=self.is_quoted(s_expr_string, start_index)
                     )
                     s_expressions.append(s_expr)

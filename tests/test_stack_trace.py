@@ -26,3 +26,6 @@ class StackTraceTestCase(unittest.TestCase):
             self.assertTrue(
                 e.print_stack_trace().endswith('3 is not a function')
             )
+            self.assertTrue(
+                'line 8' in e.print_stack_trace()
+            )
