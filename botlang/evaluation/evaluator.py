@@ -15,29 +15,19 @@ class ExecutionStack(list):
 
     def print_trace(self):
 
-        prev_frames = reduce(
+        return reduce(
             lambda a, n: a + n + '\n',
-            [self.summarized_frame_message(frame) for frame in self[:-1]],
+            [self.frame_message(frame) for frame in self],
             ''
         )
 
-        return prev_frames + self.detailed_frame_message(self[-1])
-
     @classmethod
-    def summarized_frame_message(cls, frame):
+    def frame_message(cls, frame):
 
-        return '\t{0}, line {1}'.format(
-            type(frame).__name__,
-            frame.s_expr.source_reference.start_line
-        )
-
-    @classmethod
-    def detailed_frame_message(cls, frame):
-
-        return '\t{0}, line {1}:\n{2}'.format(
-            type(frame).__name__,
+        return '\tFile "{0}", line {1}, in\n\t\t{2}'.format(
+            frame.s_expr.source_reference.source_id,
             frame.s_expr.source_reference.start_line,
-            frame.s_expr.code
+            frame.s_expr.code.split('\n')[0]
         )
 
 

@@ -60,7 +60,7 @@ class BotlangSystem(object):
         ast_seq = Parser.parse(code_string, source_id)
         return self.interpret(ast_seq, evaluator, self.environment)
 
-    def eval(self, code_string, source_id='<unknown_source>'):
+    def eval(self, code_string, source_id=None):
 
         evaluator = Evaluator(module_resolver=self.module_resolver)
         return self.primitive_eval(code_string, evaluator, source_id)
@@ -71,7 +71,7 @@ class BotlangSystem(object):
             input_msg,
             evaluation_state=None,
             data=None,
-            source_id='<unknown_source>'
+            source_id=None
     ):
 
         if data is None:
@@ -105,6 +105,15 @@ class BotlangSystem(object):
             )
 
     @classmethod
-    def run(cls, code_string, environment=None, module_resolver=None):
+    def run(
+            cls,
+            code_string,
+            environment=None,
+            module_resolver=None,
+            source_id=None
+    ):
 
-        return BotlangSystem(environment, module_resolver).eval(code_string)
+        return BotlangSystem(environment, module_resolver).eval(
+            code_string,
+            source_id
+        )

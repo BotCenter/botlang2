@@ -37,7 +37,10 @@ class Parser(object):
 
     FIND_STRINGS_REGEX = re.compile(r'"(?:\\"|[^"])*?"')
 
-    def __init__(self, code, source_id='<unknown_source>'):
+    def __init__(self, code, source_id=None):
+
+        if source_id is None:
+            source_id = '<unknown>'
 
         self.code = code
         self.source_id = source_id

@@ -41,4 +41,8 @@ class ModuleResolver(object):
             module_file = open(path, 'r')
             module_str = module_file.read()
             module_file.close()
-            BotlangSystem.run(module_str, module_resolver=self)
+            BotlangSystem.run(
+                module_str,
+                module_resolver=self,
+                source_id=path
+            )
