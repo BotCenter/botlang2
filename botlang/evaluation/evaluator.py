@@ -230,6 +230,7 @@ class Evaluator(Visitor):
                 self.execution_stack.pop()
                 return return_value
 
+        self.execution_stack.pop()
         return fun_val.apply(*arg_vals)
 
     def visit_body(self, body_node, env):

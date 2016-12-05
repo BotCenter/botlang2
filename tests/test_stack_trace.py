@@ -22,10 +22,27 @@ class StackTraceTestCase(unittest.TestCase):
         try:
             BotlangSystem().eval(code)
         except BotlangErrorException as e:
-            self.assertEqual(len(e.stack), 6)
+            self.assertEqual(len(e.stack), 4)
             self.assertTrue(
                 e.print_stack_trace().endswith('3 is not a function')
             )
             self.assertTrue(
-                'line 8' in e.print_stack_trace()
+                'line 5' in e.print_stack_trace()
             )
+
+        code = """
+            [define API_KEY "Yzy4kaJjPsWz7LVRB6Q86GcnJX9SvxaC"]
+            [define ACCESS_HEADERS
+                (make-dict
+                    (list
+                        (cons "Content-Type" "application/json")
+                        (cons "ApiKey" API_KEY)
+                    )
+                )
+            ]
+            (non-existent-function 1)
+        """
+        try:
+            BotlangSystem().eval(code)
+        except BotlangErrorException as e:
+            self.assertEqual(len(e.stack), 2)
