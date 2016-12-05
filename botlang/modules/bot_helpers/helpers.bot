@@ -11,7 +11,7 @@
                 )
             ]
             [define rut-str (get rut-dv 0)]
-            [define dv (get rut-dv 1)]
+            [define dv (get-or-nil rut-dv 1)]
             (if (nil? dv)
                 #f
                 (begin

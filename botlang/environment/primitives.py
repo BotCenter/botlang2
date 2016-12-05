@@ -20,13 +20,17 @@ def dict_put(ordered_dict, key, value):
     )
 
 
-def dict_or_list_get(data_dict, key):
+def get_or_nil(data_struct, key):
     try:
-        return data_dict[key]
+        return data_struct[key]
     except KeyError:
         return Nil
     except IndexError:
         return Nil
+
+
+def dict_or_list_get(data_dict, key):
+    return data_dict[key]
 
 
 def dict_has_key(data_dict, key):
@@ -191,6 +195,7 @@ class BotlangPrimitives(object):
         'make-dict': lambda bindings: OrderedDict(bindings),
         'put': dict_put,
         'get': dict_or_list_get,
+        'get-or-nil': get_or_nil,
         'associations': OrderedDict.items,
         'keys': OrderedDict.keys,
         'values': OrderedDict.values
