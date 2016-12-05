@@ -14,11 +14,14 @@ class BotlangSystem(object):
 
     def __init__(self, environment=None, module_resolver=None):
 
+        if module_resolver:
+            environment = module_resolver.environment
+
         if not environment:
             environment = self.base_environment()
 
         if not module_resolver:
-            module_resolver = ModuleResolver()
+            module_resolver = ModuleResolver(environment)
 
         self.environment = environment
         self.module_resolver = module_resolver
@@ -30,12 +33,12 @@ class BotlangSystem(object):
         return BotlangPrimitives.populate_environment(env)
 
     @classmethod
-    def bot_modules_resolver(cls):
+    def bot_modules_resolver(cls, environment):
 
         from botlang.modules import bot_helpers
         helpers_path = os.path.dirname(inspect.getfile(bot_helpers))
 
-        module_resolver = ModuleResolver()
+        module_resolver = ModuleResolver(environment)
         module_resolver.load_modules([
             '{0}/{1}'.format(helpers_path, 'helpers.bot')
         ])
@@ -47,9 +50,9 @@ class BotlangSystem(object):
         environment = cls.base_environment()
 
         if module_resolver is None:
-            module_resolver = cls.bot_modules_resolver()
+            module_resolver = cls.bot_modules_resolver(environment)
 
-        return BotlangSystem(environment, module_resolver)
+        return BotlangSystem(module_resolver=module_resolver)
 
     def setup_cache_extension(self, cache_implementation):
 
@@ -77,9 +80,7 @@ class BotlangSystem(object):
         if data is None:
             data = {}
 
-        self.environment.add_cachable_primitives({
-            'input-message': lambda: input_msg
-        })
+        self.environment.last_input_message = input_msg
         evaluator = Evaluator(
             evaluation_state=evaluation_state,
             module_resolver=self.module_resolver

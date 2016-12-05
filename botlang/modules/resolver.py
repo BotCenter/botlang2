@@ -16,8 +16,9 @@ class ModuleNotFoundException(Exception):
 
 class ModuleResolver(object):
 
-    def __init__(self):
+    def __init__(self, environment):
 
+        self.environment = environment
         self.modules = {}
 
     def add_module(self, module):
@@ -26,12 +27,12 @@ class ModuleResolver(object):
             raise DuplicateModuleException(module.name)
         self.modules[module.name] = module
 
-    def get_bindings(self, module_name):
+    def get_bindings(self, evaluator, module_name):
 
         module = self.modules.get(module_name)
         if module is None:
             raise ModuleNotFoundException(module_name)
-        return module.get_bindings(self)
+        return module.get_bindings(evaluator)
 
     def load_modules(self, paths):
 

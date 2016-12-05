@@ -21,7 +21,12 @@ def dict_put(ordered_dict, key, value):
 
 
 def dict_or_list_get(data_dict, key):
-    return data_dict[key]
+    try:
+        return data_dict[key]
+    except KeyError:
+        return Nil
+    except IndexError:
+        return Nil
 
 
 def dict_has_key(data_dict, key):
@@ -216,7 +221,9 @@ class BotlangPrimitives(object):
         'int': int
     }
 
-    SIDE_EFFECTS = {}
+    SIDE_EFFECTS = {
+        'print': print
+    }
 
     TERMINAL_NODES = {
         'terminal-node': make_terminal_node
@@ -258,5 +265,8 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.BASE64)
         environment.add_primitives(cls.COMPRESSION)
         environment.update({'end-node': make_terminal_node('BOT_ENDED')})
+        environment.add_cachable_primitives({
+            'input-message': environment.get_last_input_message
+        })
         environment.add_cachable_primitives(cls.HTTP)
         return environment

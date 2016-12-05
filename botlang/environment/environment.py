@@ -8,7 +8,18 @@ class Environment(object):
     def __init__(self, bindings=None, previous=None):
         self.previous = previous
         self.bindings = bindings if bindings is not None else {}
-        self.function_names = {id(obj): name for name, obj in self.bindings.items()}
+        self.function_names = {
+            id(obj): name for name, obj in self.bindings.items()
+        }
+        self.last_input_message = None
+
+    def get_last_input_message(self):
+
+        msg = self.last_input_message
+        if msg is not None:
+            return msg
+        if self.previous:
+            return self.previous.get_last_input_message()
 
     def lookup(self, var_name):
         result = self.bindings.get(var_name, None)

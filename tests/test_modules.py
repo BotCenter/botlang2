@@ -1,4 +1,6 @@
 import unittest
+
+from botlang import Evaluator
 from botlang.interpreter import BotlangSystem
 from botlang.modules.resolver import ModuleResolver
 
@@ -7,7 +9,7 @@ class ModulesTestCase(unittest.TestCase):
 
     def test_module(self):
 
-        module_resolver = ModuleResolver()
+        module_resolver = ModuleResolver(BotlangSystem.base_environment())
         module = BotlangSystem.run("""
         (module "my-module"
             [define say-cats
@@ -28,7 +30,9 @@ class ModulesTestCase(unittest.TestCase):
         """, module_resolver=module_resolver)
         self.assertEqual(module.name, 'my-module')
 
-        bindings = module.get_bindings(module_resolver)
+        bindings = module.get_bindings(
+            Evaluator(module_resolver=module_resolver)
+        )
         self.assertEqual(len(bindings.items()), 2)
         self.assertFalse(bindings.get('say-sentence') is None)
         self.assertFalse(bindings.get('say-cats') is None)
@@ -43,7 +47,9 @@ class ModulesTestCase(unittest.TestCase):
 
     def test_modules_resolver(self):
 
-        resolver = BotlangSystem.bot_modules_resolver()
+        resolver = BotlangSystem.bot_modules_resolver(
+            BotlangSystem.base_environment()
+        )
         valid_rut = BotlangSystem.run(
             '(require "bot-helpers") (validate-rut "16926695-6")',
             module_resolver=resolver

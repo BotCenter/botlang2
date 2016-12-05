@@ -12,28 +12,33 @@
             ]
             [define rut-str (get rut-dv 0)]
             [define dv (get rut-dv 1)]
-            [define sum-result
-                (sum
-                    (map
-                        (function (tuple)
-                            (*
-                                (int (get tuple 1))
-                                (+ (mod (get tuple 0) 6) 2)
+            (if (nil? dv)
+                #f
+                (begin
+                    [define sum-result
+                        (sum
+                            (map
+                                (function (tuple)
+                                    (*
+                                        (int (get tuple 1))
+                                        (+ (mod (get tuple 0) 6) 2)
+                                    )
+                                )
+                                (enumerate (reverse rut-str))
                             )
                         )
-                        (enumerate (reverse rut-str))
-                    )
+                    ]
+                    [define candidate (- 11 (mod sum-result 11))]
+                    [define computed-dv
+                        (cond
+                            [(equal? candidate 11) "0"]
+                            [(equal? candidate 10) "K"]
+                            [else (str candidate)]
+                        )
+                    ]
+                    (equal? dv computed-dv)
                 )
-            ]
-            [define candidate (- 11 (mod sum-result 11))]
-            [define computed-dv
-                (cond
-                    [(equal? candidate 11) "0"]
-                    [(equal? candidate 10) "K"]
-                    [else (str candidate)]
-                )
-            ]
-            (equal? dv computed-dv)
+            )
         )
     ]
 

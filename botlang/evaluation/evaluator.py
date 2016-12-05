@@ -38,8 +38,7 @@ class Evaluator(Visitor):
     def __init__(self, evaluation_state=None, module_resolver=None):
 
         if module_resolver is None:
-            from botlang.modules.resolver import ModuleResolver
-            module_resolver = ModuleResolver()
+            raise Exception('Module resolver required')
         self.module_resolver = module_resolver
 
         if evaluation_state is not None:
@@ -298,7 +297,7 @@ class Evaluator(Visitor):
         """
         self.execution_stack.append(require_node)
         module_name = require_node.module_name.accept(self, env)
-        bindings = self.module_resolver.get_bindings(module_name)
+        bindings = self.module_resolver.get_bindings(self, module_name)
         env.update(bindings)
         self.execution_stack.pop()
         return Nil
