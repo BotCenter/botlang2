@@ -24,9 +24,10 @@ class ExecutionStack(list):
     @classmethod
     def frame_message(cls, frame):
 
-        return '\tFile "{0}", line {1}, in\n\t\t{2}'.format(
+        return '\tModule "{0}", line {1}, in {2}:\n\t\t{3}'.format(
             frame.s_expr.source_reference.source_id,
             frame.s_expr.source_reference.start_line,
+            frame.print_node_type(),
             frame.s_expr.code.split('\n')[0]
         )
 

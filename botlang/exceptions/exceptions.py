@@ -20,7 +20,7 @@ class BotlangErrorException(BotlangException):
 
     def print_stack_trace(self):
 
-        return '\nStack trace:\n{0}\n{1}:\n{2}'.format(
+        return 'Stack trace:\n{0}\n{1}:\n{2}'.format(
             self.stack.print_trace(),
             type(self.wrapped).__name__,
             self.message

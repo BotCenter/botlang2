@@ -14,6 +14,9 @@ class ASTNode(object):
         self.s_expr = code_reference
         return self
 
+    def print_node_type(self):
+        raise NotImplementedError
+
 
 class Val(ASTNode):
     """
@@ -26,6 +29,9 @@ class Val(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_val(self, env)
 
+    def print_node_type(self):
+        return 'value'
+
 
 class ListVal(ASTNode):
     """
@@ -37,6 +43,9 @@ class ListVal(ASTNode):
 
     def accept(self, visitor, env):
         return visitor.visit_list(self, env)
+
+    def print_node_type(self):
+        return 'list'
 
 
 class If(ASTNode):
@@ -52,6 +61,9 @@ class If(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_if(self, env)
 
+    def print_node_type(self):
+        return 'if node'
+
 
 class Cond(ASTNode):
     """
@@ -63,6 +75,9 @@ class Cond(ASTNode):
 
     def accept(self, visitor, environment):
         return visitor.visit_cond(self, environment)
+
+    def print_node_type(self):
+        return 'cond node'
 
 
 class CondPredicateClause(ASTNode):
@@ -77,6 +92,9 @@ class CondPredicateClause(ASTNode):
     def accept(self, visitor, environment):
         return visitor.visit_cond_predicate_clause(self, environment)
 
+    def print_node_type(self):
+        return 'cond clause'
+
 
 class CondElseClause(ASTNode):
     """
@@ -88,6 +106,9 @@ class CondElseClause(ASTNode):
 
     def accept(self, visitor, environment):
         return visitor.visit_cond_else_clause(self, environment)
+
+    def print_node_type(self):
+        return 'else clause'
 
 
 class And(ASTNode):
@@ -102,6 +123,9 @@ class And(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_and(self, env)
 
+    def print_node_type(self):
+        return 'and node'
+
 
 class Or(ASTNode):
     """
@@ -115,6 +139,9 @@ class Or(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_or(self, env)
 
+    def print_node_type(self):
+        return 'or node'
+
 
 class Id(ASTNode):
     """
@@ -126,6 +153,9 @@ class Id(ASTNode):
 
     def accept(self, visitor, env):
         return visitor.visit_id(self, env)
+
+    def print_node_type(self):
+        return 'identifier lookup'
 
 
 class Fun(ASTNode):
@@ -140,6 +170,9 @@ class Fun(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_fun(self, env)
 
+    def print_node_type(self):
+        return 'function definition'
+
 
 class App(ASTNode):
     """
@@ -153,6 +186,9 @@ class App(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_app(self, env)
 
+    def print_node_type(self):
+        return 'function application'
+
 
 class BodySequence(ASTNode):
     """
@@ -164,6 +200,9 @@ class BodySequence(ASTNode):
 
     def accept(self, visitor, env):
         return visitor.visit_body(self, env)
+
+    def print_node_type(self):
+        return 'expressions body'
 
 
 class ModuleDefinition(ASTNode):
@@ -178,6 +217,9 @@ class ModuleDefinition(ASTNode):
     def accept(self, visitor, environment):
         return visitor.visit_module_definition(self, environment)
 
+    def print_node_type(self):
+        return 'module definition'
+
 
 class ModuleFunctionExport(ASTNode):
     """
@@ -190,6 +232,9 @@ class ModuleFunctionExport(ASTNode):
     def accept(self, visitor, environment):
         return visitor.visit_module_function_export(self, environment)
 
+    def print_node_type(self):
+        return 'module function export'
+
 
 class ModuleImport(ASTNode):
     """
@@ -201,6 +246,9 @@ class ModuleImport(ASTNode):
 
     def accept(self, visitor, environment):
         return visitor.visit_module_import(self, environment)
+
+    def print_node_type(self):
+        return 'module import'
 
 
 class Definition(ASTNode):
@@ -215,6 +263,9 @@ class Definition(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_definition(self, env)
 
+    def print_node_type(self):
+        return 'definition'
+
 
 class Local(ASTNode):
     """
@@ -227,6 +278,9 @@ class Local(ASTNode):
 
     def accept(self, visitor, env):
         return visitor.visit_local(self, env)
+
+    def print_node_type(self):
+        return 'local definition'
 
 
 class BotNode(ASTNode):
@@ -241,6 +295,9 @@ class BotNode(ASTNode):
     def accept(self, visitor, env):
         return visitor.visit_bot_node(self, env)
 
+    def print_node_type(self):
+        return 'bot node expression'
+
 
 class BotResult(ASTNode):
     """
@@ -254,3 +311,6 @@ class BotResult(ASTNode):
 
     def accept(self, visitor, env):
         return visitor.visit_bot_result(self, env)
+
+    def print_node_type(self):
+        return 'bot result'
