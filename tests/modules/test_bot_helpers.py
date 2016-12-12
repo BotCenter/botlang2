@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from unittest import TestCase
 
 from botlang import BotlangSystem
@@ -81,3 +82,81 @@ class BotHelpersTestCase(TestCase):
         self.assertEqual(state.bot_node_steps, 2)
         self.assertEqual(r.message, u'Rut inválido. Intente nuevamente.')
 
+    def test_node_selection(self):
+
+        code = """
+        (require "bot-helpers")
+
+        [define node-1
+            (bot-node (data)
+                (node-result data "Node 1" end-node)
+            )
+        ]
+        [define node-2
+            (bot-node (data)
+                (node-result data "Node 2" end-node)
+            )
+        ]
+        [define node-3
+            (bot-node (data)
+                (node-result data "Node 3" end-node)
+            )
+        ]
+
+        (bot-node (data)
+            (node-selection
+                data
+                "Holi"
+                (list
+                    (option 1 "opcion 1" node-1)
+                    (option 2 "opcion 2" node-2)
+                    (option 3 "opcion 3" node-3)
+                )
+            )
+        )
+        """
+        plain = BotlangSystem.bot_instance().eval_bot(code, input_msg='hola')
+        state = plain.execution_state
+        self.assertTrue("1) opcion 1" in plain.message)
+
+        plain = BotlangSystem.bot_instance().eval_bot(
+            code,
+            input_msg="2",
+            evaluation_state=state
+        )
+        self.assertEqual(plain.message, 'Node 2')
+
+        fb = BotlangSystem.bot_instance().eval_bot(
+            code,
+            input_msg='bla',
+            data={'social_network': 'facebook'}
+        )
+        self.assertDictEqual(
+            fb.message,
+            {
+                'attachment': {
+                    'type': 'template',
+                    'payload': {
+                        'template_type': 'button',
+                        'text': 'Holi',
+                        'buttons': [
+                            {
+                                'type': 'postback',
+                                'title': 'opcion 1',
+                                'payload': 1
+                            },
+                            {
+                                'type': 'postback',
+                                'title': 'opcion 2',
+                                'payload': 2
+                            },
+                            {
+                                'type': 'postback',
+                                'title': 'opcion 3',
+                                'payload': 3
+                            }
+                        ]
+                    }
+                }
+            }
+        )
