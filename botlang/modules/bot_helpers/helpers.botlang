@@ -100,9 +100,13 @@
         )
     ]
 
+    [define get-source
+        (function (data) (get-or-nil data "social_network"))
+    ]
+
     [define format-options
         (function (data message options)
-            [define source (get-or-nil data "social_network")]
+            [define source (get-source data)]
             (cond
                 [(equal? source "facebook")
                     (format-facebook-options message options)]
@@ -114,6 +118,7 @@
 
     [define format-link-with-image
         (function (data title link-url image-url)
+            [define source (get-source data)]
             (cond
                 [(equal? source "facebook")
                     (format-facebook-link title link-url image-url)]
