@@ -160,3 +160,49 @@ class BotHelpersTestCase(TestCase):
                 }
             }
         )
+
+    def test_format_link(self):
+        code = """
+                (require "bot-helpers")
+
+                (bot-node (data)
+                    (node-result
+                        data
+                        (format-link-with-image
+                            data
+                            "Título"
+                            "http://test.botlang.cl"
+                            "http://test.botlang.cl/image.png"
+                        )
+                        end-node
+                    )
+                )
+                """
+        plain = BotlangSystem.bot_instance().eval_bot(code, input_msg='hi')
+        self.assertTrue('Título:' in plain.message)
+        self.assertTrue('http://test.botlang.cl' in plain.message)
+        self.assertFalse('http://test.botlang.cl/image.png' in plain.message)
+
+        fb = BotlangSystem.bot_instance().eval_bot(
+            code,
+            input_msg='hi',
+            data={'social_network': 'facebook'}
+        )
+        self.assertDictEqual(
+            fb.message,
+            {
+                'attachment': {
+                    'type': 'template',
+                    'payload': {
+                        'template_type': 'generic',
+                        'elements': [
+                            {
+                                'title': 'Título',
+                                'item_url': 'http://test.botlang.cl',
+                                'image_url': 'http://test.botlang.cl/image.png'
+                            }
+                        ]
+                    }
+                }
+            }
+        )

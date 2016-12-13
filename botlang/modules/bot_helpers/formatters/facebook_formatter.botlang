@@ -18,7 +18,7 @@
             (format-template
                 (make-dict (list
                     (cons "template_type" "generic")
-                    (cons "elements" elements)
+                    (list "elements" elements)
                 ))
             )
         )
