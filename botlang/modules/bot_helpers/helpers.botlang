@@ -1,5 +1,8 @@
 (module "bot-helpers"
 
+    (require "plain-formatter")
+    (require "facebook-formatter")
+
     [define validate-rut
         (function (rut)
             [define rut-dv
@@ -97,58 +100,6 @@
         )
     ]
 
-    [define format-plain-text-options
-        (function (message options)
-            (append
-                message
-                "\n\n"
-                (reduce
-                    (fun (acc next) (append acc "\n" next))
-                    (map
-                        [fun (option)
-                            (append
-                                (str (get option 0))
-                                ") "
-                                (get option 1)
-                            )
-                        ]
-                        options
-                    )
-                )
-            )
-        )
-    ]
-
-    [define format-facebook-options
-        (function (message options)
-            (make-dict (list
-                (cons "attachment"
-                    (make-dict (list
-                        (cons "type" "template")
-                        (cons "payload"
-                            (make-dict (list
-                                (cons "template_type" "button")
-                                (cons "text" message)
-                                (list "buttons"
-                                    (map
-                                        [function (option)
-                                            (make-dict (list
-                                                (cons "type" "postback")
-                                                (cons "title" (get option 1))
-                                                (cons "payload" (get option 0))
-                                            ))
-                                        ]
-                                        options
-                                    )
-                                )
-                            ))
-                        )
-                    ))
-                )
-            ))
-        )
-    ]
-
     [define format-options
         (function (data message options)
             [define source (get-or-nil data "social_network")]
@@ -157,6 +108,17 @@
                     (format-facebook-options message options)]
                 [else
                     (format-plain-text-options message options)]
+            )
+        )
+    ]
+
+    [define format-link-with-image
+        (function (data title link-url image-url)
+            (cond
+                [(equal? source "facebook")
+                    (format-facebook-link title link-url image-url)]
+                [else
+                    (format-plain-link title link-url)]
             )
         )
     ]

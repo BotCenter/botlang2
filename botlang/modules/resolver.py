@@ -1,3 +1,6 @@
+import os
+
+
 class DuplicateModuleException(Exception):
 
     def __init__(self, module_name):
@@ -34,16 +37,22 @@ class ModuleResolver(object):
             raise ModuleNotFoundException(module_name)
         return module.get_bindings(evaluator)
 
-    def load_modules(self, paths):
+    def load_modules(self, root_path):
+
+        for root, subdirs, files in os.walk(root_path):
+            for file in files:
+                if file.endswith('.botlang'):
+                    path = os.path.join(root, file)
+                    self.load_module(path)
+
+    def load_module(self, path):
 
         from botlang import BotlangSystem
-
-        for path in paths:
-            module_file = open(path, 'r')
-            module_str = module_file.read()
-            module_file.close()
-            BotlangSystem.run(
-                module_str,
-                module_resolver=self,
-                source_id=path
-            )
+        module_file = open(path, 'r')
+        module_str = module_file.read()
+        module_file.close()
+        BotlangSystem.run(
+            module_str,
+            module_resolver=self,
+            source_id=path
+        )

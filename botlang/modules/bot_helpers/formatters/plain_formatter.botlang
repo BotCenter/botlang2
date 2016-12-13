@@ -1,0 +1,39 @@
+(module "plain-formatter"
+
+    [define format-plain-text-options
+        (function (message options)
+            (append
+                message
+                "\n\n"
+                (reduce
+                    (fun (acc next) (append acc "\n" next))
+                    (map
+                        [fun (option)
+                            (append
+                                (str (get option 0))
+                                ") "
+                                (get option 1)
+                            )
+                        ]
+                        options
+                    )
+                )
+            )
+        )
+    ]
+
+    [define format-plain-link
+        (function (title link-url)
+            (append
+                title
+                ":\n\n"
+                link-url
+            )
+        )
+    ]
+
+    (provide
+        format-plain-text-options
+        format-plain-link
+    )
+)

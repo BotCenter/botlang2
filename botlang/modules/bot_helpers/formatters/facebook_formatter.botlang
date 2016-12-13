@@ -1,0 +1,73 @@
+(module "facebook-formatter"
+
+    [define format-template
+        (function (payload)
+            (make-dict (list
+                (cons "attachment"
+                    (make-dict (list
+                        (cons "type" "template")
+                        (cons "payload" payload)
+                    ))
+                )
+            ))
+        )
+    ]
+
+    [define generic-template
+        (function (elements)
+            (format-template
+                (make-dict (list
+                    (cons "template_type" "generic")
+                    (cons "elements" elements)
+                ))
+            )
+        )
+    ]
+
+    [define button-template
+        (function (message buttons)
+            (format-template
+                (make-dict (list
+                    (cons "template_type" "button")
+                    (cons "text" message)
+                    (list "buttons" buttons)
+                ))
+            )
+        )
+    ]
+
+    [define format-facebook-options
+        (function (message options)
+            (button-template
+                message
+                (map
+                    [function (option)
+                        (make-dict (list
+                            (cons "type" "postback")
+                            (cons "title" (get option 1))
+                            (cons "payload" (get option 0))
+                        ))
+                    ]
+                    options
+                )
+            )
+        )
+    ]
+
+    [define format-facebook-link
+        (function (title link-url image-url)
+            (generic-template (list
+                (make-dict (list
+                    (cons "title" title)
+                    (cons "item_url" link-url)
+                    (cons "image_url" image-url)
+                ))
+            ))
+        )
+    ]
+
+    (provide
+        format-facebook-options
+        format-facebook-link
+    )
+)

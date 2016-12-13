@@ -39,9 +39,7 @@ class BotlangSystem(object):
         helpers_path = os.path.dirname(inspect.getfile(bot_helpers))
 
         module_resolver = ModuleResolver(environment)
-        module_resolver.load_modules([
-            '{0}/{1}'.format(helpers_path, 'helpers.bot')
-        ])
+        module_resolver.load_modules(helpers_path)
         return module_resolver
 
     @classmethod
