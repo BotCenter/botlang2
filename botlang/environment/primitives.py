@@ -97,6 +97,10 @@ def base64_decode(text):
     return base64.b64decode(text.encode('utf-8')).decode('utf-8')
 
 
+def make_dict(bindings):
+    return OrderedDict(bindings)
+
+
 class BotlangPrimitives(object):
 
     MATH = {
@@ -175,6 +179,8 @@ class BotlangPrimitives(object):
         'append': append,
         'head': lambda x: x[0],
         'tail': lambda x: x[1:],
+        'init': lambda x: x[:-1],
+        'last': lambda x: x[-1],
         'length': len,
         'list': lambda *x: list(x),
         'map': lambda f, l: list(map(f, l)),
@@ -192,7 +198,7 @@ class BotlangPrimitives(object):
     }
 
     DICT_OPERATIONS = {
-        'make-dict': lambda bindings: OrderedDict(bindings),
+        'make-dict': make_dict,
         'put': dict_put,
         'get': dict_or_list_get,
         'get-or-nil': get_or_nil,

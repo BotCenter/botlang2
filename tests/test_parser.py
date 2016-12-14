@@ -85,6 +85,12 @@ class ParserTestCase(unittest.TestCase):
         v = Parser('"Hola \\"Hola\\" Hola"').s_expressions()[0].to_ast()
         self.assertEqual(v.value, 'Hola "Hola" Hola')
 
+        v = Parser('"\\n"').s_expressions()[0].to_ast()
+        self.assertEqual(v.value, '\n')
+
+        v = Parser('"\\u2063"').s_expressions()[0].to_ast()
+        self.assertEqual(v.value, '\u2063')
+
     def test_bot_sexpr(self):
 
         code = """

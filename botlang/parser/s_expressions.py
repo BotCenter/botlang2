@@ -1,3 +1,4 @@
+import ast as python_ast
 from botlang.ast.ast import *
 
 
@@ -58,7 +59,7 @@ class Atom(SExpression):
     def as_string_value(self, token):
 
         return Val(
-            token[1:-1].replace('\\n', '\n').replace('\\"', '\"')
+            python_ast.literal_eval(token.replace('\n', '\\n'))
         ).add_code_reference(self)
 
     def as_symbol_value(self, token, quoted_parent):

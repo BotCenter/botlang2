@@ -16,6 +16,7 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('2'), 2)
         self.assertEqual(BotlangSystem.run('3.14'), 3.14)
         self.assertEqual(BotlangSystem.run('"hola"'), "hola")
+        self.assertEqual(BotlangSystem.run('"\u2063"'), u'\u2063')
 
     def test_and(self):
 

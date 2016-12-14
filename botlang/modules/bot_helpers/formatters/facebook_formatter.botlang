@@ -36,7 +36,29 @@
         )
     ]
 
-    [define format-facebook-options
+    [define separate-list
+        (function (list-to-separate num-sub-lists)
+            (fold
+                (list)
+                (function (acc next)
+                    [define index (get next 0)]
+                    [define element (get next 1)]
+                    (if (equal? (mod index num-sub-lists) 0)
+                        (append acc (list (list element)))
+                        (append
+                            (init acc)
+                            (list
+                                (append (last acc) (list element))
+                            )
+                        )
+                    )
+                )
+                (enumerate list-to-separate)
+            )
+        )
+    ]
+
+    [define format-option-buttons
         (function (message options)
             (button-template
                 message
@@ -50,6 +72,23 @@
                     ]
                     options
                 )
+            )
+        )
+    ]
+
+    [define format-facebook-options
+        (function (message all-options)
+            (map
+                [function (options-group)
+                    (format-option-buttons
+                        (if (equal? (get options-group 0) 0)
+                            message
+                            "\u2063"
+                        )
+                        (get options-group 1)
+                    )
+                ]
+                (enumerate (separate-list all-options 3))
             )
         )
     ]
@@ -69,5 +108,6 @@
     (provide
         format-facebook-options
         format-facebook-link
+        separate-list
     )
 )

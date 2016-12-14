@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from unittest import TestCase
 
 from botlang import BotlangSystem
@@ -131,8 +130,9 @@ class BotHelpersTestCase(TestCase):
             input_msg='bla',
             data={'social_network': 'facebook'}
         )
+        self.assertEqual(len(fb.message), 1)
         self.assertDictEqual(
-            fb.message,
+            fb.message[0],
             {
                 'attachment': {
                     'type': 'template',
