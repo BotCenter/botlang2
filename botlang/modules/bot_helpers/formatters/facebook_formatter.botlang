@@ -13,7 +13,7 @@
         )
     ]
 
-    [define generic-template
+    [define facebook-generic-template
         (function (elements)
             (format-template
                 (make-dict (list
@@ -24,7 +24,7 @@
         )
     ]
 
-    [define button-template
+    [define facebook-button-template
         (function (message buttons)
             (format-template
                 (make-dict (list
@@ -36,7 +36,7 @@
         )
     ]
 
-    [define list-template
+    [define facebook-list-template
         (function (elements)
             (format-template
                 (make-dict (list
@@ -50,7 +50,7 @@
 
     [define format-list
         (function (elements)
-            (list-template
+            (facebook-list-template
                 (map
                     (function (element)
                         (make-dict (list
@@ -106,7 +106,7 @@
 
     [define format-option-buttons
         (function (message options)
-            (button-template
+            (facebook-button-template
                 message
                 (map
                     [function (option)
@@ -141,7 +141,7 @@
 
     [define format-facebook-link
         (function (title link-url image-url)
-            (generic-template (list
+            (facebook-generic-template (list
                 (make-dict (list
                     (cons "title" title)
                     (cons "item_url" link-url)
@@ -152,6 +152,9 @@
     ]
 
     (provide
+        facebook-generic-template
+        facebook-button-template
+        facebook-list-template
         format-facebook-options
         format-facebook-link
         format-facebook-simple-list
