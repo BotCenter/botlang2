@@ -104,11 +104,14 @@
         (function (data) (get-or-nil data "social_network"))
     ]
 
+    [define from-facebook?
+        (function (data) (equal? (get-source data) "facebook"))
+    ]
+
     [define format-options
         (function (data message options)
-            [define source (get-source data)]
             (cond
-                [(equal? source "facebook")
+                [(from-facebook? data)
                     (format-facebook-options message options)]
                 [else
                     (format-plain-text-options message options)]
@@ -118,9 +121,8 @@
 
     [define format-simple-list
         (function (data heading elements)
-            [define source (get-source data)]
             (cond
-                [(and (equal? source "facebook")
+                [(and (from-facebook? data)
                       (> (length elements) 1))
                     (format-facebook-simple-list heading elements)]
                 [else
@@ -131,9 +133,8 @@
 
     [define format-link-with-image
         (function (data title link-url image-url)
-            [define source (get-source data)]
             (cond
-                [(equal? source "facebook")
+                [(from-facebook? data)
                     (format-facebook-link title link-url image-url)]
                 [else
                     (format-plain-link title link-url)]
