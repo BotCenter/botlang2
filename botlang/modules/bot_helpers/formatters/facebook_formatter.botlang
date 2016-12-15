@@ -104,17 +104,36 @@
         )
     ]
 
+    [define facebook-button-postback
+        (function (title payload)
+            (make-dict (list
+                (cons "type" "postback")
+                (cons "title" title)
+                (cons "payload" payload)
+            ))
+        )
+    ]
+
+    [define facebook-button-url
+        (function (title url)
+            (make-dict (list
+                (cons "type" "web_url")
+                (cons "title" title)
+                (cons "url" url)
+            ))
+        )
+    ]
+
     [define format-option-buttons
         (function (message options)
             (facebook-button-template
                 message
                 (map
                     [function (option)
-                        (make-dict (list
-                            (cons "type" "postback")
-                            (cons "title" (get option 1))
-                            (cons "payload" (get option 0))
-                        ))
+                        (facebook-button-postback
+                            (get option 1)
+                            (get option 0)
+                        )
                     ]
                     options
                 )
@@ -152,12 +171,17 @@
     ]
 
     (provide
-        facebook-generic-template
-        facebook-button-template
         facebook-list-template
-        format-facebook-options
+        facebook-button-template
+        facebook-generic-template
+
+        facebook-button-url
+        facebook-button-postback
+
         format-facebook-link
+        format-facebook-options
         format-facebook-simple-list
+
         separate-list
     )
 )
