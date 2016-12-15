@@ -29,11 +29,12 @@ class FacebookFormatterTestCase(TestCase):
                 (cons "C03: Menos de 5 min" "A 401 metros. Patente CJRT-77")
                 (cons "518: Menos de 5 min" "A 406 metros. Patente BJFR-37")
                 (cons "427: Menos de 5 min" "A 982 metros. Patente CJRS-49")
+                (cons "427: Menos de 5 min" "A 982 metros. Patente CJRS-49")
             )
         )
         """
         result = BotlangSystem.bot_instance().eval_bot(code, '')
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 3)
         self.assertEqual(result[0], 'VITAL APOQUINDO ESQ. / VIA LACTEA')
         self.assertDictEqual(
             result[1],
@@ -55,6 +56,24 @@ class FacebookFormatterTestCase(TestCase):
                             {
                                 'title': '518: Menos de 5 min',
                                 'subtitle': 'A 406 metros. Patente BJFR-37'
+                            }
+                        ]
+                    }
+                }
+            }
+        )
+        self.assertDictEqual(
+            result[2],
+            {
+                'attachment': {
+                    'type': 'template',
+                    'payload': {
+                        'template_type': 'list',
+                        'top_element_style': 'compact',
+                        'elements': [
+                            {
+                                'title': '427: Menos de 5 min',
+                                'subtitle': 'A 982 metros. Patente CJRS-49'
                             },
                             {
                                 'title': '427: Menos de 5 min',

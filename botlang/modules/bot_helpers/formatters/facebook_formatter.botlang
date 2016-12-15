@@ -48,19 +48,34 @@
         )
     ]
 
+    [define format-list
+        (function (elements)
+            (list-template
+                (map
+                    (function (element)
+                        (make-dict (list
+                            (cons "title" (get element 0))
+                            (cons "subtitle" (get element 1))
+                        ))
+                    )
+                    elements
+                )
+            )
+        )
+    ]
+
     [define format-facebook-simple-list
         (function (heading elements)
-            (list
-                heading
-                (list-template
-                    (map
-                        (function (element)
-                            (make-dict (list
-                                (cons "title" (get element 0))
-                                (cons "subtitle" (get element 1))
-                            ))
+            (append
+                (list heading)
+                (map
+                    (function (elems) (format-list elems))
+                    (if (equal?
+                            (mod (- (length elements) 1) 4)
+                            0
                         )
-                        elements
+                        (separate-list elements 3)
+                        (separate-list elements 4)
                     )
                 )
             )

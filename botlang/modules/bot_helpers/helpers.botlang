@@ -120,7 +120,8 @@
         (function (data heading elements)
             [define source (get-source data)]
             (cond
-                [(equal? source "facebook")
+                [(and (equal? source "facebook")
+                      (> (length elements) 1))
                     (format-facebook-simple-list heading elements)]
                 [else
                     (format-plain-simple-list heading elements)]
