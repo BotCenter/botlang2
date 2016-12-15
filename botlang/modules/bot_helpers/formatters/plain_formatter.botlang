@@ -32,8 +32,25 @@
         )
     ]
 
+    [define format-plain-simple-list
+        (function (heading elements)
+            (fold
+                heading
+                (function (acc element)
+                    (append
+                        acc
+                        "\n\n"
+                        (get element 0) ". " (get element 1)
+                    )
+                )
+                elements
+            )
+        )
+    ]
+
     (provide
         format-plain-text-options
         format-plain-link
+        format-plain-simple-list
     )
 )

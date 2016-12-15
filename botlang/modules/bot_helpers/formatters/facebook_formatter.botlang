@@ -36,6 +36,37 @@
         )
     ]
 
+    [define list-template
+        (function (elements)
+            (format-template
+                (make-dict (list
+                    (cons "template_type" "list")
+                    (cons "top_element_style" "compact")
+                    (list "elements" elements)
+                ))
+            )
+        )
+    ]
+
+    [define format-facebook-simple-list
+        (function (heading elements)
+            (list
+                heading
+                (list-template
+                    (map
+                        (function (element)
+                            (make-dict (list
+                                (cons "title" (get element 0))
+                                (cons "subtitle" (get element 1))
+                            ))
+                        )
+                        elements
+                    )
+                )
+            )
+        )
+    ]
+
     [define separate-list
         (function (list-to-separate num-sub-lists)
             (fold
@@ -108,6 +139,7 @@
     (provide
         format-facebook-options
         format-facebook-link
+        format-facebook-simple-list
         separate-list
     )
 )

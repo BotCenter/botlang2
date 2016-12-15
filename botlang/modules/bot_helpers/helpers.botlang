@@ -116,6 +116,18 @@
         )
     ]
 
+    [define format-simple-list
+        (function (data elements)
+            [define source (get-source data)]
+            (cond
+                [(equal? source "facebook")
+                    (format-facebook-simple-list elements)]
+                [else
+                    (format-plain-simple-list elements)]
+            )
+        )
+    ]
+
     [define format-link-with-image
         (function (data title link-url image-url)
             [define source (get-source data)]
@@ -216,5 +228,6 @@
         in-options
         node-selection
         node-yes-no
+        format-simple-list
     )
 )

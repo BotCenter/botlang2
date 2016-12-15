@@ -18,6 +18,54 @@ class FacebookFormatterTestCase(TestCase):
         result = BotlangSystem.bot_instance().eval(code)
         self.assertEqual([[1, 2, 3], [4, 5, 6], [7, 8]], result)
 
+    def test_format_list(self):
+
+        code = """
+        (require "facebook-formatter")
+        (format-facebook-simple-list
+            "VITAL APOQUINDO ESQ. / VIA LACTEA"
+            (list
+                (cons "501: Menos de 5 min" "A 197 metros. Patente BJFD-87")
+                (cons "C03: Menos de 5 min" "A 401 metros. Patente CJRT-77")
+                (cons "518: Menos de 5 min" "A 406 metros. Patente BJFR-37")
+                (cons "427: Menos de 5 min" "A 982 metros. Patente CJRS-49")
+            )
+        )
+        """
+        result = BotlangSystem.bot_instance().eval_bot(code, '')
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], 'VITAL APOQUINDO ESQ. / VIA LACTEA')
+        self.assertDictEqual(
+            result[1],
+            {
+                'attachment': {
+                    'type': 'template',
+                    'payload': {
+                        'template_type': 'list',
+                        'top_element_style': 'compact',
+                        'elements': [
+                            {
+                                'title': '501: Menos de 5 min',
+                                'subtitle': 'A 197 metros. Patente BJFD-87'
+                            },
+                            {
+                                'title': 'C03: Menos de 5 min',
+                                'subtitle': 'A 401 metros. Patente CJRT-77'
+                            },
+                            {
+                                'title': '518: Menos de 5 min',
+                                'subtitle': 'A 406 metros. Patente BJFR-37'
+                            },
+                            {
+                                'title': '427: Menos de 5 min',
+                                'subtitle': 'A 982 metros. Patente CJRS-49'
+                            }
+                        ]
+                    }
+                }
+            }
+        )
+
     def test_format_options(self):
 
         code = """
