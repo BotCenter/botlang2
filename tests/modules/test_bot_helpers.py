@@ -161,6 +161,25 @@ class BotHelpersTestCase(TestCase):
             }
         )
 
+    def test_format_simple_list(self):
+
+        code = """
+        (require "bot-helpers")
+        (format-simple-list
+            (make-dict (list))
+            "Hola"
+            (list
+                (cons "Juanito" "Lechuga")
+                (cons "Edulio" "Caluga")
+            )
+        )
+        """
+        result = BotlangSystem.bot_instance().eval_bot(code, input_msg='')
+        self.assertEqual(
+            result,
+            'Hola\n\nJuanito. Lechuga\n\nEdulio. Caluga'
+        )
+
     def test_format_link(self):
         code = """
                 (require "bot-helpers")

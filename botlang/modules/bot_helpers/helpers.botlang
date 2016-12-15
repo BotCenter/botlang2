@@ -117,13 +117,13 @@
     ]
 
     [define format-simple-list
-        (function (data elements)
+        (function (data heading elements)
             [define source (get-source data)]
             (cond
                 [(equal? source "facebook")
-                    (format-facebook-simple-list elements)]
+                    (format-facebook-simple-list heading elements)]
                 [else
-                    (format-plain-simple-list elements)]
+                    (format-plain-simple-list heading elements)]
             )
         )
     ]
