@@ -155,7 +155,7 @@
                         data
                         (format-options
                             data
-                            "Opción inválida. Elija entre:"
+                            "Opción inválida. Elige entre:"
                             list-of-options
                         )
                         selection-node

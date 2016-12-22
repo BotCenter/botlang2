@@ -189,12 +189,16 @@ class Tree(SExpression):
     def to_cond_clause_ast_node(self):
 
         first = self.children[0].code
+
         if first == 'else':
-            return CondElseClause(self.children[1].to_ast())
+            return CondElseClause(
+                self.children[1].to_ast()
+            ).add_code_reference(self)
+
         return CondPredicateClause(
             self.children[0].to_ast(),
             self.children[1].to_ast()
-        )
+        ).add_code_reference(self)
 
     def and_node(self):
 
