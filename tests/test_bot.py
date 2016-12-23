@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from botlang.evaluation.values import Nil
 from botlang.examples.example_bots import ExampleBots
 from botlang.interpreter import BotlangSystem
 
@@ -190,3 +191,42 @@ class TestBots(unittest.TestCase):
             second_result.message,
             'Miau\n1\n2\n3\n4'
         )
+
+    def test_cache_nil(self):
+
+        environment = BotlangSystem.base_environment()\
+            .add_cachable_primitives({
+                'cached-nil': lambda: Nil
+            })
+
+        code = """
+        [define another-node
+            (bot-node (data)
+                (node-result
+                    data
+                    (cached-nil)
+                    end-node
+                )
+            )
+        ]
+        (bot-node (data)
+            (if (nil? (cached-nil))
+                (node-result
+                    data
+                    "Nil"
+                    another-node
+                )
+                "Not nil"
+            )
+        )
+        """
+        first_result = BotlangSystem(environment).eval_bot(code, '')
+        self.assertEqual(first_result.message, 'Nil')
+
+        first_execution_state = first_result.execution_state
+        second_result = BotlangSystem(environment).eval_bot(
+            code,
+            '',
+            first_execution_state
+        )
+        self.assertEqual(second_result.message, Nil)

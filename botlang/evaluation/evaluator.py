@@ -220,12 +220,17 @@ class Evaluator(Visitor):
         if fun_val.must_be_cached():
             if self.primitive_step == len(self.primitives_evaluations):
                 return_value = fun_val.apply(*arg_vals)
-                self.primitives_evaluations.append(return_value)
+                if return_value is Nil:
+                    self.primitives_evaluations.append(None)
+                else:
+                    self.primitives_evaluations.append(return_value)
                 self.primitive_step += 1
                 self.execution_stack.pop()
                 return return_value
             else:
                 return_value = self.primitives_evaluations[self.primitive_step]
+                if return_value is None:
+                    return_value = Nil
                 self.primitive_step += 1
                 self.execution_stack.pop()
                 return return_value
