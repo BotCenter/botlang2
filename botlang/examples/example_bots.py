@@ -42,7 +42,7 @@ class ExampleBots(object):
                     [if (equal? [input-message] "si")
                         (node-result
                             (put data 'dog #t)
-                            (append "Wauf, " (get data 'name) "!")
+                            (append "Wauf, \\"" (get data 'name) "\\"!")
                             end-node
                         )
                         (node-result

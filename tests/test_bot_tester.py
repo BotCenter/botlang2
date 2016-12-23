@@ -33,7 +33,7 @@ class BotlangTesterTestCase(TestCase):
                     (assert-equal? (get r7 'message) "Miau, Juanito :3")
 
                     [define r8 (send-message (get r6 'bot) "si")]
-                    (assert-equal? (get r8 'message) "Wauf, Juanito!")
+                    (assert-equal? (get r8 'message) "Wauf, \\"Juanito\\"!")
                 ]
             )
         """
@@ -72,7 +72,7 @@ class BotlangTesterTestCase(TestCase):
                 [function (bot)
                     (assert-equal?
                         [get (send-message node-to-test "si") 'message]
-                        "Wauf, Pepe!"
+                        "Wauf, \\"Pepe\\"!"
                     )
                 ]
             )

@@ -81,6 +81,10 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('(max (list 3 4 5 2 1))'), 5)
         self.assertEqual(BotlangSystem.run('(min (list 3 4 5 2 1))'), 1)
         self.assertEqual(BotlangSystem.run('(map abs (list 1 -2 3))'), [1, 2, 3])
+        self.assertEqual(
+            BotlangSystem.run('(append "Asd \\"" "qwerty" "\\". sumthin")'),
+            'Asd "qwerty". sumthin'
+        )
 
     def test_lists(self):
 

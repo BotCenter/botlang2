@@ -91,6 +91,13 @@ class ParserTestCase(unittest.TestCase):
         v = Parser('"\\u2063"').s_expressions()[0].to_ast()
         self.assertEqual(v.value, '\u2063')
 
+        append = Parser(
+            '(append "Asd \\"" "qwerty" "\\". sumthin")'
+        ).s_expressions()[0].to_ast()
+        self.assertEqual(append.arg_exprs[0].value, 'Asd "')
+        self.assertEqual(append.arg_exprs[1].value, 'qwerty')
+        self.assertEqual(append.arg_exprs[2].value, '". sumthin')
+
     def test_bot_sexpr(self):
 
         code = """

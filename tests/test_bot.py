@@ -134,7 +134,7 @@ class TestBots(unittest.TestCase):
             'si',
             fifth_execution_state
         )
-        self.assertEqual(alternative_sixth_result.message, 'Wauf, Juanito!')
+        self.assertEqual(alternative_sixth_result.message, 'Wauf, "Juanito"!')
 
     def test_primitives_caching(self):
 
