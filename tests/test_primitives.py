@@ -144,3 +144,17 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(
             BotlangSystem.run('(list? "bla")')
         )
+
+    def test_string_append(self):
+
+        self.assertEqual(
+            BotlangSystem.run('(append "holi" "hola")'),
+            'holihola'
+        )
+
+    def test_list_append(self):
+
+        self.assertEqual(
+            BotlangSystem.run('(append (list 1 2) (list 3))'),
+            [1, 2, 3]
+        )
