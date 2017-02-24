@@ -135,3 +135,12 @@ class BotlangTestCase(unittest.TestCase):
 
         result = BotlangSystem.run('(sum (list 1 2 3 4 10))')
         self.assertEqual(result, 20)
+
+    def test_type(self):
+
+        self.assertTrue(
+            BotlangSystem.run('(list? (list 1 2 3))')
+        )
+        self.assertFalse(
+            BotlangSystem.run('(list? "bla")')
+        )

@@ -194,7 +194,8 @@ class BotlangPrimitives(object):
         'cons': cons,
         'reverse': lambda l: l[::-1],
         'enumerate': lambda l: list(enumerate(l)),
-        'sum': sum
+        'sum': sum,
+        'list?': lambda l: isinstance(l, list)
     }
 
     DICT_OPERATIONS = {
