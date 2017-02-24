@@ -27,7 +27,10 @@ class BotlangErrorException(BotlangException):
         )
 
     def __str__(self):
-        return self.message
+        if isinstance(str, self.message):
+            return self.message
+        else:
+            return self.message.__str__
 
 
 class BotlangAssertionException(BotlangException):
