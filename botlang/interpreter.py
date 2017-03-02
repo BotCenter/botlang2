@@ -6,6 +6,8 @@ from botlang.evaluation.evaluator import Evaluator
 from botlang.evaluation.values import BotNodeValue
 from botlang.exceptions.exceptions import *
 from botlang.extensions.cache import CacheExtension
+from botlang.extensions.storage import LocalStorageExtension, \
+    GlobalStorageExtension
 from botlang.modules.resolver import ModuleResolver
 from botlang.parser import Parser
 
@@ -54,7 +56,15 @@ class BotlangSystem(object):
 
     def setup_cache_extension(self, cache_implementation):
 
-        return CacheExtension.enable_cache(self, cache_implementation)
+        return CacheExtension.apply(self, cache_implementation)
+
+    def setup_local_storage(self, db_implementation):
+
+        return LocalStorageExtension.apply(self, db_implementation)
+
+    def setup_global_storage(self, db_implementation):
+
+        return GlobalStorageExtension.apply(self, db_implementation)
 
     def primitive_eval(self, code_string, evaluator, source_id):
 
@@ -74,7 +84,6 @@ class BotlangSystem(object):
             data=None,
             source_id=None
     ):
-
         if data is None:
             data = {}
 
@@ -111,7 +120,6 @@ class BotlangSystem(object):
             module_resolver=None,
             source_id=None
     ):
-
         return BotlangSystem(environment, module_resolver).eval(
             code_string,
             source_id

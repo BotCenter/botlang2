@@ -16,7 +16,7 @@ class CacheApi(object):
 class CacheExtension(object):
 
     @classmethod
-    def enable_cache(cls, botlang_system, cache_implementation):
+    def apply(cls, botlang_system, cache_implementation):
 
         botlang_system.environment.add_primitives({
             'cache-put': cache_implementation.put,
