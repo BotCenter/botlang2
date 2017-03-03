@@ -15,14 +15,6 @@ class DummyStore(StorageApi):
     def get(self, key):
         return self.backend.get(key)
 
-    def get_or_else(self, key, else_function, expiration=None):
-        element = self.get(key)
-        if element is None:
-            self.put(key, else_function(), expiration)
-            return self.get(key)
-        else:
-            return element
-
     def remove(self, key):
         del self.backend[key]
 

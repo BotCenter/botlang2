@@ -1,3 +1,6 @@
+from botlang.evaluation.values import Nil
+
+
 class StorageApi(object):
 
     def put(self, key, value, expiration=None):
@@ -30,7 +33,12 @@ class StorageApi(object):
         :param else_function: a function which does not take parameters
         :param expiration: milliseconds or None for unbounded persistence
         """
-        raise NotImplementedError
+        value = self.get(key)
+        if value is None:
+            value = else_function()
+            if value is not Nil:
+                self.put(key, value, expiration)
+        return value
 
     def remove(self, key):
         """
