@@ -5,9 +5,8 @@ from botlang.environment import *
 from botlang.evaluation.evaluator import Evaluator
 from botlang.evaluation.values import BotNodeValue
 from botlang.exceptions.exceptions import *
-from botlang.extensions.cache import CacheExtension
 from botlang.extensions.storage import LocalStorageExtension, \
-    GlobalStorageExtension
+    GlobalStorageExtension, CacheExtension
 from botlang.modules.resolver import ModuleResolver
 from botlang.parser import Parser
 
