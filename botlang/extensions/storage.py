@@ -1,12 +1,12 @@
 class StorageApi(object):
 
-    def put(self, key, value):
+    def put(self, key, value, expiration=None):
         raise NotImplementedError
 
     def get(self, key):
         raise NotImplementedError
 
-    def get_or_else(self, key, else_function):
+    def get_or_else(self, key, else_function, expiration=None):
         raise NotImplementedError
 
     def remove(self, key):
