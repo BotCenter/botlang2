@@ -192,7 +192,6 @@
                 yes-node
                 no-node
             )
-            [define choose-node-message (append choose-node-message " (si/no)")]
             [define selection-node
                 (bot-node (data)
                     (if (equal? (plain [input-message]) "si")
@@ -215,8 +214,14 @@
                 data
                 (append
                     initial-message
-                    "\n\n"
-                    choose-node-message
+                    (format-options
+                        data
+                        choose-node-message
+                        (list
+                            (option "Sí" "Sí")
+                            (option "No" "No")
+                        )
+                    )
                 )
                 selection-node
             )
