@@ -158,3 +158,34 @@ class BotlangTestCase(unittest.TestCase):
             BotlangSystem.run('(append (list 1 2) (list 3))'),
             [1, 2, 3]
         )
+
+    def test_any_satisfy(self):
+
+        self.assertTrue(
+            BotlangSystem.run(
+                '(any-satisfy? (fun (x) (equal? x 3)) (list 1 2 3 4))'
+            )
+        )
+        self.assertTrue(
+            BotlangSystem.run(
+                '(any-satisfy? (fun (x) (equal? x 2)) (list 1 2 3 4))'
+            )
+        )
+        self.assertFalse(
+            BotlangSystem.run(
+                '(any-satisfy? (fun (x) (equal? x -1)) (list 1 2 3 4))'
+            )
+        )
+
+    def test_matches(self):
+
+        self.assertTrue(
+            BotlangSystem.run(
+                '(match? ".*pedro.*" "hola pedro, como estas?")'
+            )
+        )
+        self.assertFalse(
+            BotlangSystem.run(
+                '(match? ".*pedro.*" "hola julito, como estas?")'
+            )
+        )

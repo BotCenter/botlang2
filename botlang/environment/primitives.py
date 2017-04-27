@@ -1,6 +1,7 @@
 import base64
 import bz2
 import math
+import re
 from functools import *
 import operator as op
 from collections import OrderedDict
@@ -99,6 +100,19 @@ def base64_decode(text):
 
 def make_dict(bindings):
     return OrderedDict(bindings)
+
+
+def any_satisfy(fun, lst):
+    for e in lst:
+        if fun(e):
+            return True
+    return False
+
+
+def pattern_match(pattern, message):
+    if re.match(pattern, message):
+        return True
+    return False
 
 
 class BotlangPrimitives(object):
@@ -212,7 +226,8 @@ class BotlangPrimitives(object):
         'member?': lambda collection, element: element in collection,
         'starts-with?': str.startswith,
         'ends-with?': str.endswith,
-        'contains?': str.__contains__
+        'contains?': str.__contains__,
+        'any-satisfy?': any_satisfy
     }
 
     STRING_OPERATIONS = {
@@ -224,7 +239,8 @@ class BotlangPrimitives(object):
         'lowercase': str.lower,
         'capitalize': str.capitalize,
         'replace': str.replace,
-        'trim': str.strip
+        'trim': str.strip,
+        'match?': pattern_match
     }
 
     TYPE_CONVERSION = {
