@@ -177,7 +177,15 @@
             ]
             (node-result
                 data
-                (format-options data message list-of-options)
+                (if (list? message)
+                    (append
+                        (init message)
+                        (list
+                            (format-options data (last message) list-of-options)
+                        )
+                    )
+                    (format-options data message list-of-options)
+                )
                 selection-node
             )
         ]
