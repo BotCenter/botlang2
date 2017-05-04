@@ -15,6 +15,12 @@ def append(*values):
     return reduce(op.add, values)
 
 
+def extend(lst, value):
+    if isinstance(value, list):
+        return lst + value
+    return lst + [value]
+
+
 def dict_put(ordered_dict, key, value):
     return OrderedDict(
         list(ordered_dict.items()) + [(key, value)]
@@ -191,6 +197,7 @@ class BotlangPrimitives(object):
 
     LIST_OPERATIONS = {
         'append': append,
+        'extend': extend,
         'head': lambda x: x[0],
         'tail': lambda x: x[1:],
         'init': lambda x: x[:-1],

@@ -178,11 +178,9 @@
             (node-result
                 data
                 (if (list? message)
-                    (append
+                    (extend
                         (init message)
-                        (list
-                            (format-options data (last message) list-of-options)
-                        )
+                        (format-options data (last message) list-of-options)
                     )
                     (format-options data message list-of-options)
                 )

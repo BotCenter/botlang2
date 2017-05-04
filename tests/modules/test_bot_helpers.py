@@ -217,7 +217,7 @@ class BotHelpersTestCase(TestCase):
         self.assertEqual(fb.message[0], 'Blablabla')
         self.assertEqual(len(fb.message[1]), 1)
         self.assertDictEqual(
-            fb.message[1][0],
+            fb.message[1],
             {
                 'attachment': {
                     'type': 'template',
