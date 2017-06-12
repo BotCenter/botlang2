@@ -181,7 +181,7 @@ class BotlangPrimitives(object):
     UNARY_OPERATORS = {
         'abs': abs,
         'not': op.not_,
-        'nil?': lambda v: v is Nil
+        'nil?': lambda v: v is Nil or v is None
     }
 
     BINARY_OPERATORS = {
