@@ -1,4 +1,7 @@
 import unittest
+
+import math
+
 from botlang.interpreter import BotlangSystem
 
 
@@ -189,3 +192,11 @@ class BotlangTestCase(unittest.TestCase):
                 '(match? ".*pedro.*" "hola julito, como estas?")'
             )
         )
+
+    def test_timestamp(self):
+
+        t0 = math.floor(BotlangSystem.run('(timestamp)'))
+        import time
+        time.sleep(0.5)
+        t1 = round(BotlangSystem.run('(timestamp)'))
+        self.assertEqual(t1 - t0, 1)
