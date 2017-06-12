@@ -7,6 +7,7 @@ import operator as op
 from collections import OrderedDict
 from uuid import uuid4
 
+import time
 from unidecode import unidecode
 
 from botlang.evaluation.values import Nil, TerminalNode
@@ -278,6 +279,10 @@ class BotlangPrimitives(object):
 
     RANDOM = {
         'uuid': uuid4
+    }
+
+    DATETIME = {
+        'timestamp': time.time
     }
 
     COMPRESSION = {
