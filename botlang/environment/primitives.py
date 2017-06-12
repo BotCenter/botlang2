@@ -5,6 +5,8 @@ import re
 from functools import *
 import operator as op
 from collections import OrderedDict
+from uuid import uuid4
+
 from unidecode import unidecode
 
 from botlang.evaluation.values import Nil, TerminalNode
@@ -272,6 +274,10 @@ class BotlangPrimitives(object):
     BASE64 = {
         'b64-encode': base64_encode,
         'b64-decode': base64_decode
+    }
+
+    RANDOM = {
+        'uuid': uuid4
     }
 
     COMPRESSION = {
