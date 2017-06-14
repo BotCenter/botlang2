@@ -124,6 +124,20 @@ def pattern_match(pattern, message):
     return False
 
 
+def divide_text(max_chars, text):
+
+    if len(text) <= max_chars:
+        return [text]
+
+    texts = []
+    for p in re.split('\n', text):
+        stripped_p = p.strip()
+        if len(stripped_p) > 0:
+            texts.append(stripped_p)
+
+    return texts
+
+
 class BotlangPrimitives(object):
 
     MATH = {
@@ -250,7 +264,8 @@ class BotlangPrimitives(object):
         'capitalize': str.capitalize,
         'replace': str.replace,
         'trim': str.strip,
-        'match?': pattern_match
+        'match?': pattern_match,
+        'divide-text': divide_text
     }
 
     TYPE_CONVERSION = {
