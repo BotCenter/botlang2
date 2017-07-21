@@ -23,7 +23,7 @@ def http_get(url, headers=None):
     return build_response_dict(response)
 
 
-def http_post(url, data, headers=None):
+def http_post(url, json, headers=None):
 
-    response = requests.post(url, data, headers=headers)
+    response = requests.post(url, json=json, headers=headers)
     return build_response_dict(response)
