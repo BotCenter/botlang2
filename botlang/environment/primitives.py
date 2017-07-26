@@ -6,6 +6,7 @@ from functools import *
 import operator as op
 from collections import OrderedDict
 from uuid import uuid4
+from urllib.parse import quote
 
 import time
 from unidecode import unidecode
@@ -265,7 +266,8 @@ class BotlangPrimitives(object):
         'replace': str.replace,
         'trim': str.strip,
         'match?': pattern_match,
-        'divide-text': divide_text
+        'divide-text': divide_text,
+        'url-quote': quote
     }
 
     TYPE_CONVERSION = {
