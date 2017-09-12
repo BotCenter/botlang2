@@ -130,7 +130,7 @@ class Tree(SExpression):
             return self.begin_node()
 
         if first == 'fun' or first == 'function':
-            return self.function_node()
+            return self.function_node(self.children)
 
         if first == 'bot-node':
             return self.bot_node()
@@ -146,6 +146,10 @@ class Tree(SExpression):
 
         if first == 'require':
             return self.module_import_node()
+
+        # TODO: change to macro expansion
+        if first == 'defun':
+            return self.define_function_node()
 
         return self.application_node()
 
@@ -221,6 +225,13 @@ class Tree(SExpression):
             self.children[2].to_ast()
         ).add_code_reference(self)
 
+    def define_function_node(self):
+
+        return Definition(
+            self.children[1].code,
+            self.function_node(self.children[1:])
+        ).add_code_reference(self)
+
     def local_node(self):
 
         return Local(
@@ -241,14 +252,14 @@ class Tree(SExpression):
             [s_expr.to_ast() for s_expr in self.children[1:]]
         ).add_code_reference(self)
 
-    def function_node(self):
+    def function_node(self, children):
 
         function_body = BodySequence(
-            [s_expr.to_ast() for s_expr in self.children[2:]]
+            [s_expr.to_ast() for s_expr in children[2:]]
         ).add_code_reference(self)
 
         return Fun(
-            [identifier.code for identifier in self.children[1].children],
+            [identifier.code for identifier in children[1].children],
             function_body
         ).add_code_reference(self)
 

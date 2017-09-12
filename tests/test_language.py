@@ -265,6 +265,14 @@ class BotlangTestCase(unittest.TestCase):
         """
         self.assertEqual(BotlangSystem.run(code), 25)
 
+    def test_defun(self):
+
+        code = """
+            (defun hola (x y) (+ x y))
+            (hola 5 3)
+        """
+        self.assertEqual(BotlangSystem.run(code), 8)
+
     def test_begin(self):
 
         code = """

@@ -225,7 +225,6 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(len(split_text), 1)
 
         split_text = divide_text(500, long_text)
-        print(split_text)
         self.assertEqual(len(split_text), 5)
         self.assertEqual(
             split_text[3],
