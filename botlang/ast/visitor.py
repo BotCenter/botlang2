@@ -61,6 +61,17 @@ class Visitor(object):
 
         return fun_node.body.accept(self, env)
 
+    def visit_bot_node(self, bot_node: BotNode, env):
+
+        return bot_node.body.accept(self, env)
+
+    def visit_bot_result(self, bot_result: BotResult, env):
+
+        bot_result.data.accept(self, env)
+        bot_result.message.accept(self, env)
+        bot_result.next_node.accept(self, env)
+        return bot_result
+
     def visit_app(self, app_node: App, env):
 
         app_node.fun_expr.accept(self, env)

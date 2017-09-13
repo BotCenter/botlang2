@@ -59,14 +59,6 @@ class Evaluator(Visitor):
         """
         return val_node.value
 
-    def visit_list(self, list_node, env):
-        """
-        List expression evaluation
-        """
-        return [
-            element.accept(self, env) for element in list_node.elements
-        ]
-
     def visit_if(self, if_node, env):
         """
         'If' construct evaluation
