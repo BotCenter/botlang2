@@ -30,6 +30,23 @@ class ParserTestCase(unittest.TestCase):
             lambda: Parser(')ab(').s_expressions()
         )
 
+    def test_comments(self):
+
+        code = """
+        ;; Hi, this is my kawaii code ;)
+
+        (defun kawaii-function (❤)
+            (append "(づ｡◕‿‿◕｡)づ kawaii desu ne " ❤) ;; so kawaii <3
+        )
+
+        ;; yay
+        (kawaii-function "(▰˘◡˘▰)") ;; (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+        """
+        sexprs = Parser(code).s_expressions()
+        self.assertEqual(len(sexprs), 2)
+        self.assertEqual(sexprs[0].children[0].code, 'defun')
+        self.assertEqual(sexprs[1].children[0].code, 'kawaii-function')
+
     def test_separate_sexpr_strings(self):
 
         code = """

@@ -42,11 +42,24 @@ class Parser(object):
         if source_id is None:
             source_id = '<unknown>'
 
-        self.code = code
+        self.code = self.remove_comments(code)
         self.source_id = source_id
         self.strings = {}
 
-        for match in self.FIND_STRINGS_REGEX.finditer(code):
+        self.hash_strings()
+
+    REMOVE_COMMENTS_REGEX = re.compile(r".*(;;.*)")
+
+    def remove_comments(self, code):
+
+        for match in self.REMOVE_COMMENTS_REGEX.finditer(code):
+            comment = match.group(1)
+            code = code.replace(comment, ' ' * len(comment))
+        return code
+
+    def hash_strings(self):
+
+        for match in self.FIND_STRINGS_REGEX.finditer(self.code):
             string = match.group(0)
             str_hash = self.generate_string_hash(string)
             identifier = '__STR__{0}'.format(str_hash)
