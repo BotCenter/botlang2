@@ -26,6 +26,10 @@ class Atom(SExpression):
         self.code = token
         self.source_reference = source_reference
 
+    @property
+    def token(self):
+        return self.code
+
     def is_atom(self):
 
         return True
@@ -99,7 +103,7 @@ class Tree(SExpression):
 
         return ListVal([
             child.as_quoted() for child in self.children
-        ])
+        ]).add_code_reference(self)
 
     def to_ast(self):
 
@@ -146,6 +150,9 @@ class Tree(SExpression):
 
         if first == 'require':
             return self.module_import_node()
+
+        if first == 'define-syntax-rule':
+            return self.define_syntax_rule_node()
 
         # TODO: change to macro expansion
         if first == 'defun':
@@ -275,6 +282,7 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def bot_result_node(self):
+
         return BotResult(
             self.children[1].to_ast(),
             self.children[2].to_ast(),
@@ -282,7 +290,17 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def application_node(self):
+
         return App(
             self.children[0].to_ast(),
             [s_expr.to_ast() for s_expr in self.children[1:]]
+        ).add_code_reference(self)
+
+    def define_syntax_rule_node(self):
+
+        pattern = self.children[1].children
+        pattern_node = SyntaxPattern(pattern[0], pattern[1:])
+        return DefineSyntax(
+            pattern_node.add_code_reference(pattern_node),
+            self.children[2].to_ast()
         ).add_code_reference(self)

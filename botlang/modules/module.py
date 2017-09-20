@@ -1,4 +1,4 @@
-from botlang.ast.visitor import Visitor
+from botlang.ast.ast_visitor import ASTVisitor
 from botlang.evaluation.values import Nil
 
 
@@ -31,7 +31,7 @@ class Module(object):
         self.bindings[id] = closure
 
 
-class ModuleEvaluator(Visitor):
+class ModuleEvaluator(ASTVisitor):
     """
     AST visitor for module evaluation
     """

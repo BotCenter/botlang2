@@ -1,10 +1,10 @@
 from functools import reduce
 
 from botlang import Parser
-from botlang.ast.visitor import Visitor
+from botlang.ast.ast_visitor import ASTVisitor
 
 
-class NodeHasher(Visitor):
+class NodeHasher(ASTVisitor):
     """
     AST visitor for adding nodes to a dictionary with a unique and
     deterministic key.

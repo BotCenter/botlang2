@@ -1,5 +1,5 @@
 from functools import reduce
-from botlang.ast.visitor import Visitor
+from botlang.ast.ast_visitor import ASTVisitor
 from botlang.evaluation.values import *
 
 
@@ -32,7 +32,7 @@ class ExecutionStack(list):
         )
 
 
-class Evaluator(Visitor):
+class Evaluator(ASTVisitor):
     """
     AST visitor for evaluation
     """
@@ -58,6 +58,11 @@ class Evaluator(Visitor):
         Value expression evaluation
         """
         return val_node.value
+
+    def visit_list(self, literal_list, env):
+        return [
+            element.accept(self, env) for element in literal_list.elements
+        ]
 
     def visit_if(self, if_node, env):
         """
