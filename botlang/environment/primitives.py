@@ -276,9 +276,9 @@ class BotlangPrimitives(object):
         'int': int
     }
 
-    SIDE_EFFECTS = {
-        'print': print
-    }
+    # SIDE_EFFECTS = {
+    #     'print': print
+    # }
 
     TERMINAL_NODES = {
         'terminal-node': make_terminal_node
@@ -323,7 +323,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.PREDICATES)
         environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
-        environment.add_primitives(cls.SIDE_EFFECTS)
+        # environment.add_primitives(cls.SIDE_EFFECTS)
         environment.add_primitives(cls.TERMINAL_NODES)
         environment.add_primitives(cls.BASE64)
         environment.add_primitives(cls.COMPRESSION)
