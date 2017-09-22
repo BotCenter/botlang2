@@ -19,6 +19,18 @@ class MacrosTestCase(TestCase):
         result = BotlangSystem.run(code)
         self.assertTrue(result)
 
+    def test_defun_macro(self):
+
+        code = """
+        (define-syntax-rule (def-fun name args body)
+            (define name (function args body))
+        )
+        (def-fun squared (x) (* x x))
+        (squared 4)
+        """
+        result = BotlangSystem.run(code)
+        self.assertEqual(result, 16)
+
     def test_syntax_rule_hygiene(self):
 
         code = """

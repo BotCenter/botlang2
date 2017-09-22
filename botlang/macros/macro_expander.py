@@ -1,5 +1,6 @@
 from botlang.ast.ast import Id
 from botlang.ast.ast_visitor import ASTVisitor
+from botlang.parser.s_expressions_visitor import SExprVisitor
 
 
 class MacroExpander(ASTVisitor):
@@ -30,8 +31,8 @@ class MacroExpander(ASTVisitor):
     def expand_macro(cls, macro_definition, arguments):
         """
         1) Get identifiers used in arguments ASTs
-        2) Hygienize macro template AST given the arguments' identifiers
-        3) Copy arguments ASTs into hygienized template AST (macro expansion)
+        2) Hygienize macro template S-Expr given the arguments' identifiers
+        3) Copy arguments S-Expr into hygienized template S-Expr (expansion)
         4) Return expanded macro
         
         :param macro_definition: DefineSyntax
@@ -48,31 +49,34 @@ class MacroExpander(ASTVisitor):
         pattern = macro_definition.pattern.copy()
         template = macro_definition.template.copy()
         hygienizer = MacroHygienizer(identifiers, pattern)
-        hygienic_template = template.accept(hygienizer, None)
+        hygienic_template = template.accept(hygienizer)
 
-        ast_mappings = {}
+        sexpr_mappings = {}
         for i in range(0, len(arguments)):
-            ast_mappings[pattern.arguments[i].token] = arguments[i]
-        return hygienic_template.accept(ASTExpander(ast_mappings), None)
+            sexpr_mappings[pattern.arguments[i].token] = arguments[i].s_expr
+
+        expanded = hygienic_template.accept(SExprExpander(sexpr_mappings))
+        return expanded.to_ast()
 
 
-class ASTExpander(ASTVisitor):
+class SExprExpander(SExprVisitor):
 
     def __init__(self, mappings):
 
         self.mappings = mappings
 
-    def visit_id(self, id_node, env):
+    def visit_atom(self, atom_node):
 
-        ast_to_paste = self.mappings.get(id_node.identifier)
-        if ast_to_paste is not None:
-            return ast_to_paste.copy()
-        else:
-            return id_node
+        sexpr_to_paste = self.mappings.get(atom_node.token)
+        if sexpr_to_paste is not None:
+            return sexpr_to_paste.copy()
+        return atom_node
 
 
-class MacroHygienizer(ASTVisitor):
-
+class MacroHygienizer(SExprVisitor):
+    """
+    https://en.wikipedia.org/wiki/Hygienic_macro
+    """
     def __init__(self, existing_identifiers, macro_pattern):
 
         pattern_arguments = [arg.token for arg in macro_pattern.arguments]
@@ -80,17 +84,17 @@ class MacroHygienizer(ASTVisitor):
         self.existing_identifiers = ids
         self.hygienic_mapping = {}
 
-    def visit_id(self, id_node, env):
+    def visit_atom(self, atom_node):
 
-        if id_node.identifier in self.existing_identifiers:
-            replacement = self.hygienic_mapping.get(id_node.identifier)
+        if atom_node.token in self.existing_identifiers:
+            replacement = self.hygienic_mapping.get(atom_node.token)
             if replacement is not None:
-                id_node.identifier = replacement
+                atom_node.token = replacement
             else:
-                replacement = self.get_replacement_for(id_node.identifier)
-                self.hygienic_mapping[id_node.identifier] = replacement
-                id_node.identifier = replacement
-        return id_node
+                replacement = self.get_replacement_for(atom_node.token)
+                self.hygienic_mapping[atom_node.token] = replacement
+                atom_node.token = replacement
+        return atom_node
 
     def get_replacement_for(self, identifier):
 

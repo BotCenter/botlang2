@@ -66,16 +66,25 @@ class BotlangSystem(object):
 
         return GlobalStorageExtension.apply(self, db_implementation)
 
-    def expand_macros(self, ast, macro_environment):
+    @classmethod
+    def default_macro_environment(cls):
 
-        return ast.accept(MacroExpander(), macro_environment)
+        environment = Environment()
+        macros = Parser.parse("""
+        (define-syntax-rule (defun name args body)
+            (define name (function args body))
+        )
+        """, source_id='<default macros>')
+        for macro in macros:
+            macro.accept(MacroExpander(), environment)  # Populate environment
+        return environment
 
     def primitive_eval(self, code_string, evaluator, source_id):
 
         ast_seq = Parser.parse(code_string, source_id)
-        macro_environment = Environment()
+        macro_environment = self.default_macro_environment()
         expanded_asts = [
-            self.expand_macros(ast, macro_environment) for ast in ast_seq
+            ast.accept(MacroExpander(), macro_environment) for ast in ast_seq
         ]
         return self.interpret(expanded_asts, evaluator, self.environment)
 

@@ -12,6 +12,12 @@ class SExpression(object):
     def to_ast(self):
         raise NotImplementedError
 
+    def accept(self, visitor):
+        raise NotImplementedError
+
+    def copy(self):
+        raise NotImplementedError
+
     def is_tree(self):
         return False
 
@@ -26,15 +32,79 @@ class Atom(SExpression):
         self.code = token
         self.source_reference = source_reference
 
+    def accept(self, visitor):
+        return visitor.visit_atom(self)
+
+    def copy(self):
+        return Atom(self.code, self.source_reference)
+
     @property
     def token(self):
         return self.code
 
     def is_atom(self):
-
         return True
 
     def to_ast(self, quoted_parent=False):
+
+        try:
+            return self.as_boolean_value()
+        except ValueError:
+            pass
+
+        try:
+            return self.as_integer_value()
+        except ValueError:
+            pass
+
+        try:
+            return self.as_float_value()
+        except ValueError:
+            pass
+
+        if self.is_string():
+            return self.as_string_value()
+
+        if self.is_symbol() or quoted_parent:
+            return self.as_symbol_value(quoted_parent)
+
+        return self.as_identifier()
+
+    def is_boolean(self):
+
+        return self.code == '#t' or self.code == '#f'
+
+    def is_integer(self):
+
+        try:
+            self.as_integer_value()
+        except ValueError:
+            return False
+        else:
+            return True
+
+    def is_float(self):
+
+        try:
+            self.as_float_value()
+        except ValueError:
+            return False
+        else:
+            return True
+
+    def is_number(self):
+
+        return self.is_integer() or self.is_float()
+
+    def is_identifier(self):
+
+        return \
+            not self.is_boolean() \
+            and not self.is_number() \
+            and not self.is_string() \
+            and not self.is_symbol()
+
+    def as_boolean_value(self):
 
         if self.code == '#t':
             return Val(True).add_code_reference(self)
@@ -42,48 +112,42 @@ class Atom(SExpression):
         if self.code == '#f':
             return Val(False).add_code_reference(self)
 
-        try:
-            return Val(int(self.code)).add_code_reference(self)
+        raise ValueError
 
-        except ValueError:
-            try:
-                return Val(float(self.code)).add_code_reference(self)
+    def as_integer_value(self):
 
-            except ValueError:
-                if self.is_string(self.code):
-                    return self.as_string_value(self.code)
-                if self.is_symbol(self.code) or quoted_parent:
-                    return self.as_symbol_value(self.code, quoted_parent)
-                return self.as_identifier(self.code)
+        return Val(int(self.code)).add_code_reference(self)
+
+    def as_float_value(self):
+
+        return Val(float(self.code)).add_code_reference(self)
 
     def as_quoted(self):
 
         return self.to_ast(quoted_parent=True)
 
-    def as_string_value(self, token):
+    def as_string_value(self):
 
         return Val(
-            python_ast.literal_eval(token.replace('\n', '\\n'))
+            python_ast.literal_eval(self.code.replace('\n', '\\n'))
         ).add_code_reference(self)
 
-    def as_symbol_value(self, token, quoted_parent):
+    def as_symbol_value(self, quoted_parent):
 
-        symbol = token if quoted_parent else token[1:]
+        symbol = self.token if quoted_parent else self.token[1:]
         return Val(symbol).add_code_reference(self)
 
-    def as_identifier(self, token):
+    def as_identifier(self):
 
-        return Id(token).add_code_reference(self)
+        return Id(self.token).add_code_reference(self)
 
-    @classmethod
-    def is_string(cls, token):
+    def is_string(self):
 
-        return token.startswith('"') and token.endswith('"')
+        return self.code.startswith('"') and self.code.endswith('"')
 
-    @classmethod
-    def is_symbol(cls, token):
+    def is_symbol(self):
 
-        return token.startswith("'")
+        return self.code.startswith("'")
 
 
 class Tree(SExpression):
@@ -95,8 +159,19 @@ class Tree(SExpression):
         self.source_reference = source_reference
         self.quoted = quoted
 
-    def is_tree(self):
+    def accept(self, visitor):
+        return visitor.visit_tree(self)
 
+    def copy(self):
+
+        return Tree(
+            [child.copy() for child in self.children],
+            self.code,
+            self.source_reference,
+            self.quoted
+        )
+
+    def is_tree(self):
         return True
 
     def as_quoted(self):
@@ -153,10 +228,6 @@ class Tree(SExpression):
 
         if first == 'define-syntax-rule':
             return self.define_syntax_rule_node()
-
-        # TODO: change to macro expansion
-        if first == 'defun':
-            return self.define_function_node()
 
         return self.application_node()
 
@@ -232,13 +303,6 @@ class Tree(SExpression):
             self.children[2].to_ast()
         ).add_code_reference(self)
 
-    def define_function_node(self):
-
-        return Definition(
-            self.children[1].code,
-            self.function_node(self.children[1:])
-        ).add_code_reference(self)
-
     def local_node(self):
 
         return Local(
@@ -302,5 +366,5 @@ class Tree(SExpression):
         pattern_node = SyntaxPattern(pattern[0], pattern[1:])
         return DefineSyntax(
             pattern_node.add_code_reference(pattern_node),
-            self.children[2].to_ast()
+            self.children[2]
         ).add_code_reference(self)

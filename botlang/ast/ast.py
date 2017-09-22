@@ -257,7 +257,7 @@ class Fun(ASTNode):
 
     def copy(self):
         return Fun(
-            [param.copy() for param in self.params],
+            copy.copy(self.params),
             self.body.copy()
         ).add_code_reference(self.s_expr)
 
@@ -503,7 +503,7 @@ class DefineSyntax(ASTNode):
     def __init__(self, pattern, template):
         """
         :param pattern: SyntaxPattern
-        :param template: ASTNode
+        :param template: SExpr
         """
         super(ASTNode, self).__init__()
         self.pattern = pattern
