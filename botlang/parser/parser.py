@@ -42,13 +42,13 @@ class Parser(object):
         if source_id is None:
             source_id = '<unknown>'
 
-        self.code = self.remove_comments(code)
+        self.code = code
         self.source_id = source_id
         self.strings = {}
-
         self.hash_strings()
+        self.code = self.remove_comments(self.code)
 
-    REMOVE_COMMENTS_REGEX = re.compile(r".*(;;.*)")
+    REMOVE_COMMENTS_REGEX = re.compile(r"[^;]*(;.*)")
 
     def remove_comments(self, code):
 
