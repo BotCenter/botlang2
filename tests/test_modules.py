@@ -2,6 +2,7 @@ import unittest
 
 from botlang import Evaluator
 from botlang.interpreter import BotlangSystem
+from botlang.modules.module import ExternalModule
 from botlang.modules.resolver import ModuleResolver
 
 
@@ -61,3 +62,21 @@ class ModulesTestCase(unittest.TestCase):
             module_resolver=resolver
         )
         self.assertFalse(invalid_rut)
+
+    def test_external_modules(self):
+
+        external_module = ExternalModule(
+            'cool-module',
+            {
+                'moo': lambda: 'moo',
+                'meow': lambda: 'mew'
+            }
+        )
+        environment = BotlangSystem.base_environment()
+        resolver = ModuleResolver(environment)
+        resolver.add_module(external_module)
+        meow = BotlangSystem.run(
+            '(require "cool-module") (meow)',
+            module_resolver=resolver
+        )
+        self.assertEqual(meow, 'mew')

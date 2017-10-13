@@ -1,12 +1,21 @@
 from botlang.ast.ast_visitor import ASTVisitor
-from botlang.evaluation.values import Nil
+from botlang.evaluation.values import Nil, Primitive
 
 
 class Module(object):
 
+    def __init__(self, name):
+        self.name = name
+
+    def get_bindings(self, evaluator):
+        raise NotImplementedError
+
+
+class BotlangModule(Module):
+
     def __init__(self, name, body_ast):
 
-        self.name = name
+        super(BotlangModule, self).__init__(name)
         self.body_ast = body_ast
         self.evaluated = False
         self.bindings = {}
@@ -29,6 +38,21 @@ class Module(object):
     def add_binding(self, id, closure):
 
         self.bindings[id] = closure
+
+
+class ExternalModule(Module):
+
+    def __init__(self, name, function_bindings):
+
+        super(ExternalModule, self).__init__(name)
+        self.function_bindings = function_bindings
+
+    def get_bindings(self, evaluator):
+
+        return {
+            key: Primitive(primitive, None)
+            for key, primitive in self.function_bindings.items()
+        }
 
 
 class ModuleEvaluator(ASTVisitor):

@@ -279,8 +279,8 @@ class Evaluator(ASTVisitor):
         Module definition
         """
         self.execution_stack.append(module_node)
-        from botlang.modules.module import Module
-        module = Module(
+        from botlang.modules.module import BotlangModule
+        module = BotlangModule(
             module_node.name.accept(self, env),
             module_node.body
         )
