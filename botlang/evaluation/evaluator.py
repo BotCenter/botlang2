@@ -129,10 +129,9 @@ class Evaluator(ASTVisitor):
         """
         self.execution_stack.append(or_node)
         left_branch = or_node.cond1.accept(self, env)
-        right_branch = or_node.cond2.accept(self, env)
-
+        result = left_branch or or_node.cond2.accept(self, env)
         self.execution_stack.pop()
-        return left_branch or right_branch
+        return result
 
     def visit_id(self, id_node, env):
         """

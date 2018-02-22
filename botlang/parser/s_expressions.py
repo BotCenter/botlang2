@@ -182,7 +182,7 @@ class Tree(SExpression):
 
     def to_ast(self):
 
-        if self.quoted:
+        if self.quoted or len(self.children) == 0:
             return self.as_quoted()
 
         first = self.children[0].code

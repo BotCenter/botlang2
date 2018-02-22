@@ -273,6 +273,12 @@ class BotlangTestCase(unittest.TestCase):
         """
         self.assertEqual(BotlangSystem.run(code), 8)
 
+        code = """
+            (defun oli () "oli")
+            (oli)
+        """
+        self.assertEqual(BotlangSystem.run(code), 'oli')
+
     def test_begin(self):
 
         code = """
@@ -404,3 +410,12 @@ class BotlangTestCase(unittest.TestCase):
         primitives_evaluations = execution_state.primitives_values
         self.assertEqual(bot_node_steps, 2)
         self.assertEqual(len(primitives_evaluations), 3)
+
+    def test_nil(self):
+
+        code = """
+            [define value nil]
+            (nil? value)
+        """
+        result = BotlangSystem.run(code)
+        self.assertTrue(result)
