@@ -179,6 +179,23 @@ class BotlangTestCase(unittest.TestCase):
         """)
         self.assertEqual(dict_associations, expected_dict.items())
 
+        immutable_dict = BotlangSystem.run("""
+        (define my-dict (make-dict (list)))
+        (put my-dict "datum" 10)
+        """)
+        self.assertEqual(len(immutable_dict.values()), 1)
+        self.assertEqual(immutable_dict['datum'], 10)
+
+        mutable_dict = BotlangSystem.run("""
+        (define my-dict (make-dict (list)))
+        (put! my-dict "datum1" 4)
+        (put! my-dict "datum2" 5)
+        my-dict
+        """)
+        self.assertEqual(len(mutable_dict.values()), 2)
+        self.assertEqual(mutable_dict['datum1'], 4)
+        self.assertEqual(mutable_dict['datum2'], 5)
+
     def test_closures(self):
 
         self.assertTrue(BotlangSystem.run('((fun (x) x) #t)'))

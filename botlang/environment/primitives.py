@@ -240,6 +240,7 @@ class BotlangPrimitives(object):
     DICT_OPERATIONS = {
         'make-dict': make_dict,
         'put': dict_put,
+        'put!': dict.__setitem__,
         'get': dict_or_list_get,
         'get-or-nil': get_or_nil,
         'associations': OrderedDict.items,
