@@ -12,9 +12,6 @@ class FunVal(object):
     def apply(self, *args):
         raise NotImplementedError('Must implement apply(*args)')
 
-    def must_be_cached(self):
-        return False
-
 
 class Primitive(FunVal):
     """
@@ -31,15 +28,6 @@ class Primitive(FunVal):
         return '<built-in function {0}>'.format(
             self.env.get_function_name(self)
         )
-
-
-class CachablePrimitive(Primitive):
-    """
-    Special kind of primitive whose returned values must be cached by the
-    evaluator
-    """
-    def must_be_cached(self):
-        return True
 
 
 class InvalidArgumentsException(Exception):
@@ -93,12 +81,14 @@ class BotNodeValue(Closure):
     Bot node (also a lexical closure)
     """
     def __repr__(self):
-        name = self.env.get_function_name(self)
-
+        name = self.name()
         if name is None:
             return '<anonymous bot-node>'
 
         return '<bot-node {0} at {1}>'.format(name, hex(id(self)))
+
+    def name(self):
+        return self.env.get_function_name(self)
 
     def is_terminal(self):
         return False
@@ -121,17 +111,14 @@ class BotResultValue(object):
             self,
             data,
             message,
-            next_node,
-            evaluation_state
+            next_node
     ):
-
         self.data = data
         self.message = message
-        self.execution_state = evaluation_state
 
         if next_node.is_terminal():
             self.next_node = None
             self.bot_state = next_node.state
         else:
-            self.next_node = next_node
+            self.next_node = next_node.name()
             self.bot_state = self.BOT_WAITING_INPUT

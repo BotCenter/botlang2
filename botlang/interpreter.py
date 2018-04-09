@@ -85,7 +85,7 @@ class BotlangSystem(object):
             self,
             bot_code,
             input_msg,
-            evaluation_state=None,
+            next_node=None,
             data=None,
             source_id=None
     ):
@@ -93,11 +93,11 @@ class BotlangSystem(object):
             data = {}
 
         self.environment.last_input_message = input_msg
-        evaluator = Evaluator(
-            evaluation_state=evaluation_state,
-            module_resolver=self.module_resolver
-        )
+        evaluator = Evaluator(module_resolver=self.module_resolver)
         result = self.primitive_eval(bot_code, evaluator, source_id)
+
+        if next_node is not None:
+            return self.environment.lookup(next_node).apply(data)
         if isinstance(result, BotNodeValue):
             return result.apply(data)
         return result

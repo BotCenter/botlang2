@@ -330,8 +330,8 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.RANDOM)
         environment.add_primitives(cls.DATETIME)
         environment.update({'end-node': make_terminal_node('BOT_ENDED')})
-        environment.add_cachable_primitives({
+        environment.add_primitives({
             'input-message': environment.get_last_input_message
         })
-        environment.add_cachable_primitives(cls.HTTP)
+        environment.add_primitives(cls.HTTP)
         return environment

@@ -55,11 +55,6 @@ class Environment(object):
             {key: lambda: value for key, value in node_states.items()}
         )
 
-    def add_cachable_primitives(self, bindings):
-        return self.update(
-            {k: CachablePrimitive(v, self) for k, v in bindings.items()}
-        )
-
     def new_environment(self, bindings=None):
         return Environment(
             bindings if bindings is not None else {},

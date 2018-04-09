@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from botlang.evaluation.values import Nil
 from botlang.examples.example_bots import ExampleBots
 from botlang.interpreter import BotlangSystem
 
@@ -57,176 +56,103 @@ class TestBots(unittest.TestCase):
 
     def test_example_bot(self):
 
-        code = ExampleBots.dog_bot_code
+        code = ExampleBots.bank_bot_code
 
         first_result = BotlangSystem.bot_instance().eval_bot(code, 'hola')
         self.assertEqual(
-            first_result.message,
-            'Bienvenido a Botcenter! ¿Con quién tengo el gusto de hablar?'
+            first_result.message[0],
+            'ENTRY_MESSAGE'
         )
-        self.assertEqual(first_result.data, {})
+        self.assertSequenceEqual(first_result.data.get('nodes-path'), [])
+        self.assertEqual(first_result.bot_state, 'WAITING_INPUT')
 
-        first_execution_state = first_result.execution_state
         second_result = BotlangSystem.bot_instance().eval_bot(
             code,
-            'Juanito',
-            first_execution_state
+            'tengo una emergencia',
+            first_result.next_node,
+            first_result.data
         )
         self.assertEqual(
-            second_result.message,
-            'Mucho gusto Juanito. Indíqueme su RUT, por favor.'
+            second_result.message[0],
+            'EMERGENCIAS_CABECERA'
         )
-        self.assertEqual(len(second_result.data.items()), 1)
-        self.assertEqual(second_result.data.get('name'), 'Juanito')
+        self.assertEqual(len(second_result.data.items()), 2)
+        self.assertSequenceEqual(
+            second_result.data.get('nodes-path'),
+            ['EMERGENCIA']
+        )
+        self.assertEqual(second_result.bot_state, 'WAITING_INPUT')
 
-        second_execution_state = second_result.execution_state
         third_result = BotlangSystem.bot_instance().eval_bot(
             code,
-            '17098131-2',
-            second_execution_state
+            'tuve un problema con mi auto',
+            second_result.next_node,
+            second_result.data
         )
-
-        self.assertEqual(len(third_result.data.items()), 1)
+        self.assertSequenceEqual(
+            third_result.data.get('nodes-path'),
+            ['EMERGENCIA', 'AUTO']
+        )
         self.assertEqual(
-            third_result.message,
-            'Rut inválido. Intente nuevamente.'
+            third_result.message[0],
+            'SIGUIENTES_PASOS'
         )
+        self.assertEqual(third_result.bot_state, 'WAITING_INPUT')
 
-        third_execution_state = third_result.execution_state
         fourth_result = BotlangSystem.bot_instance().eval_bot(
             code,
-            '16926695-6',
-            third_execution_state
+            'No',
+            third_result.next_node,
+            third_result.data
         )
-
-        self.assertEqual(len(fourth_result.data.items()), 2)
-        self.assertEqual(fourth_result.data.get('rut'), '16926695-6')
         self.assertEqual(
-            fourth_result.message,
-            'Muchas gracias. ¿Tiene perro? (si/no)'
+            fourth_result.message['text'],
+            'TE_SIRVIO?'
         )
+        self.assertEqual(fourth_result.bot_state, 'WAITING_INPUT')
 
-        fourth_execution_state = fourth_result.execution_state
-        self.assertEqual(fourth_execution_state.bot_node_steps, 4)
         fifth_result = BotlangSystem.bot_instance().eval_bot(
             code,
-            'bla',
-            fourth_execution_state
+            'Si',
+            fourth_result.next_node,
+            fourth_result.data
         )
         self.assertEqual(
-            fifth_result.message,
-            'Debe responder si o no. ¿Tiene perro?'
+            fifth_result.message[0],
+            'DESPEDIDA'
         )
+        self.assertEqual(fifth_result.bot_state, 'CLOSE_TICKET')
 
-        self.assertEqual(fifth_result.bot_state, 'WAITING_INPUT')
-
-        fifth_execution_state = fifth_result.execution_state
-        self.assertEqual(fifth_execution_state.bot_node_steps, 5)
-        sixth_result = BotlangSystem.bot_instance().eval_bot(
-            code,
-            'no',
-            fifth_execution_state
-        )
-        self.assertEqual(sixth_result.message, 'Miau, Juanito :3')
-        self.assertEqual(sixth_result.bot_state, 'BOT_ENDED')
-
-        alternative_sixth_result = BotlangSystem.bot_instance().eval_bot(
-            code,
-            'si',
-            fifth_execution_state
-        )
-        self.assertEqual(alternative_sixth_result.message, 'Wauf, "Juanito"!')
-
-    def test_primitives_caching(self):
-
-        environment = BotlangSystem.base_environment()
-        code = """
-        [define node-two
-            (bot-node (data)
-                [define washo
-                    (append [input-message] "\n" (get data 'mensajito))
-                ]
-                (node-result
-                    (put data 'washo washo)
-                    washo
-                    end-node
-                )
-            )
-        ]
-        [define some-list (list 1 2 3 4)]
-        [define concatenate
-            (fun (list)
-                [reduce
-                    (fun (acc next) [append (str acc) "\n" (str next)])
-                    list
-                ]
-            )
-        ]
-
-        (bot-node (data)
-            (node-result
-                (put data 'mensajito [concatenate some-list])
-                "Hola"
-                node-two
-            )
-        )
-        """
-        first_result = BotlangSystem(environment).eval_bot(code, 'hola')
-        self.assertEqual(
-            first_result.message,
-            'Hola'
-        )
-        self.assertEqual(
-            first_result.data,
-            {'mensajito': '1\n2\n3\n4'}
-        )
-
-        first_execution_state = first_result.execution_state
-        second_result = BotlangSystem(environment).eval_bot(
-            code,
-            'Miau',
-            first_execution_state
-        )
-        self.assertEqual(
-            second_result.message,
-            'Miau\n1\n2\n3\n4'
-        )
-
-    def test_cache_nil(self):
-
-        environment = BotlangSystem.base_environment()\
-            .add_cachable_primitives({
-                'cached-nil': lambda: Nil
-            })
+    def test_bot_recursion(self):
 
         code = """
-        [define another-node
-            (bot-node (data)
-                (node-result
-                    data
-                    (cached-nil)
-                    end-node
+            [define get-count
+                (function (data)
+                    [define c (get-or-nil data "counter")]
+                    (if (nil? c) 0 c)
                 )
-            )
-        ]
-        (bot-node (data)
-            (if (nil? (cached-nil))
-                (node-result
-                    data
-                    "Nil"
-                    another-node
+            ]
+            [define node1
+                (bot-node (data)
+                    [define count (+ (get-count data) 1)]
+                    (node-result
+                        (put data "counter" count)
+                        count
+                        node1
+                    )
                 )
-                "Not nil"
-            )
-        )
+            ]
+            node1
         """
-        first_result = BotlangSystem(environment).eval_bot(code, '')
-        self.assertEqual(first_result.message, 'Nil')
+        r1 = BotlangSystem.bot_instance().eval_bot(code, '')
+        self.assertEqual(r1.message, 1)
 
-        first_execution_state = first_result.execution_state
-        second_result = BotlangSystem(environment).eval_bot(
-            code,
-            '',
-            first_execution_state
+        r2 = BotlangSystem.bot_instance().eval_bot(
+            code, '', r1.next_node, r1.data
         )
-        self.assertEqual(second_result.message, Nil)
+        self.assertEqual(r2.message, 2)
+
+        r3 = BotlangSystem.bot_instance().eval_bot(
+            code, '', r2.next_node, r2.data
+        )
+        self.assertEqual(r3.message, 3)

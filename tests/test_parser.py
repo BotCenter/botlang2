@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from botlang.parser import Parser, BotLangSyntaxError
+from botlang.parser.bot_definition_checker import InvalidBotDefinitionException
 from botlang.parser.s_expressions import Tree
 
 
@@ -211,3 +212,57 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(function_expr.children[4].code, '"String 3"')
         self.assertEqual(function_expr.children[5].code, 'some-id')
         self.assertEqual(function_expr.children[6].code, '"String 4"')
+
+    def test_bot_definitions(self):
+
+        code = """
+            (bot-node (data)
+                [define message (get [input-message] "message")]
+                (node-result
+                    data
+                    (make-dict
+                        (list
+                            (cons "answer" message)
+                        )
+                    )
+                    end-node
+                )
+            )
+        """
+        Parser.parse(code, None)
+
+        code = """
+            (module "a-bot-module"
+                [define bot1 (bot-node (data) (node-result data "" end-node))]
+                (provide bot1)
+            )
+        """
+        Parser.parse(code, None)
+
+        code = """
+            (define bot1 (bot-node (data) (node-result data "" end-node)))
+        """
+        Parser.parse(code, None)
+
+        code = """
+            (function ()
+                (bot-node (data) (node-result data "" end-node))
+            )
+        """
+        self.assertRaises(
+            InvalidBotDefinitionException,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (bot-node (data)
+                [define bot2
+                    (bot-node (data) (node-result data "" end-node))
+                ]
+                (bot2 data)
+            )
+        """
+        self.assertRaises(
+            InvalidBotDefinitionException,
+            lambda: Parser.parse(code, None)
+        )

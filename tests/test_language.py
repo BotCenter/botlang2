@@ -355,62 +355,6 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(node_result.message, 'Holi, soy Botcito')
         self.assertEqual(node_result.bot_state, 'HOLA')
 
-    def test_evaluation_state(self):
-
-        test_dict = {'value': 0}
-
-        def test_primitive():
-            test_dict['value'] += 1
-            return 'holi'
-
-        code = """
-            (bot-node (data)
-                (test-primitive)
-                (test-primitive)
-                (node-result
-                    data
-                    "Holi"
-                    (bot-node (data)
-                        (test-primitive)
-                        (node-result
-                            data
-                            "Chau"
-                            end-node
-                        )
-                    )
-                )
-            )
-        """
-
-        environment = BotlangSystem.base_environment().add_cachable_primitives(
-            {
-                'test-primitive': test_primitive
-            }
-        )
-        first_node_result = BotlangSystem(environment).eval_bot(code, 'oli bot')
-        self.assertEqual(first_node_result.message, 'Holi')
-        self.assertEqual(test_dict['value'], 2)
-
-        execution_state = first_node_result.execution_state
-        bot_node_steps = execution_state.bot_node_steps
-        primitives_evaluations = execution_state.primitives_values
-        self.assertEqual(bot_node_steps, 1)
-        self.assertEqual(len(primitives_evaluations), 2)
-
-        second_node_result = BotlangSystem(environment).eval_bot(
-            code,
-            'otro mensaje',
-            execution_state
-        )
-        self.assertEqual(second_node_result.message, 'Chau')
-        self.assertEqual(test_dict['value'], 3)
-
-        execution_state = second_node_result.execution_state
-        bot_node_steps = execution_state.bot_node_steps
-        primitives_evaluations = execution_state.primitives_values
-        self.assertEqual(bot_node_steps, 2)
-        self.assertEqual(len(primitives_evaluations), 3)
-
     def test_nil(self):
 
         code = """

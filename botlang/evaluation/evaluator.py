@@ -3,14 +3,6 @@ from botlang.ast.ast_visitor import ASTVisitor
 from botlang.evaluation.values import *
 
 
-class ExecutionState(object):
-
-    def __init__(self, primitives_values, bot_node_steps):
-
-        self.primitives_values = primitives_values
-        self.bot_node_steps = bot_node_steps
-
-
 class ExecutionStack(list):
 
     def print_trace(self):
@@ -36,21 +28,11 @@ class Evaluator(ASTVisitor):
     """
     AST visitor for evaluation
     """
-    def __init__(self, evaluation_state=None, module_resolver=None):
+    def __init__(self, module_resolver=None):
 
         if module_resolver is None:
             raise Exception('Module resolver required')
         self.module_resolver = module_resolver
-
-        if evaluation_state is not None:
-            self.primitives_evaluations = evaluation_state.primitives_values[:]
-            self.bot_result_skips = evaluation_state.bot_node_steps
-        else:
-            self.primitives_evaluations = []
-            self.bot_result_skips = 0
-
-        self.primitive_step = 0
-        self.bot_node_step = 0
         self.execution_stack = ExecutionStack()
 
     def visit_val(self, val_node, env):
@@ -166,34 +148,19 @@ class Evaluator(ASTVisitor):
         """
         Bot result evaluation. Returns a BotResultValue which can be used
         to resume execution in the future.
-
-        If the bot_result_skips number configured for this evaluator is
-        greater or equal than the current bot_node_step, instead of returning
-        a BotResultValue the next node is evaluated immediately.
         """
         self.execution_stack.append(bot_result_node)
         data = bot_result_node.data.accept(self, env)
         message = bot_result_node.message.accept(self, env)
         next_node = bot_result_node.next_node.accept(self, env)
-        self.bot_node_step += 1
 
-        if self.bot_node_step <= self.bot_result_skips:
-            next_node_value = next_node.apply(data)
-            self.execution_stack.pop()
-            return next_node_value
-        else:
-            evaluation_state = ExecutionState(
-                self.primitives_evaluations,
-                self.bot_node_step
-            )
-            bot_result_value = BotResultValue(
-                data,
-                message,
-                next_node,
-                evaluation_state
-            )
-            self.execution_stack.pop()
-            return bot_result_value
+        bot_result_value = BotResultValue(
+            data,
+            message,
+            next_node
+        )
+        self.execution_stack.pop()
+        return bot_result_value
 
     def visit_app(self, app_node, env):
         """
@@ -212,25 +179,6 @@ class Evaluator(ASTVisitor):
             )
 
         arg_vals = [arg.accept(self, env) for arg in app_node.arg_exprs]
-
-        if fun_val.must_be_cached():
-            if self.primitive_step == len(self.primitives_evaluations):
-                return_value = fun_val.apply(*arg_vals)
-                if return_value is Nil:
-                    self.primitives_evaluations.append(None)
-                else:
-                    self.primitives_evaluations.append(return_value)
-                self.primitive_step += 1
-                self.execution_stack.pop()
-                return return_value
-            else:
-                return_value = self.primitives_evaluations[self.primitive_step]
-                if return_value is None:
-                    return_value = Nil
-                self.primitive_step += 1
-                self.execution_stack.pop()
-                return return_value
-
         self.execution_stack.pop()
         return fun_val.apply(*arg_vals)
 

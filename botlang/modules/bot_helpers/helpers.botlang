@@ -45,46 +45,6 @@
         )
     ]
 
-    [define ask-with-retries
-        [function
-            (
-                data
-                message
-                validation-fun
-                input-id
-                next-node-fun
-                max-retries
-                retry-msg
-                exit-result-fun
-            )
-            (define validate-input-node
-                [bot-node (data)
-                    (define to-validate [input-message])
-                    (define is-valid? [validation-fun to-validate])
-                    (if is-valid?
-                        (next-node-fun (put data input-id to-validate))
-                        (begin
-                            (define counter (get data '__retries-counter))
-                            (if (>= counter max-retries)
-                                (exit-result-fun data)
-                                (node-result
-                                    (put data '__retries-counter (+ counter 1))
-                                    retry-msg
-                                    validate-input-node
-                                )
-                            )
-                        )
-                    )
-                ]
-            )
-            (node-result
-                (put data '__retries-counter 0)
-                message
-                validate-input-node
-            )
-        ]
-    ]
-
     [define option
         (function (key description node)
             (list key description node)
@@ -142,100 +102,10 @@
         )
     ]
 
-    [define node-selection
-        [function
-            (
-                data
-                message
-                list-of-options
-            )
-            [define failure-node
-                (bot-node (data)
-                    (node-result
-                        data
-                        (format-options
-                            data
-                            "Opción inválida. Elige entre:"
-                            list-of-options
-                        )
-                        selection-node
-                    )
-                )
-            ]
-            [define selection-node
-                (bot-node (data)
-                    [define input-option (input-message)]
-                    [define find-fun
-                        (fun (option) [equal? (str (get option 0)) input-option])
-                    ]
-                    [define selected-option (find find-fun list-of-options)]
-                    (if (nil? selected-option)
-                        (failure-node data)
-                        ((get selected-option 2) data)
-                    )
-                )
-            ]
-            (node-result
-                data
-                (if (list? message)
-                    (extend
-                        (init message)
-                        (format-options data (last message) list-of-options)
-                    )
-                    (format-options data message list-of-options)
-                )
-                selection-node
-            )
-        ]
-    ]
-
-    [define node-yes-no
-        [function
-            (
-                data
-                initial-message
-                choose-node-message
-                yes-node
-                no-node
-            )
-            [define choose-node-message (append choose-node-message " (si/no)")]
-            [define selection-node
-                (bot-node (data)
-                    (if (equal? (plain [input-message]) "si")
-                        (yes-node data)
-                        (if (equal? (plain [input-message]) "no")
-                            (no-node data)
-                            (node-result
-                                data
-                                (append
-                                    "Opción inválida.\n\n"
-                                    choose-node-message
-                                )
-                                selection-node
-                            )
-                        )
-                    )
-                )
-            ]
-            (node-result
-                data
-                (append
-                    initial-message
-                    "\n\n"
-                    choose-node-message
-                )
-                selection-node
-            )
-        ]
-    ]
-
     (provide
         validate-rut
         option
-        ask-with-retries
         in-options
-        node-selection
-        node-yes-no
         format-simple-list
     )
 )

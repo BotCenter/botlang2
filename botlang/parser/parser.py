@@ -2,6 +2,7 @@ import base64
 import hashlib
 import re
 
+from botlang.parser.bot_definition_checker import BotDefinitionChecker
 from botlang.parser.s_expressions import *
 from botlang.parser.source_reference import SourceReference
 
@@ -30,10 +31,19 @@ class Parser(object):
             return cached_asts
 
         s_expressions = Parser(code, source_id).s_expressions()
-        abstract_syntax_trees = [s_expr.to_ast() for s_expr in s_expressions]
+        abstract_syntax_trees = [
+            cls.s_expr_to_ast(s_expr) for s_expr in s_expressions
+        ]
         cls.asts_cache[code_id] = abstract_syntax_trees
 
         return abstract_syntax_trees
+
+    @classmethod
+    def s_expr_to_ast(cls, s_expr):
+
+        ast = s_expr.to_ast()
+        ast.accept(BotDefinitionChecker(), None)
+        return ast
 
     FIND_STRINGS_REGEX = re.compile(r'"(?:\\"|[^"])*?"')
 
@@ -48,7 +58,7 @@ class Parser(object):
         self.hash_strings()
         self.code = self.remove_comments(self.code)
 
-    REMOVE_COMMENTS_REGEX = re.compile(r"[^;]*(;.*)")
+    REMOVE_COMMENTS_REGEX = re.compile(r"(;+.*)")
 
     def remove_comments(self, code):
 

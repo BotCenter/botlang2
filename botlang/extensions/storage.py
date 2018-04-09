@@ -54,7 +54,7 @@ class LocalStorageExtension(object):
     @classmethod
     def apply(cls, botlang_system, db_implementation):
 
-        botlang_system.environment.add_cachable_primitives({
+        botlang_system.environment.add_primitives({
             'localdb-put': db_implementation.put,
             'localdb-get': db_implementation.get,
             'localdb-get-or-else': db_implementation.get_or_else,
@@ -68,7 +68,7 @@ class GlobalStorageExtension(object):
     @classmethod
     def apply(cls, botlang_system, db_implementation):
 
-        botlang_system.environment.add_cachable_primitives({
+        botlang_system.environment.add_primitives({
             'globaldb-put': db_implementation.put,
             'globaldb-get': db_implementation.get,
             'globaldb-get-or-else': db_implementation.get_or_else,
@@ -82,7 +82,7 @@ class CacheExtension(object):
     @classmethod
     def apply(cls, botlang_system, cache_implementation):
 
-        botlang_system.environment.add_cachable_primitives({
+        botlang_system.environment.add_primitives({
             'cache-put': cache_implementation.put,
             'cache-get': cache_implementation.get,
             'cache-get-or-else': cache_implementation.get_or_else,
