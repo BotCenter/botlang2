@@ -233,8 +233,7 @@ class BotlangPrimitives(object):
         'cons': cons,
         'reverse': lambda l: l[::-1],
         'enumerate': lambda l: list(enumerate(l)),
-        'sum': sum,
-        'list?': lambda l: isinstance(l, list)
+        'sum': sum
     }
 
     DICT_OPERATIONS = {
@@ -275,6 +274,15 @@ class BotlangPrimitives(object):
         'str': str,
         'num': float,
         'int': int
+    }
+
+    TYPE_CHECKING = {
+        'bool?': lambda b: isinstance(b, bool),
+        'str?': lambda s: isinstance(s, str),
+        'num?': lambda n:
+            isinstance(n, (float, int)) and not isinstance(n, bool),
+        'int?': lambda i: isinstance(i, int) and not isinstance(i, bool),
+        'list?': lambda l: isinstance(l, list)
     }
 
     # SIDE_EFFECTS = {
@@ -324,6 +332,7 @@ class BotlangPrimitives(object):
         environment.add_primitives(cls.PREDICATES)
         environment.add_primitives(cls.STRING_OPERATIONS)
         environment.add_primitives(cls.TYPE_CONVERSION)
+        environment.add_primitives(cls.TYPE_CHECKING)
         # environment.add_primitives(cls.SIDE_EFFECTS)
         environment.add_primitives(cls.TERMINAL_NODES)
         environment.add_primitives(cls.BASE64)
