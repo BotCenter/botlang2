@@ -156,3 +156,11 @@ class TestBots(unittest.TestCase):
             code, '', r2.next_node, r2.data
         )
         self.assertEqual(r3.message, 3)
+
+        r = r3
+        for i in range(0, 10):
+            r = BotlangSystem.bot_instance().eval_bot(
+                code, '', r.next_node, r.data
+            )
+
+        self.assertEqual(r.message, 13)
