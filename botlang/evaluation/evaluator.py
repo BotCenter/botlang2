@@ -164,10 +164,7 @@ class Evaluator(ASTVisitor):
 
     def visit_app(self, app_node, env):
         """
-        Function application evaluation. If the function being applied is a
-        primitive we check if its value is already stored in this evaluator.
-        If it's not, then the value is computed and stored in the
-        primitives_evaluation list.
+        Function application evaluation.
         """
         self.execution_stack.append(app_node)
         fun_val = app_node.fun_expr.accept(self, env)
@@ -179,8 +176,9 @@ class Evaluator(ASTVisitor):
             )
 
         arg_vals = [arg.accept(self, env) for arg in app_node.arg_exprs]
+        result = fun_val.apply(*arg_vals)
         self.execution_stack.pop()
-        return fun_val.apply(*arg_vals)
+        return result
 
     def visit_body(self, body_node, env):
         """

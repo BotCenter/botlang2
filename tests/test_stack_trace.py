@@ -21,8 +21,9 @@ class StackTraceTestCase(unittest.TestCase):
         """
         try:
             BotlangSystem().eval(code)
+            self.fail('Should not reach this')
         except BotlangErrorException as e:
-            self.assertEqual(len(e.stack), 4)
+            self.assertEqual(len(e.stack), 5)
             self.assertTrue(
                 e.print_stack_trace().endswith('3 is not a function')
             )
@@ -46,3 +47,12 @@ class StackTraceTestCase(unittest.TestCase):
             BotlangSystem().eval(code)
         except BotlangErrorException as e:
             self.assertEqual(len(e.stack), 2)
+
+    def test_primitives_exception(self):
+
+        try:
+            BotlangSystem().eval('(+ (list 1) #f)')
+            self.fail('Should not reach this')
+        except BotlangErrorException as e:
+            self.assertEqual(len(e.stack), 1)
+            print(e.print_stack_trace())
