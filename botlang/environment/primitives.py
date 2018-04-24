@@ -1,6 +1,7 @@
 import base64
 import bz2
 import math
+import random
 import re
 from functools import *
 import operator as op
@@ -190,7 +191,8 @@ class BotlangPrimitives(object):
         'sqrt': math.sqrt,
         'tan': math.tan,
         'tanh': math.tanh,
-        'trunc': math.trunc
+        'trunc': math.trunc,
+        'random': random.randint
     }
 
     UNARY_OPERATORS = {
