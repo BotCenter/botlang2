@@ -297,7 +297,8 @@ class BotlangPrimitives(object):
 
     HTTP = {
         'http-get': http_get,
-        'http-post': http_post
+        'http-post': http_post,
+        'http-post-form': http_post_form
     }
 
     BASE64 = {
