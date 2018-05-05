@@ -72,6 +72,25 @@ class BotlangTestCase(unittest.TestCase):
             3
         )
 
+        another_test_code = """
+            (define dict (make-dict (list)))
+            (cond
+                [(equal? sup 1) (put! dict "sup" 1)]
+                [(< sup dawg) (put! dict "dawg" 2)]
+            )
+            dict
+        """
+        environment = BotlangSystem.base_environment().update(
+            {'sup': 1, 'dawg': 2}
+        )
+        self.assertEqual(
+            BotlangSystem(environment).eval(another_test_code).get('sup'),
+            1
+        )
+        self.assertIsNone(
+            BotlangSystem(environment).eval(another_test_code).get('dawg')
+        )
+
     def test_primitive_application(self):
 
         self.assertTrue(BotlangSystem.run('(not #f)'))

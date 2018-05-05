@@ -32,6 +32,11 @@ def dict_put(ordered_dict, key, value):
     )
 
 
+def dict_put_mutate(ordered_dict, key, value):
+    ordered_dict[key] = value
+    return value
+
+
 def get_or_nil(data_struct, key):
     try:
         return data_struct[key]
@@ -241,7 +246,7 @@ class BotlangPrimitives(object):
     DICT_OPERATIONS = {
         'make-dict': make_dict,
         'put': dict_put,
-        'put!': dict.__setitem__,
+        'put!': dict_put_mutate,
         'get': dict_or_list_get,
         'get-or-nil': get_or_nil,
         'associations': OrderedDict.items,
