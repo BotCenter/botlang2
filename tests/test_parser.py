@@ -14,14 +14,12 @@ class ParserTestCase(unittest.TestCase):
         self.assertTrue(Parser('(a [b] (c {d}))').s_expressions())
         self.assertTrue(Parser('(ab [c e (e) {a}] [d])').s_expressions())
 
-        self.assertRaises(
-            BotLangSyntaxError,
-            lambda: Parser('(a))').s_expressions()
-        )
-        self.assertRaises(
-            BotLangSyntaxError,
-            lambda: Parser('([][]}').s_expressions()
-        )
+        with self.assertRaises(BotLangSyntaxError) as cm:
+            Parser('(a))').s_expressions()
+        self.assertTrue('parentheses' in cm.exception.args[0])
+        self.assertTrue('excess' in cm.exception.args[0])
+        self.assertTrue('line 1' in cm.exception.args[0])
+
         self.assertRaises(
             BotLangSyntaxError,
             lambda: Parser('{[[]}').s_expressions()
@@ -30,6 +28,32 @@ class ParserTestCase(unittest.TestCase):
             BotLangSyntaxError,
             lambda: Parser(')ab(').s_expressions()
         )
+        with self.assertRaises(BotLangSyntaxError) as cm:
+            Parser("""
+            (
+                ([][]}
+            )
+            """).s_expressions()
+        self.assertTrue("don't match, line 3" in cm.exception.args[0])
+
+        with self.assertRaises(BotLangSyntaxError) as cm:
+            Parser("""
+            (define f (function (x)
+                ((* x x)
+            ))
+            (f 4)
+            """).s_expressions()
+        self.assertTrue('not closed, line 6' in cm.exception.args[0])
+
+        with self.assertRaises(BotLangSyntaxError) as cm:
+            Parser("""
+            (define f (function (x)
+                (* x x)
+            )))
+            (f 4)
+            """).s_expressions()
+        self.assertTrue('excess' in cm.exception.args[0])
+        self.assertTrue('line 4' in cm.exception.args[0])
 
     def test_comments(self):
 

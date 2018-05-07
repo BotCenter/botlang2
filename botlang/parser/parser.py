@@ -115,10 +115,10 @@ class Parser(object):
             SExpression.CLOSING_PARENS.index(closed_paren)
 
     @classmethod
-    def raise_unbalanced_parens(cls, line):
+    def raise_unbalanced_parens(cls, reason, line):
 
         raise BotLangSyntaxError(
-            'unbalanced parentheses, line {0}'.format(line)
+            'Unbalanced parentheses: {}, line {}'.format(reason, line)
         )
 
     @classmethod
@@ -166,9 +166,15 @@ class Parser(object):
                 try:
                     start_index, start_line, paren = parens_stack.pop()
                     if not self.parens_match(paren, char):
-                        self.raise_unbalanced_parens(current_line)
+                        self.raise_unbalanced_parens(
+                            "opening and closing symbols don't match",
+                            current_line
+                        )
                 except IndexError:
-                    self.raise_unbalanced_parens(current_line)
+                    self.raise_unbalanced_parens(
+                        'excess closing symbol',
+                        current_line
+                    )
 
                 if len(parens_stack) == 0:
                     code = self.restore_code(
@@ -200,6 +206,6 @@ class Parser(object):
                 )
 
         if len(parens_stack) > 0:
-            self.raise_unbalanced_parens(current_line)
+            self.raise_unbalanced_parens('not closed', current_line)
 
         return s_expressions
