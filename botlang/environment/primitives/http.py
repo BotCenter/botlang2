@@ -37,3 +37,10 @@ def http_post_json(url, json, headers=None):
 def http_post(url, json, headers=None):
 
     return http_post_json(url, json, headers)
+
+
+HTTP_PRIMITIVES = {
+    'http-get': http_get,
+    'http-post': http_post,
+    'http-post-form': http_post_form
+}

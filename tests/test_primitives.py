@@ -2,7 +2,7 @@ import unittest
 
 import math
 
-from botlang.environment.primitives import divide_text
+from botlang.environment.primitives.strings import divide_text
 from botlang.interpreter import BotlangSystem
 
 
@@ -265,4 +265,3 @@ class BotlangTestCase(unittest.TestCase):
         for index in range(iterations):
             value = BotlangSystem().eval('(random 0 5)')
             self.assertTrue(0 <= value <= 5)
-
