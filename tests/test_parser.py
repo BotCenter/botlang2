@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
+
+from botlang import BotlangSystem
 from botlang.parser import Parser, BotLangSyntaxError
 from botlang.parser.bot_definition_checker import InvalidBotDefinitionException
 from botlang.parser.s_expressions import Tree
@@ -236,6 +238,20 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(function_expr.children[4].code, '"String 3"')
         self.assertEqual(function_expr.children[5].code, 'some-id')
         self.assertEqual(function_expr.children[6].code, '"String 4"')
+
+    def test_more_strings(self):
+
+        code = """
+        (replace
+            (replace (replace message "-" "") " " "")
+            "+"
+            ""
+        )
+        (put data "a" "b c")
+        """
+        s_exprs = Parser(code).s_expressions()
+        print(s_exprs[1])
+        self.assertEqual(s_exprs[1].children[2].code, '"a"')
 
     def test_bot_definitions(self):
 

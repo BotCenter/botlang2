@@ -32,6 +32,10 @@ class Atom(SExpression):
         self.code = token
         self.source_reference = source_reference
 
+    def __repr__(self):
+
+        return 'Atom({})'.format(self.code)
+
     def accept(self, visitor):
         return visitor.visit_atom(self)
 
@@ -158,6 +162,10 @@ class Tree(SExpression):
         self.code = code
         self.source_reference = source_reference
         self.quoted = quoted
+
+    def __repr__(self):
+
+        return 'Tree({})'.format(self.children)
 
     def accept(self, visitor):
         return visitor.visit_tree(self)
