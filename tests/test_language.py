@@ -175,7 +175,8 @@ class BotlangTestCase(unittest.TestCase):
             )
         )
         """)
-        self.assertEqual(dict_keys, expected_dict.keys())
+        self.assertTrue(isinstance(dict_keys, list))
+        self.assertEqual(dict_keys, list(expected_dict.keys()))
 
         dict_values = BotlangSystem.run("""
         (values
@@ -187,7 +188,8 @@ class BotlangTestCase(unittest.TestCase):
             )
         )
         """)
-        self.assertEqual(list(dict_values), list(expected_dict.values()))
+        self.assertTrue(isinstance(dict_values, list))
+        self.assertEqual(dict_values, list(expected_dict.values()))
 
         dict_associations = BotlangSystem.run("""
         (associations
@@ -199,7 +201,8 @@ class BotlangTestCase(unittest.TestCase):
             )
         )
         """)
-        self.assertEqual(dict_associations, expected_dict.items())
+        self.assertTrue(isinstance(dict_associations, list))
+        self.assertEqual(dict_associations, list(expected_dict.items()))
 
         immutable_dict = BotlangSystem.run("""
         (define my-dict (make-dict (list)))

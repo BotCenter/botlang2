@@ -79,9 +79,9 @@ DICT_OPERATIONS = {
     'make-dict': make_dict,
     'put': dict_put,
     'put!': dict_put_mutate,
-    'associations': OrderedDict.items,
-    'keys': OrderedDict.keys,
-    'values': OrderedDict.values
+    'associations': lambda d: list(d.items()),
+    'keys': lambda d: list(d.keys()),
+    'values': lambda d: list(d.values())
 }
 
 
