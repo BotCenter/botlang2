@@ -204,7 +204,14 @@ class Parser(object):
             token = s_expr_string[last_index:].strip()
             if len(token) > 0:
                 s_expressions.append(
-                    Atom(self.restore_token(token), current_line)
+                    Atom(
+                        self.restore_token(token),
+                        SourceReference(
+                            self.source_id,
+                            current_line,
+                            current_line
+                        )
+                    )
                 )
 
         if len(parens_stack) > 0:

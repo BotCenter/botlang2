@@ -218,6 +218,10 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(end_node_sexpr.source_reference.start_line, 6)
         self.assertEqual(end_node_sexpr.source_reference.end_line, 6)
 
+        code3 = '(stuff data)'
+        sexpr = Parser(code3).s_expressions()
+        self.assertEqual(sexpr[0].children[1].source_reference.start_line, 1)
+
     def test_code_string_information(self):
 
         code = """

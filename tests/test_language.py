@@ -1,7 +1,7 @@
 import unittest
 from collections import OrderedDict
 
-from botlang import Environment
+from botlang import BotlangErrorException
 from botlang.interpreter import BotlangSystem
 from botlang.evaluation.evaluator import Primitive
 from botlang.evaluation.values import BotResultValue
@@ -253,10 +253,21 @@ class BotlangTestCase(unittest.TestCase):
                 return 1
             return fibonacci(n - 1) + fibonacci(n - 2)
 
+        def test_stuff(d, key):
+            return {}.get(key, [key])
+
         runtime = BotlangSystem()
-        runtime.environment.add_primitives({'fibo': fibonacci})
+        runtime.environment.add_primitives({
+            'fibo': fibonacci,
+            'stuff': test_stuff
+        })
         self.assertEqual(runtime.eval('(fibo 4)'), 3)
         self.assertEqual(runtime.eval('(fibo 7)'), 13)
+
+        with self.assertRaises(BotlangErrorException) as e:
+            runtime.eval('(stuff data)')
+
+        self.assertTrue('data' in e.exception.print_stack_trace())
 
     def test_nesting(self):
 
