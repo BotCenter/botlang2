@@ -30,7 +30,7 @@ class BotlangErrorException(BotlangException):
         if isinstance(self.message, str):
             return self.message
         else:
-            return self.message.__str__
+            return self.message.__str__()
 
 
 class BotlangAssertionException(BotlangException):

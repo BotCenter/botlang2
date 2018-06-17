@@ -246,7 +246,6 @@ class BotlangTestCase(unittest.TestCase):
 
         def fibonacci(n):
             assert n >= 0
-
             if n == 0:
                 return 0
             if n == 1:
@@ -256,18 +255,33 @@ class BotlangTestCase(unittest.TestCase):
         def test_stuff(d, key):
             return {}.get(key, [key])
 
+        def i_explode():
+            raise Exception('Boom!')
+
+        def i_explode_a_lot():
+            raise Exception(lambda: 'Boom')
+
         runtime = BotlangSystem()
         runtime.environment.add_primitives({
             'fibo': fibonacci,
-            'stuff': test_stuff
+            'stuff': test_stuff,
+            'explosion': i_explode,
+            'kaboom': i_explode_a_lot,
         })
         self.assertEqual(runtime.eval('(fibo 4)'), 3)
         self.assertEqual(runtime.eval('(fibo 7)'), 13)
 
         with self.assertRaises(BotlangErrorException) as e:
             runtime.eval('(stuff data)')
-
         self.assertTrue('data' in e.exception.print_stack_trace())
+
+        with self.assertRaises(BotlangErrorException) as e:
+            runtime.eval('(explosion)')
+        self.assertTrue('Boom!' in e.exception.print_stack_trace())
+
+        with self.assertRaises(BotlangErrorException) as e:
+            runtime.eval('(kaboom)')
+        self.assertTrue('lambda' in str(e.exception))
 
     def test_nesting(self):
 
