@@ -221,6 +221,16 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(mutable_dict['datum1'], 4)
         self.assertEqual(mutable_dict['datum2'], 5)
 
+        mutable_dict = BotlangSystem.run("""
+        (define my-dict (make-dict (list)))
+        (put! my-dict "datum1" 4)
+        (put! my-dict "datum2" 5)
+        (remove! my-dict "datum2")
+        my-dict
+        """)
+        self.assertEqual(len(mutable_dict.values()), 1)
+        self.assertEqual(mutable_dict['datum1'], 4)
+
     def test_closures(self):
 
         self.assertTrue(BotlangSystem.run('((fun (x) x) #t)'))

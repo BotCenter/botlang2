@@ -65,6 +65,11 @@ def dict_has_key(data_dict, key):
         return Nil
 
 
+def dict_remove_mutable(data_dict, key):
+    data_dict.pop(key, None)
+    return data_dict
+
+
 def make_dict(bindings):
     return OrderedDict(bindings)
 
@@ -77,6 +82,7 @@ COMMON_OPERATIONS = {
 
 DICT_OPERATIONS = {
     'make-dict': make_dict,
+    'remove!': dict_remove_mutable,
     'put': dict_put,
     'put!': dict_put_mutate,
     'associations': lambda d: list(d.items()),
