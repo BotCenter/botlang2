@@ -55,4 +55,3 @@ class StackTraceTestCase(unittest.TestCase):
             self.fail('Should not reach this')
         except BotlangErrorException as e:
             self.assertEqual(len(e.stack), 1)
-            print(e.print_stack_trace())

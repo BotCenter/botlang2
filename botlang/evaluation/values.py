@@ -12,6 +12,9 @@ class FunVal(object):
     def apply(self, *args):
         raise NotImplementedError('Must implement apply(*args)')
 
+    def is_reflective(self):
+        return False
+
 
 class Primitive(FunVal):
     """
@@ -28,6 +31,17 @@ class Primitive(FunVal):
         return '<built-in function {0}>'.format(
             self.env.get_function_name(self)
         )
+
+
+class ReflectivePrimitive(Primitive):
+    """
+    Function that has direct access to the current environment
+    """
+    def apply(self, evaluation_env, *args):
+        return self.proc(evaluation_env, *args)
+
+    def is_reflective(self):
+        return True
 
 
 class InvalidArgumentsException(Exception):

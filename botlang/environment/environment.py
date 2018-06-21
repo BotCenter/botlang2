@@ -49,6 +49,11 @@ class Environment(object):
             {k: Primitive(v, self) for k, v in bindings.items()}
         )
 
+    def add_reflective_primitives(self, bindings):
+        return self.update(
+            {k: ReflectivePrimitive(v, self) for k, v in bindings.items()}
+        )
+
     def add_terminal_nodes(self, node_states):
 
         return self.add_primitives(

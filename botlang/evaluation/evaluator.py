@@ -175,7 +175,10 @@ class Evaluator(ASTVisitor):
             )
 
         arg_vals = [arg.accept(self, env) for arg in app_node.arg_exprs]
-        result = fun_val.apply(*arg_vals)
+        if fun_val.is_reflective():
+            result = fun_val.apply(env, *arg_vals)
+        else:
+            result = fun_val.apply(*arg_vals)
         self.execution_stack.pop()
         return result
 

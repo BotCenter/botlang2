@@ -2,7 +2,7 @@ import operator as op
 
 
 from botlang.environment.primitives import math, http, collections, strings, \
-    compression, base64, random, datetime
+    compression, base64, random, datetime, reflection
 from botlang.evaluation.values import Nil, TerminalNode
 
 
@@ -98,5 +98,6 @@ class BotlangPrimitives(object):
         environment.add_primitives({
             'input-message': environment.get_last_input_message
         })
+        environment.add_reflective_primitives(reflection.REFLECTIVE_PRIMITIVES)
 
         return environment

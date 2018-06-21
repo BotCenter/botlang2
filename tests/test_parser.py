@@ -254,7 +254,6 @@ class ParserTestCase(unittest.TestCase):
         (put data "a" "b c")
         """
         s_exprs = Parser(code).s_expressions()
-        print(s_exprs[1])
         self.assertEqual(s_exprs[1].children[2].code, '"a"')
 
     def test_bot_definitions(self):
