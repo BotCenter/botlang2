@@ -96,7 +96,7 @@ class BotlangPrimitives(object):
 
         environment.update({'end-node': make_terminal_node('BOT_ENDED')})
         environment.add_primitives({
-            'input-message': environment.get_last_input_message
+            'input-message': environment.get_last_input_message     # Legacy
         })
         environment.add_reflective_primitives(reflection.REFLECTIVE_PRIMITIVES)
 

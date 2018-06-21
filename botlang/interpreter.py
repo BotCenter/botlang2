@@ -92,14 +92,14 @@ class BotlangSystem(object):
         if data is None:
             data = {}
 
-        self.environment.last_input_message = input_msg
+        self.environment.last_input_message = input_msg     # Legacy
         evaluator = Evaluator(module_resolver=self.module_resolver)
         result = self.primitive_eval(bot_code, evaluator, source_id)
 
         if next_node:
             return self.environment.lookup(next_node).apply(data)
         if isinstance(result, BotNodeValue):
-            return result.apply(data)
+            return result.apply(data, input_msg)
         return result
 
     @classmethod

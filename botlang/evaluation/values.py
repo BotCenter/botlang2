@@ -94,6 +94,12 @@ class BotNodeValue(Closure):
     """
     Bot node (also a lexical closure)
     """
+    def apply(self, context, message=None):
+        if message is not None and len(self.params) == 2:
+            return super(BotNodeValue, self).apply(context, message)
+        else:
+            return super(BotNodeValue, self).apply(context)
+
     def __repr__(self):
         name = self.name()
         if name is None:
