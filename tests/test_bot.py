@@ -46,6 +46,9 @@ class TestBots(unittest.TestCase):
         result = BotlangSystem.bot_instance().eval_bot(code, 'Hola')
         self.assertEqual(result.message, 'node2: node1: Hola')
 
+        result = BotlangSystem.bot_instance().eval_bot(code, 'Hola', 'node2')
+        self.assertEqual(result.message, 'node2: Hola')
+
     def test_dict_messages(self):
 
         code = """

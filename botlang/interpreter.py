@@ -97,7 +97,7 @@ class BotlangSystem(object):
         result = self.primitive_eval(bot_code, evaluator, source_id)
 
         if next_node:
-            return self.environment.lookup(next_node).apply(data)
+            return self.environment.lookup(next_node).apply(data, input_msg)
         if isinstance(result, BotNodeValue):
             return result.apply(data, input_msg)
         return result
