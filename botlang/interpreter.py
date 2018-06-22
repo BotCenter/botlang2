@@ -66,15 +66,29 @@ class BotlangSystem(object):
 
         return GlobalStorageExtension.apply(self, db_implementation)
 
-    def primitive_eval(self, code_string, evaluator, source_id):
+    def parse(self, code_string, source_id):
 
         ast_seq = Parser.parse(code_string, source_id)
+        expanded_asts = self.expand_macros(ast_seq)
+        return expanded_asts
+
+    def expand_macros(self, ast_seq):
+
         from botlang.macros.default_macros import DefaultMacros
         macro_environment = DefaultMacros.get_environment()
         expanded_asts = [
             ast.accept(MacroExpander(), macro_environment) for ast in ast_seq
         ]
-        return self.interpret(expanded_asts, evaluator, self.environment)
+        return expanded_asts
+
+    def primitive_eval(self, code_string, evaluator, source_id):
+
+        expanded_asts = self.parse(code_string, source_id)
+        return self.primitive_eval_ast(expanded_asts, evaluator)
+
+    def primitive_eval_ast(self, ast_seq, evaluator):
+
+        return self.interpret(ast_seq, evaluator, self.environment)
 
     def eval(self, code_string, source_id=None):
 
@@ -89,12 +103,22 @@ class BotlangSystem(object):
             data=None,
             source_id=None
     ):
+        ast_seq = self.parse(bot_code, source_id)
+        return self.eval_bot_ast(ast_seq, input_msg, next_node, data)
+
+    def eval_bot_ast(
+            self,
+            bot_ast,
+            input_msg,
+            next_node=None,
+            data=None
+    ):
         if data is None:
             data = {}
 
         self.environment.last_input_message = input_msg     # Legacy
         evaluator = Evaluator(module_resolver=self.module_resolver)
-        result = self.primitive_eval(bot_code, evaluator, source_id)
+        result = self.primitive_eval_ast(bot_ast, evaluator)
 
         if next_node:
             return self.environment.lookup(next_node).apply(data, input_msg)
