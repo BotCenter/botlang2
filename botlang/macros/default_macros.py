@@ -4,6 +4,8 @@ from botlang.macros.macro_expander import MacroExpander
 
 class DefaultMacros(object):
 
+    DEFAULT_MACROS_SOURCE_ID = '<DEFAULT_MACROS>'
+
     MACROS = Parser.parse("""
         (define-syntax-rule (defun name args body)
             (define name (function args body))
@@ -12,7 +14,7 @@ class DefaultMacros(object):
         (define-syntax-rule (bot name args body)
             (define name (bot-node args body))
         )
-    """, source_id='<default macros>')
+    """, source_id='<DEFAULT_MACROS>')
 
     @classmethod
     def get_environment(cls):

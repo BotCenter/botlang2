@@ -7,9 +7,14 @@ class ExecutionStack(list):
 
     def print_trace(self):
 
+        from botlang.macros.default_macros import DefaultMacros
         return reduce(
             lambda a, n: a + n + '\n',
-            [self.frame_message(frame) for frame in self],
+            [
+                self.frame_message(frame) for frame in self
+                if frame.s_expr.source_reference.source_id !=
+                DefaultMacros.DEFAULT_MACROS_SOURCE_ID
+            ],
             ''
         )
 
