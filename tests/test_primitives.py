@@ -265,3 +265,31 @@ class BotlangTestCase(unittest.TestCase):
         for index in range(iterations):
             value = BotlangSystem().eval('(random 0 5)')
             self.assertTrue(0 <= value <= 5)
+
+    def test_exceptions(self):
+        self.assertFalse(BotlangSystem().eval('(exception? #t)'))
+        self.assertFalse(BotlangSystem().eval('(exception? nil)'))
+        self.assertTrue(BotlangSystem().eval('(exception? (get (make-dict (list)) 1))'))
+
+        complex_botlang = r"""
+        [defun process () (get (make-dict (list)) 1)]
+        [defun failure (arg) () ]
+        (try-catch process failure)
+        """
+
+        try:
+            result = BotlangSystem.run(complex_botlang)
+            self.assertEqual(result, None)
+        except Exception:
+            self.fail("Try-catch failed")
+
+        complex_botlang = r"""
+        [define context (make-dict (list))]
+        [defun process () (get (make-dict (list)) 1)]
+        [defun failure (arg) (put! context 'error' arg) ]
+        (try-catch-verbose process failure)
+        (get context 'error')
+        """
+
+        result = BotlangSystem.run(complex_botlang)
+        self.assertEqual(result.name[0], 'collection')

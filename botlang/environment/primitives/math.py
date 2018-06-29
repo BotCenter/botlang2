@@ -1,6 +1,7 @@
 import math
 
 MATH_PRIMITIVES = {
+    'abs': abs,
     'acos': math.acos,
     'acosh': math.acosh,
     'asin': math.asin,
