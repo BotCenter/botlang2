@@ -6,7 +6,7 @@ def is_exception(value):
 
 
 def try_catch_complete(process, failure,
-                       after_execution=lambda: None, prod=False):
+                       after_execution=lambda: None, prod=True):
     exception = None
     try:
         value = process()
@@ -27,11 +27,11 @@ def try_catch_complete(process, failure,
 
 
 def public_try_catch(process, failure, after_execution=lambda: None):
-    try_catch_complete(process, failure, after_execution, False)
+    try_catch_complete(process, failure, after_execution, True)
 
 
 def develop_try_catch(process, failure, after_execution=lambda: None):
-    try_catch_complete(process, failure, after_execution, True)
+    try_catch_complete(process, failure, after_execution, False)
 
 
 EXCEPTION_PRIMITIVES = {

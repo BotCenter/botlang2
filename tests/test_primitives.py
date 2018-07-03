@@ -271,6 +271,8 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(BotlangSystem().eval('(exception? nil)'))
         self.assertTrue(BotlangSystem().eval('(exception? (get (make-dict (list)) 1))'))
 
+        # Botlang errors
+
         complex_botlang = r"""
         [defun process () (get (make-dict (list)) 1)]
         [defun failure (arg) () ]
@@ -293,3 +295,31 @@ class BotlangTestCase(unittest.TestCase):
 
         result = BotlangSystem.run(complex_botlang)
         self.assertEqual(result.name[0], 'collection')
+        self.assertEqual(result.description, ('The collection doest not '
+                                              'have the key/index {}.'
+                                              ).format('1'))
+
+        # Python errors
+
+        complex_botlang = r"""
+        [define context (make-dict (list))]
+        [defun fatal-error () (/ 1 0)]
+        [defun failure (arg) (put! context 'error' arg) ]
+        (try-catch fatal-error failure)
+        (get context 'error')
+        """
+        result = BotlangSystem.run(complex_botlang)
+        self.assertEqual(result.name[0], 'system')
+        self.assertEqual(result.description, 'system')
+
+        complex_botlang = r"""
+        [define context (make-dict (list))]
+        [defun fatal-error () (/ 1 0)]
+        [defun failure (arg) (put! context 'error' arg) ]
+        (try-catch-verbose fatal-error failure)
+        (get context 'error')
+        """
+        result = BotlangSystem.run(complex_botlang)
+        self.assertEqual(result.name[0], 'system')
+        self.assertRegex(result.description, 'Exception')
+        self.assertRegex(result.description, 'division by zero')
