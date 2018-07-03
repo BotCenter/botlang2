@@ -55,10 +55,13 @@ def get_or_nil(data_struct, key):
 
 
 def dict_or_list_get(data_dict, key):
-    return data_dict.get(key, NativeException('collection',
-                                              ('The collection doest not '
-                                               'have the key/index {}.'
-                                               ).format(key)))
+    try:
+        return data_dict[key]
+    except (KeyError, IndexError):
+        return NativeException('collection',
+                               ('The collection doest not '
+                                'have the key/index {}.'
+                                ).format(key))
 
 
 def dict_remove_mutable(data_dict, key):

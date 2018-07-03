@@ -270,13 +270,15 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(BotlangSystem().eval('(exception? #t)'))
         self.assertFalse(BotlangSystem().eval('(exception? nil)'))
         self.assertTrue(BotlangSystem().eval('(exception? (get (make-dict (list)) 1))'))
+        self.assertFalse(BotlangSystem().eval('(exception? (get (list 1) 0))'))
+        self.assertTrue(BotlangSystem().eval('(exception? (get (list 1) 1))'))
 
-        # Botlang errors
+        # Catching process
 
         complex_botlang = r"""
-        [defun process () (get (make-dict (list)) 1)]
+        [defun fatal-error () (/ 1 0)]
         [defun failure (arg) () ]
-        (try-catch process failure)
+        (try-catch fatal-error failure)
         """
 
         try:
