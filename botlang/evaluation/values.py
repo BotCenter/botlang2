@@ -7,7 +7,7 @@ class NativeException(object):
     Object representation of a botlang exception.
     """
     def __init__(self, name='Exception', description='exception'):
-        self.name = name,
+        self.name = name
         self.description = description
 
     def get_type(self):

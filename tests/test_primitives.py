@@ -296,7 +296,7 @@ class BotlangTestCase(unittest.TestCase):
         """
 
         result = BotlangSystem.run(complex_botlang)
-        self.assertEqual(result.name[0], 'collection')
+        self.assertEqual(result.name, 'collection')
         self.assertEqual(result.description, ('The collection doest not '
                                               'have the key/index {}.'
                                               ).format('1'))
@@ -311,7 +311,7 @@ class BotlangTestCase(unittest.TestCase):
         (get context 'error')
         """
         result = BotlangSystem.run(complex_botlang)
-        self.assertEqual(result.name[0], 'system')
+        self.assertEqual(result.name, 'system')
         self.assertEqual(result.description, 'system')
 
         complex_botlang = r"""
@@ -322,6 +322,6 @@ class BotlangTestCase(unittest.TestCase):
         (get context 'error')
         """
         result = BotlangSystem.run(complex_botlang)
-        self.assertEqual(result.name[0], 'system')
+        self.assertEqual(result.name, 'system')
         self.assertRegex(result.description, 'Exception')
         self.assertRegex(result.description, 'division by zero')
