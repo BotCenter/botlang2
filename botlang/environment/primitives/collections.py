@@ -2,7 +2,7 @@ import operator as op
 from collections import OrderedDict
 from functools import reduce, cmp_to_key
 
-from botlang.evaluation.values import Nil
+from botlang.evaluation.values import Nil, NativeException
 
 
 def append(*values):
@@ -55,14 +55,13 @@ def get_or_nil(data_struct, key):
 
 
 def dict_or_list_get(data_dict, key):
-    return data_dict[key]
-
-
-def dict_has_key(data_dict, key):
     try:
         return data_dict[key]
-    except:
-        return Nil
+    except (KeyError, IndexError):
+        return NativeException('collection',
+                               ('The collection doest not '
+                                'have the key/index {}.'
+                                ).format(key))
 
 
 def dict_remove_mutable(data_dict, key):
