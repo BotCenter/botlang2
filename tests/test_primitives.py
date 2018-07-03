@@ -290,9 +290,9 @@ class BotlangTestCase(unittest.TestCase):
         complex_botlang = r"""
         [define context (make-dict (list))]
         [defun process () (get (make-dict (list)) 1)]
-        [defun failure (arg) (put! context 'error' arg) ]
+        [defun failure (arg) (put! context "error" arg) ]
         (try-catch-verbose process failure)
-        (get context 'error')
+        (get context "error")
         """
 
         result = BotlangSystem.run(complex_botlang)
@@ -306,9 +306,9 @@ class BotlangTestCase(unittest.TestCase):
         complex_botlang = r"""
         [define context (make-dict (list))]
         [defun fatal-error () (/ 1 0)]
-        [defun failure (arg) (put! context 'error' arg) ]
+        [defun failure (arg) (put! context "error" arg) ]
         (try-catch fatal-error failure)
-        (get context 'error')
+        (get context "error")
         """
         result = BotlangSystem.run(complex_botlang)
         self.assertEqual(result.name, 'system')
@@ -317,11 +317,29 @@ class BotlangTestCase(unittest.TestCase):
         complex_botlang = r"""
         [define context (make-dict (list))]
         [defun fatal-error () (/ 1 0)]
-        [defun failure (arg) (put! context 'error' arg) ]
+        [defun failure (arg) (put! context "error" arg) ]
         (try-catch-verbose fatal-error failure)
-        (get context 'error')
+        (get context "error")
         """
         result = BotlangSystem.run(complex_botlang)
         self.assertEqual(result.name, 'system')
         self.assertRegex(result.description, 'Exception')
         self.assertRegex(result.description, 'division by zero')
+
+        # Finally use
+
+        complex_botlang = r"""
+        [define context (make-dict (list))]
+        [defun fatal-error () (/ 1 0)]
+        [defun failure (arg) (put! context "error" arg) ]
+        [defun finally () (put! context "success" "Finally called")]
+        (try-catch-verbose fatal-error failure finally)
+        context
+        """
+        result = BotlangSystem.run(complex_botlang)
+        error = result.get('error')
+        finally_result = result.get('success')
+        self.assertEqual(error.name, 'system')
+        self.assertRegex(error.description, 'Exception')
+        self.assertRegex(error.description, 'division by zero')
+        self.assertEqual(finally_result, 'Finally called')
