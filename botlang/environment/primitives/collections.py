@@ -69,7 +69,10 @@ def dict_remove_mutable(data_dict, key):
     return data_dict
 
 
-def make_dict(bindings):
+def make_dict(bindings=None):
+
+    if bindings is None:
+        bindings = []
     return OrderedDict(bindings)
 
 

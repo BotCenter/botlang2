@@ -130,6 +130,11 @@ class BotlangTestCase(unittest.TestCase):
 
     def test_dictionaries(self):
 
+        self.assertEqual(
+            BotlangSystem.run('(make-dict)'),
+            OrderedDict([])
+        )
+
         computed_dict = BotlangSystem.run("""
         (make-dict '[
                 (holi "chao")
