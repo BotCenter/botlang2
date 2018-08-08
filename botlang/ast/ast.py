@@ -311,6 +311,54 @@ class BodySequence(ASTNode):
         ).add_code_reference(self.s_expr)
 
 
+class ClassDefinition(ASTNode):
+
+    def __init__(self, class_name, members):
+        """
+        :param class_name: string
+        :param members: List[ClassMemberDefinition]
+        """
+        super(ASTNode, self).__init__()
+        self.name = class_name
+        self.members = members
+
+    def accept(self, visitor, env):
+        return visitor.visit_class_definition(self, env)
+
+    def print_node_type(self):
+        return 'class definition'
+
+    def copy(self):
+        return ClassDefinition(
+            self.name,
+            self.members
+        ).add_code_reference(self.s_expr)
+
+
+class ClassMemberDefinition(ASTNode):
+
+    def __init__(self, member_id, value):
+        """
+        :param member_id: string
+        :param value: ASTNode
+        """
+        super(ASTNode, self).__init__()
+        self.identifier = member_id
+        self.value = value
+
+    def accept(self, visitor, env):
+        return visitor.visit_class_member_definition(self, env)
+
+    def print_node_type(self):
+        return 'class member definition'
+
+    def copy(self):
+        return ClassDefinition(
+            self.identifier,
+            self.value
+        ).add_code_reference(self.s_expr)
+
+
 class ModuleDefinition(ASTNode):
     """
     Module definition

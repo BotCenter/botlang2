@@ -2,7 +2,7 @@ import operator as op
 
 
 from botlang.environment.primitives import math, http, collections, strings, \
-    compression, base64, random, datetime, reflection, exceptions
+    compression, base64, random, datetime, reflection, exceptions, oop
 from botlang.evaluation.values import Nil, TerminalNode
 
 
@@ -83,7 +83,8 @@ class BotlangPrimitives(object):
         http.HTTP_PRIMITIVES,
         base64.EXPORT_FUNCTIONS,
         compression.EXPORT_FUNCTIONS,
-        exceptions.EXCEPTION_PRIMITIVES
+        exceptions.EXCEPTION_PRIMITIVES,
+        oop.OOP_PRIMITIVES
     ]
 
     @classmethod

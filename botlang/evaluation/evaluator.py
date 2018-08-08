@@ -99,6 +99,20 @@ class Evaluator(ASTVisitor):
         self.execution_stack.pop()
         return value
 
+    def visit_class_definition(self, class_node, env):
+
+        self.execution_stack.append(class_node)
+        class_obj = {
+            'members': {
+                member.identifier: member.value.accept(self, env)
+                for member in class_node.members
+            }
+        }
+        env.update(
+            {class_node.name: class_obj}
+        )
+        self.execution_stack.pop()
+
     def visit_and(self, and_node, env):
         """
         Logical 'and' evaluation

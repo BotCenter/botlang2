@@ -1,4 +1,5 @@
 from botlang.ast import *
+from botlang.ast import ClassDefinition, ClassMemberDefinition
 
 
 class ASTVisitor(object):
@@ -161,6 +162,26 @@ class ASTVisitor(object):
             [defn.accept(self, env) for defn in local_node.definitions],
             local_node.body.accept(self, env)
         ).add_code_reference(local_node.s_expr)
+
+    def visit_class_definition(self, class_node, env):
+        """
+        :param class_node: ast.ClassDefinition
+        :param env: Environment
+        """
+        return ClassDefinition(
+            class_node.name,
+            [member.accept(self, env) for member in class_node.members]
+        )
+
+    def visit_class_member_definition(self, class_member_node, env):
+        """
+        :param class_member_node:
+        :param env:
+        """
+        return ClassMemberDefinition(
+            class_member_node.identifier,
+            class_member_node.value.accept(self, env)
+        )
 
     def visit_module_definition(self, module_node, env):
         """

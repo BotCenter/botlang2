@@ -201,6 +201,9 @@ class Tree(SExpression):
         if first == 'cond':
             return self.cond_node()
 
+        if first == 'defclass':
+            return self.class_definition_node()
+
         if first == 'and':
             return self.and_node()
 
@@ -288,6 +291,19 @@ class Tree(SExpression):
         return CondPredicateClause(
             self.children[0].to_ast(),
             self.children[1].to_ast()
+        ).add_code_reference(self)
+
+    def class_definition_node(self):
+
+        return ClassDefinition(
+            self.children[1].code,
+            [
+                ClassMemberDefinition(
+                    child.children[0].code,
+                    child.children[1].to_ast()
+                )
+                for child in self.children[2:]
+            ]
         ).add_code_reference(self)
 
     def and_node(self):
