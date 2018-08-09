@@ -18,10 +18,15 @@ def call_method(obj, method_name, *args):
     return OopHelper.call_method(obj, method_name, *args)
 
 
+def call_parent_method(obj, method_name, *args):
+    return OopHelper.call_parent_method(obj, method_name, *args)
+
+
 OOP_PRIMITIVES = {
     'new': new_instance,
     '@!': set_attribute,
     '@': get_attribute,
     '@@': call_method,
-    'send': call_method
+    'send': call_method,
+    'super': call_parent_method
 }

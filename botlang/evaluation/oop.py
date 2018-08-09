@@ -110,3 +110,11 @@ class OopHelper(object):
             method = cls.method_lookup(class_obj, method_name)
 
         return method(obj, *args)
+
+    @classmethod
+    def call_parent_method(cls, obj, method_name, *args):
+
+        superclass_obj = obj[CLASS_REFERENCE_KEY][SUPERCLASS_KEY]
+        method = cls.method_lookup(superclass_obj, method_name)
+
+        return method(obj, *args)

@@ -56,10 +56,11 @@ class BotlangClassesTestCase(TestCase):
 
     TEST_HIERARCHY_2 = """
     (defclass Product
-        [attributes id name price]
+        [attributes id category name price]
         [methods
-            (init (fun (self id name price)
+            (init (fun (self id category name price)
                 (@! self "id" id)
+                (@! self "category" category)
                 (@! self "name" name)
                 (@! self "price" price)
             ))
@@ -82,17 +83,6 @@ class BotlangClassesTestCase(TestCase):
             ))
         ]
     )
-    
-    (define cart (new ShoppingCart))
-    (map
-        (fun (product) (send cart "add-product" product))
-        (list
-            (new Product "id1" "Producto 1" 1000)
-            (new Product "id2" "Producto 2" 3000)
-            (new Product "id3" "Producto 3" 2000)
-        )
-    )
-    (send cart "get-products")
     """
 
     def test_class_definition(self):
@@ -191,9 +181,45 @@ class BotlangClassesTestCase(TestCase):
 
     def test_attributes(self):
 
-        p1, p2, p3 = BotlangSystem.run(self.TEST_HIERARCHY_2)
-        self.assertEqual(len(p1.keys()), 4)
+        code = """{}
+        (define cart (new ShoppingCart))
+        (map
+            (fun (product) (send cart "add-product" product))
+            (list
+                (new Product "id1" "food" "Producto 1" 1000)
+                (new Product "id2" "food" "Producto 2" 3000)
+                (new Product "id3" "food" "Producto 3" 2000)
+            )
+        )
+        (send cart "get-products")
+        """.format(self.TEST_HIERARCHY_2)
+
+        p1, p2, p3 = BotlangSystem.run(code)
+        self.assertEqual(len(p1.keys()), 5)
         self.assertEqual(p1['id'], 'id1')
+        self.assertEqual(p1['category'], 'food')
         self.assertEqual(p1['name'], 'Producto 1')
         self.assertEqual(p1['price'], 1000)
         self.assertEqual(p1[CLASS_REFERENCE_KEY], 'Product')
+
+    def test_super(self):
+
+        code = """{}
+        (defclass Wine
+            (extends Product)
+            (methods
+                (init (fun (self id name price)
+                    (super self "init" id "wine" name price)
+                ))
+            )
+        )
+        (send (new Wine "gato1" "Gato" 2000) "serialize")
+        """.format(self.TEST_HIERARCHY_2)
+
+        wine = BotlangSystem.run(code)
+        self.assertEqual(len(wine.keys()), 5)
+        self.assertEqual(wine['id'], 'gato1')
+        self.assertEqual(wine['category'], 'wine')
+        self.assertEqual(wine['name'], 'Gato')
+        self.assertEqual(wine['price'], 2000)
+        self.assertEqual(wine[CLASS_REFERENCE_KEY], 'Wine')
