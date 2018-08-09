@@ -1,5 +1,6 @@
 from functools import reduce
 from botlang.ast.ast_visitor import ASTVisitor
+from botlang.evaluation.oop import OopHelper
 from botlang.evaluation.values import *
 
 
@@ -102,12 +103,22 @@ class Evaluator(ASTVisitor):
     def visit_class_definition(self, class_node, env):
 
         self.execution_stack.append(class_node)
-        class_obj = {
-            'members': {
-                member.identifier: member.value.accept(self, env)
-                for member in class_node.members
-            }
+        superclass_obj = OopHelper.class_lookup(class_node.superclass, env)
+        methods = {
+            member.identifier: member.definition.accept(self, env)
+            for member in class_node.methods
         }
+        attributes = {
+            attr.identifier: attr.definition.accept(self, env)
+            if attr.definition else Nil
+            for attr in class_node.attributes
+        }
+        class_obj = OopHelper.build_class(
+            class_node.name,
+            superclass_obj,
+            attributes,
+            methods
+        )
         env.update(
             {class_node.name: class_obj}
         )

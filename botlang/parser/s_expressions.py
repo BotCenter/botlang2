@@ -1,5 +1,6 @@
 import ast as python_ast
 from botlang.ast.ast import *
+from botlang.evaluation.oop import OopHelper
 
 
 class SExpression(object):
@@ -295,16 +296,60 @@ class Tree(SExpression):
 
     def class_definition_node(self):
 
+        properties = self.children[2:]
+        try:
+            extends = [
+                expr.children[1].code
+                for expr in properties if expr.children[0].code == 'extends'
+            ]
+            superclass = extends[0]
+        except IndexError:
+            superclass = OopHelper.BASE_CLASS_NAME
+
+        attributes = self.get_instance_attributes(properties)
+        methods = self.get_methods(properties)
+
         return ClassDefinition(
             self.children[1].code,
-            [
-                ClassMemberDefinition(
+            superclass,
+            attributes,
+            methods,
+        ).add_code_reference(self)
+
+    @classmethod
+    def get_instance_attributes(cls, class_properties):
+        try:
+            attributes_def = [
+                expr.children[1:] for expr in class_properties
+                if expr.children[0].code == 'attributes'
+            ][0]
+            return [
+                InstanceAttributeDefinition(
                     child.children[0].code,
                     child.children[1].to_ast()
-                )
-                for child in self.children[2:]
+                ) if child.is_tree()
+                else InstanceAttributeDefinition(child.code, None)
+                for child in attributes_def
             ]
-        ).add_code_reference(self)
+        except IndexError:
+            return []
+
+    @classmethod
+    def get_methods(cls, class_properties):
+        try:
+            return [
+                [
+                    MethodDefinition(
+                        child.children[0].code,
+                        child.children[1].to_ast()
+                    )
+                    for child in expr.children[1:]
+                ]
+                for expr in class_properties
+                if expr.children[0].code == 'methods'
+            ][0]
+        except IndexError:
+            return []
 
     def and_node(self):
 

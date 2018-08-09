@@ -313,14 +313,18 @@ class BodySequence(ASTNode):
 
 class ClassDefinition(ASTNode):
 
-    def __init__(self, class_name, members):
+    def __init__(self, class_name, superclass_name, attributes, methods):
         """
         :param class_name: string
-        :param members: List[ClassMemberDefinition]
+        :param superclass_name: string
+        :param attributes: List[InstanceAttributeDefinition]
+        :param methods: List[MethodDefinition]
         """
         super(ASTNode, self).__init__()
         self.name = class_name
-        self.members = members
+        self.superclass = superclass_name
+        self.attributes = attributes
+        self.methods = methods
 
     def accept(self, visitor, env):
         return visitor.visit_class_definition(self, env)
@@ -331,31 +335,57 @@ class ClassDefinition(ASTNode):
     def copy(self):
         return ClassDefinition(
             self.name,
-            self.members
+            self.superclass,
+            self.attributes,
+            self.methods
         ).add_code_reference(self.s_expr)
 
 
-class ClassMemberDefinition(ASTNode):
+class InstanceAttributeDefinition(ASTNode):
 
-    def __init__(self, member_id, value):
+    def __init__(self, identifier, attribute_definition):
         """
-        :param member_id: string
-        :param value: ASTNode
+        :param identifier: string
+        :param attribute_definition: ASTNode
         """
         super(ASTNode, self).__init__()
-        self.identifier = member_id
-        self.value = value
+        self.identifier = identifier
+        self.definition = attribute_definition
 
     def accept(self, visitor, env):
-        return visitor.visit_class_member_definition(self, env)
+        return visitor.visit_instance_attribute(self, env)
 
     def print_node_type(self):
-        return 'class member definition'
+        return 'instance attribute definition'
 
     def copy(self):
-        return ClassDefinition(
+        return InstanceAttributeDefinition(
             self.identifier,
-            self.value
+            self.definition
+        ).add_code_reference(self.s_expr)
+
+
+class MethodDefinition(ASTNode):
+
+    def __init__(self, identifier, function_definition):
+        """
+        :param identifier: string
+        :param function_definition: Fun
+        """
+        super(ASTNode, self).__init__()
+        self.identifier = identifier
+        self.definition = function_definition
+
+    def accept(self, visitor, env):
+        return visitor.visit_method_definition(self, env)
+
+    def print_node_type(self):
+        return 'method definition'
+
+    def copy(self):
+        return MethodDefinition(
+            self.identifier,
+            self.definition
         ).add_code_reference(self.s_expr)
 
 

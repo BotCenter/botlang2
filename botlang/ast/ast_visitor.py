@@ -1,5 +1,6 @@
 from botlang.ast import *
-from botlang.ast import ClassDefinition, ClassMemberDefinition
+from botlang.ast import ClassDefinition, MethodDefinition, \
+    InstanceAttributeDefinition
 
 
 class ASTVisitor(object):
@@ -170,17 +171,30 @@ class ASTVisitor(object):
         """
         return ClassDefinition(
             class_node.name,
-            [member.accept(self, env) for member in class_node.members]
+            class_node.superclass,
+            [attr.accept(self, env) for attr in class_node.attributes],
+            [method.accept(self, env) for method in class_node.methods]
         )
 
-    def visit_class_member_definition(self, class_member_node, env):
+    def visit_instance_attribute(self, attribute_node, env):
         """
-        :param class_member_node:
-        :param env:
+        :param attribute_node: ast.InstanceAttributeDefinition
+        :param env: Environment
         """
-        return ClassMemberDefinition(
-            class_member_node.identifier,
-            class_member_node.value.accept(self, env)
+        definition_ast = attribute_node.definition
+        return InstanceAttributeDefinition(
+            attribute_node.identifier,
+            definition_ast.accept(self, env) if definition_ast else None
+        )
+
+    def visit_method_definition(self, method_node, env):
+        """
+        :param method_node: ast.MethodDefinition
+        :param env: Environment
+        """
+        return MethodDefinition(
+            method_node.identifier,
+            method_node.definition.accept(self, env)
         )
 
     def visit_module_definition(self, module_node, env):
