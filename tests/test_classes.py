@@ -94,7 +94,7 @@ class BotlangClassesTestCase(TestCase):
         # Superclass is Object
         self.assertEqual(
             car_class[SUPERCLASS_KEY][CLASS_NAME_KEY],
-            OopHelper.BASE_CLASS_NAME
+            OopHelper.OBJECT_CLASS_NAME
         )
 
         attributes = car_class[INSTANCE_ATTRS_KEY]
@@ -223,3 +223,33 @@ class BotlangClassesTestCase(TestCase):
         self.assertEqual(wine['name'], 'Gato')
         self.assertEqual(wine['price'], 2000)
         self.assertEqual(wine[CLASS_REFERENCE_KEY], 'Wine')
+
+    def test_class_side(self):
+
+        code = """
+        (defclass Singleton
+            [attributes (data 10)]
+            [class-attributes instance]
+            [class-methods
+                (get-instance (fun (cls)
+                    (define instance (@ cls "instance"))
+                    (if (nil? instance)
+                        (begin
+                            (define new-instance (new cls))
+                            (@! cls "instance" new-instance)
+                            new-instance
+                        )
+                        instance
+                    )
+                ))
+            ]
+        )
+        (list
+            (send Singleton "get-instance")
+            (send Singleton "get-instance")
+            (send Singleton "get-instance")
+        )
+        """
+        i1, i2, i3 = BotlangSystem.run(code)
+        self.assertTrue(i1 is i2)
+        self.assertTrue(i2 is i3)

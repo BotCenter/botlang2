@@ -1,6 +1,6 @@
 from botlang.ast import *
 from botlang.ast import ClassDefinition, MethodDefinition, \
-    InstanceAttributeDefinition
+    AttributeDefinition
 
 
 class ASTVisitor(object):
@@ -173,7 +173,9 @@ class ASTVisitor(object):
             class_node.name,
             class_node.superclass,
             [attr.accept(self, env) for attr in class_node.attributes],
-            [method.accept(self, env) for method in class_node.methods]
+            [method.accept(self, env) for method in class_node.methods],
+            [attr.accept(self, env) for attr in class_node.class_attributes],
+            [method.accept(self, env) for method in class_node.class_methods]
         )
 
     def visit_instance_attribute(self, attribute_node, env):
@@ -182,7 +184,7 @@ class ASTVisitor(object):
         :param env: Environment
         """
         definition_ast = attribute_node.definition
-        return InstanceAttributeDefinition(
+        return AttributeDefinition(
             attribute_node.identifier,
             definition_ast.accept(self, env) if definition_ast else None
         )

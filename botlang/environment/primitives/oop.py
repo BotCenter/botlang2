@@ -6,12 +6,11 @@ def new_instance(cls, *args):
 
 
 def get_attribute(obj, attribute_name):
-    return obj[attribute_name]
+    return OopHelper.get_attribute(obj, attribute_name)
 
 
 def set_attribute(obj, attribute_name, value):
-    obj[attribute_name] = value
-    return obj
+    return OopHelper.set_attribute(obj, attribute_name, value)
 
 
 def call_method(obj, method_name, *args):

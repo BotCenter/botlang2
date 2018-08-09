@@ -297,45 +297,62 @@ class Tree(SExpression):
     def class_definition_node(self):
 
         properties = self.children[2:]
-        try:
-            extends = [
-                expr.children[1].code
-                for expr in properties if expr.children[0].code == 'extends'
-            ]
-            superclass = extends[0]
-        except IndexError:
-            superclass = OopHelper.BASE_CLASS_NAME
+        superclass = self.get_superclass(properties)
 
         attributes = self.get_instance_attributes(properties)
-        methods = self.get_methods(properties)
+        class_attributes = self.get_class_attributes(properties)
+
+        methods = self.get_instance_methods(properties)
+        class_methods = self.get_class_methods(properties)
 
         return ClassDefinition(
             self.children[1].code,
             superclass,
             attributes,
             methods,
+            class_attributes,
+            class_methods
         ).add_code_reference(self)
 
     @classmethod
-    def get_instance_attributes(cls, class_properties):
+    def get_superclass(cls, properties):
+        try:
+            extends = [
+                expr.children[1].code
+                for expr in properties if expr.children[0].code == 'extends'
+            ]
+            return extends[0]
+        except IndexError:
+            return OopHelper.OBJECT_CLASS_NAME
+
+    @classmethod
+    def get_attributes(cls, class_properties, attributes_key):
         try:
             attributes_def = [
                 expr.children[1:] for expr in class_properties
-                if expr.children[0].code == 'attributes'
+                if expr.children[0].code == attributes_key
             ][0]
             return [
-                InstanceAttributeDefinition(
+                AttributeDefinition(
                     child.children[0].code,
                     child.children[1].to_ast()
                 ) if child.is_tree()
-                else InstanceAttributeDefinition(child.code, None)
+                else AttributeDefinition(child.code, None)
                 for child in attributes_def
             ]
         except IndexError:
             return []
 
     @classmethod
-    def get_methods(cls, class_properties):
+    def get_instance_attributes(cls, class_properties):
+        return cls.get_attributes(class_properties, 'attributes')
+
+    @classmethod
+    def get_class_attributes(cls, class_properties):
+        return cls.get_attributes(class_properties, 'class-attributes')
+
+    @classmethod
+    def get_methods(cls, class_properties, methods_key):
         try:
             return [
                 [
@@ -346,10 +363,18 @@ class Tree(SExpression):
                     for child in expr.children[1:]
                 ]
                 for expr in class_properties
-                if expr.children[0].code == 'methods'
+                if expr.children[0].code == methods_key
             ][0]
         except IndexError:
             return []
+
+    @classmethod
+    def get_instance_methods(cls, class_properties):
+        return cls.get_methods(class_properties, 'methods')
+
+    @classmethod
+    def get_class_methods(cls, class_properties):
+        return cls.get_methods(class_properties, 'class-methods')
 
     def and_node(self):
 

@@ -113,11 +113,22 @@ class Evaluator(ASTVisitor):
             if attr.definition else Nil
             for attr in class_node.attributes
         }
+        class_attributes = {
+            attr.identifier: attr.definition.accept(self, env)
+            if attr.definition else Nil
+            for attr in class_node.class_attributes
+        }
+        class_methods = {
+            member.identifier: member.definition.accept(self, env)
+            for member in class_node.class_methods
+        }
         class_obj = OopHelper.build_class(
             class_node.name,
             superclass_obj,
             attributes,
-            methods
+            methods,
+            class_attributes,
+            class_methods
         )
         env.update(
             {class_node.name: class_obj}

@@ -313,18 +313,30 @@ class BodySequence(ASTNode):
 
 class ClassDefinition(ASTNode):
 
-    def __init__(self, class_name, superclass_name, attributes, methods):
+    def __init__(
+            self,
+            class_name,
+            superclass_name,
+            attributes,
+            methods,
+            class_attributes,
+            class_methods
+    ):
         """
         :param class_name: string
         :param superclass_name: string
         :param attributes: List[InstanceAttributeDefinition]
         :param methods: List[MethodDefinition]
+        :param class_attributes: List[InstanceAttributeDefinition]
+        :param class_methods: List[MethodDefinition]
         """
         super(ASTNode, self).__init__()
         self.name = class_name
         self.superclass = superclass_name
         self.attributes = attributes
         self.methods = methods
+        self.class_attributes = class_attributes
+        self.class_methods = class_methods
 
     def accept(self, visitor, env):
         return visitor.visit_class_definition(self, env)
@@ -337,11 +349,13 @@ class ClassDefinition(ASTNode):
             self.name,
             self.superclass,
             self.attributes,
-            self.methods
+            self.methods,
+            self.class_attributes,
+            self.class_methods
         ).add_code_reference(self.s_expr)
 
 
-class InstanceAttributeDefinition(ASTNode):
+class AttributeDefinition(ASTNode):
 
     def __init__(self, identifier, attribute_definition):
         """
@@ -356,10 +370,10 @@ class InstanceAttributeDefinition(ASTNode):
         return visitor.visit_instance_attribute(self, env)
 
     def print_node_type(self):
-        return 'instance attribute definition'
+        return 'attribute definition'
 
     def copy(self):
-        return InstanceAttributeDefinition(
+        return AttributeDefinition(
             self.identifier,
             self.definition
         ).add_code_reference(self.s_expr)
