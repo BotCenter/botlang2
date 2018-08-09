@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from botlang import BotlangSystem
-from botlang.evaluation.oop import OopHelper
+from botlang.evaluation.oop import OopHelper, CLASS_REFERENCE_KEY, \
+    INSTANCE_ATTRS_KEY, CLASS_NAME_KEY, SUPERCLASS_KEY, METHODS_KEY
 from botlang.evaluation.values import FunVal
 
 
@@ -61,15 +62,15 @@ class BotlangClassesTestCase(TestCase):
 
         # Superclass is Object
         self.assertEqual(
-            car_class[OopHelper.SUPERCLASS_KEY][OopHelper.CLASS_NAME_KEY],
+            car_class[SUPERCLASS_KEY][CLASS_NAME_KEY],
             OopHelper.BASE_CLASS_NAME
         )
 
-        attributes = car_class[OopHelper.INSTANCE_ATTRS_KEY]
+        attributes = car_class[INSTANCE_ATTRS_KEY]
         self.assertEqual(attributes['wheels'], 4)
         self.assertEqual(attributes['speed'], 0)
 
-        methods = car_class[OopHelper.METHODS_KEY]
+        methods = car_class[METHODS_KEY]
         self.assertTrue(isinstance(methods['accelerate'], FunVal))
 
     def test_class_instance(self):
@@ -85,9 +86,9 @@ class BotlangClassesTestCase(TestCase):
         (cons Car my-car)
         """.format(self.TEST_CLASS)
         car_class, car_instance = BotlangSystem.run(code)
-        self.assertEqual(car_class[OopHelper.INSTANCE_ATTRS_KEY]['speed'], 0)
+        self.assertEqual(car_class[INSTANCE_ATTRS_KEY]['speed'], 0)
         self.assertEqual(car_instance['speed'], 2)
-        self.assertEqual(car_instance[OopHelper.CLASS_REFERENCE_KEY], car_class)
+        self.assertEqual(car_instance[CLASS_REFERENCE_KEY], car_class)
 
     def test_method_invocation(self):
 
@@ -130,3 +131,19 @@ class BotlangClassesTestCase(TestCase):
         car, plane = BotlangSystem.run(code)
         self.assertEqual(car['speed'], 3)
         self.assertEqual(plane['speed'], 15)
+
+    def test_default_serialize_method(self):
+
+        code = """{}
+        (define car (new Car))
+        (cons car (send car "serialize"))
+        """.format(self.TEST_CLASS)
+
+        car, serialized_car = BotlangSystem.run(code)
+        self.assertEqual(len(car.items()), len(serialized_car.items()))
+        self.assertEqual(
+            serialized_car[CLASS_REFERENCE_KEY],
+            car[CLASS_REFERENCE_KEY][CLASS_NAME_KEY]
+        )
+        self.assertEqual(car['speed'], serialized_car['speed'])
+        self.assertEqual(car['wheels'], serialized_car['wheels'])
