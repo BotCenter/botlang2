@@ -68,7 +68,7 @@ class OopHelper(object):
                 acc_attrs[key] = value
             return acc_attrs
         else:
-            return class_obj[INSTANCE_ATTRS_KEY]
+            return copy.deepcopy(class_obj[INSTANCE_ATTRS_KEY])
 
     @classmethod
     def create_instance(cls, class_ref, *args):

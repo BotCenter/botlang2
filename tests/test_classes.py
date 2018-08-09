@@ -54,6 +54,47 @@ class BotlangClassesTestCase(TestCase):
     )
     """
 
+    TEST_HIERARCHY_2 = """
+    (defclass Product
+        [attributes id name price]
+        [methods
+            (init (fun (self id name price)
+                (@! self "id" id)
+                (@! self "name" name)
+                (@! self "price" price)
+            ))
+        ]
+    )
+    
+    (defclass ShoppingCart
+        [attributes
+            (products (make-dict))
+        ]
+        [methods
+            (add-product (fun (self product)
+                (put! (@ self "products") (@ product "id") product)
+            ))
+            (get-products (fun (self)
+                (map
+                    (fun (product) (send product "serialize"))
+                    (values (@ self "products"))
+                )
+            ))
+        ]
+    )
+    
+    (define cart (new ShoppingCart))
+    (map
+        (fun (product) (send cart "add-product" product))
+        (list
+            (new Product "id1" "Producto 1" 1000)
+            (new Product "id2" "Producto 2" 3000)
+            (new Product "id3" "Producto 3" 2000)
+        )
+    )
+    (send cart "get-products")
+    """
+
     def test_class_definition(self):
 
         code = '{} Car'.format(self.TEST_CLASS)
@@ -147,3 +188,12 @@ class BotlangClassesTestCase(TestCase):
         )
         self.assertEqual(car['speed'], serialized_car['speed'])
         self.assertEqual(car['wheels'], serialized_car['wheels'])
+
+    def test_attributes(self):
+
+        p1, p2, p3 = BotlangSystem.run(self.TEST_HIERARCHY_2)
+        self.assertEqual(len(p1.keys()), 4)
+        self.assertEqual(p1['id'], 'id1')
+        self.assertEqual(p1['name'], 'Producto 1')
+        self.assertEqual(p1['price'], 1000)
+        self.assertEqual(p1[CLASS_REFERENCE_KEY], 'Product')
