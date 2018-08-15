@@ -7,7 +7,6 @@ from botlang.evaluation.values import BotNodeValue
 from botlang.exceptions.exceptions import *
 from botlang.extensions.storage import LocalStorageExtension, \
     GlobalStorageExtension, CacheExtension
-from botlang.macros.macro_expander import MacroExpander
 from botlang.modules.resolver import ModuleResolver
 from botlang.parser import Parser
 
@@ -66,24 +65,9 @@ class BotlangSystem(object):
 
         return GlobalStorageExtension.apply(self, db_implementation)
 
-    def parse(self, code_string, source_id):
-
-        ast_seq = Parser.parse(code_string, source_id)
-        expanded_asts = self.expand_macros(ast_seq)
-        return expanded_asts
-
-    def expand_macros(self, ast_seq):
-
-        from botlang.macros.default_macros import DefaultMacros
-        macro_environment = DefaultMacros.get_environment()
-        expanded_asts = [
-            ast.accept(MacroExpander(), macro_environment) for ast in ast_seq
-        ]
-        return expanded_asts
-
     def primitive_eval(self, code_string, evaluator, source_id):
 
-        expanded_asts = self.parse(code_string, source_id)
+        expanded_asts = Parser.parse(code_string, source_id)
         return self.primitive_eval_ast(expanded_asts, evaluator)
 
     def primitive_eval_ast(self, ast_seq, evaluator):
@@ -103,7 +87,7 @@ class BotlangSystem(object):
             data=None,
             source_id=None
     ):
-        ast_seq = self.parse(bot_code, source_id)
+        ast_seq = Parser.parse(bot_code, source_id)
         return self.eval_bot_ast(ast_seq, input_msg, next_node, data)
 
     def eval_bot_ast(
