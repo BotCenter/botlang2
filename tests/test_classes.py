@@ -85,6 +85,47 @@ class BotlangClassesTestCase(TestCase):
     )
     """
 
+    TEST_DEEP_HIERARCHY = """
+    (defclass Product
+        [attributes id category name price]
+        [methods
+            (init (fun (self id category name price)
+                (@! self "id" id)
+                (@! self "category" category)
+                (@! self "name" name)
+                (@! self "price" price)
+            ))
+        ]
+    )
+    
+    (defclass Cheese
+        [extends Product]
+        [methods
+            (init (fun (self id name price)
+                (super self "init" id "Cheese" name price)
+            ))
+        ]
+    )
+    
+    (defclass Camembert
+        [extends Cheese]
+        [methods
+            (init (fun (self id price)
+                (super self "init" id "Camembert" price)
+            ))
+        ]
+    )
+    
+    (defclass CheapCamembert
+        [extends Camembert]
+        [methods
+            (init (fun (self id)
+                (super self "init" id 2000)
+            ))
+        ]
+    )
+    """
+
     def test_class_definition(self):
 
         code = '{} Car'.format(self.TEST_CLASS)
@@ -223,6 +264,19 @@ class BotlangClassesTestCase(TestCase):
         self.assertEqual(wine['name'], 'Gato')
         self.assertEqual(wine['price'], 2000)
         self.assertEqual(wine[CLASS_REFERENCE_KEY], 'Wine')
+
+        code = """{}
+        (send (new CheapCamembert "id1") "serialize")
+        """.format(self.TEST_DEEP_HIERARCHY)
+
+        camembert = BotlangSystem.run(code)
+        self.assertEqual(len(camembert.keys()), 5)
+        self.assertEqual(camembert['id'], 'id1')
+        self.assertEqual(camembert['category'], 'Cheese')
+        self.assertEqual(camembert['name'], 'Camembert')
+        self.assertEqual(camembert['price'], 2000)
+        print(camembert)
+        self.assertEqual(camembert[CLASS_REFERENCE_KEY], 'CheapCamembert')
 
     def test_class_side(self):
 

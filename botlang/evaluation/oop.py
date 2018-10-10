@@ -22,6 +22,7 @@ CLASS_METHODS_KEY = 'CLASS_METHODS'
 INSTANCE_ATTRS_KEY = 'INSTANCE_ATTRS'
 METHODS_KEY = 'METHODS'
 CLASS_REFERENCE_KEY = '__CLASS__'
+SUPER_CONTEXT = '__SUPER_CONTEXT__'
 
 
 def default_serialize_object(obj):
@@ -190,7 +191,18 @@ class OopHelper(object):
     @classmethod
     def call_parent_method(cls, obj, method_name, *args):
 
-        superclass_obj = obj[CLASS_REFERENCE_KEY][SUPERCLASS_KEY]
-        method = cls.method_lookup(superclass_obj, method_name)
+        super_context = obj.get(SUPER_CONTEXT)
+        if super_context is None:
+            obj[SUPER_CONTEXT] = []
+            superclass_obj = obj[CLASS_REFERENCE_KEY][SUPERCLASS_KEY]
+        else:
+            superclass_obj = super_context[-1][SUPERCLASS_KEY]
 
-        return method(obj, *args)
+        obj[SUPER_CONTEXT].append(superclass_obj)
+        method = cls.method_lookup(superclass_obj, method_name)
+        result = method(obj, *args)
+        obj[SUPER_CONTEXT].pop()
+
+        if len(obj[SUPER_CONTEXT]) == 0:
+            del obj[SUPER_CONTEXT]
+        return result
