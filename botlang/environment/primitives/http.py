@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 import requests
 
 
@@ -39,8 +41,13 @@ def http_post(url, json, headers=None):
     return http_post_json(url, json, headers)
 
 
+def uri_escape(uri_part):
+    return quote(uri_part)
+
+
 HTTP_PRIMITIVES = {
     'http-get': http_get,
     'http-post': http_post,
-    'http-post-form': http_post_form
+    'http-post-form': http_post_form,
+    'uri-escape': uri_escape
 }
