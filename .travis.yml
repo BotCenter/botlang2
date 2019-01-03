@@ -16,4 +16,4 @@ script:
   - coverage run --source . -m unittest discover -s .
 
 after_success:
-  - codecov --file coverage/lcov.info --disable search
+  - codecov
