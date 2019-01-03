@@ -244,7 +244,7 @@ class BotlangClassesTestCase(TestCase):
         self.assertEqual(p1[CLASS_REFERENCE_KEY], 'Product')
 
     def test_super(self):
-
+        # TODO: still broken in some cases. Test that and then fix.
         code = """{}
         (defclass Wine
             (extends Product)
@@ -275,7 +275,6 @@ class BotlangClassesTestCase(TestCase):
         self.assertEqual(camembert['category'], 'Cheese')
         self.assertEqual(camembert['name'], 'Camembert')
         self.assertEqual(camembert['price'], 2000)
-        print(camembert)
         self.assertEqual(camembert[CLASS_REFERENCE_KEY], 'CheapCamembert')
 
     def test_class_side(self):
