@@ -1,9 +1,13 @@
 language: python
+
 python:
   - "3.5"
   - "3.6"
   # PyPy versions
   - "pypy3.5"
+
+before_install:
+  - pip install --user codecov
 
 install:
   - pip install -r requirements.txt
@@ -12,3 +16,6 @@ script:
   - coverage run --source . -m unittest discover -s .
   - coverage report
   - coverage html
+
+after_success:
+  - codecov --file coverage/lcov.info --disable search
