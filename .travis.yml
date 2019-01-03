@@ -1,0 +1,15 @@
+language: python
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  # PyPy versions
+  - "pypy3.5"
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - coverage run --source . -m unittest discover -s .
+  - coverage report
+  - coverage html
