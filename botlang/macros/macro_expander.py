@@ -3,6 +3,14 @@ from botlang.ast.ast_visitor import ASTVisitor
 from botlang.parser.s_expressions_visitor import SExprVisitor
 
 
+class MacroArgumentsDontMatchException(Exception):
+
+    def __init__(self, args_expected, args_received):
+        super(MacroArgumentsDontMatchException, self).__init__()
+        self.args_expected = args_expected
+        self.args_received = args_received
+
+
 class MacroExpander(ASTVisitor):
 
     def visit_app(self, app_node, env):
@@ -10,7 +18,18 @@ class MacroExpander(ASTVisitor):
         if isinstance(app_node.fun_expr, Id):
             macro_def = self.get_macro_definition(app_node.fun_expr, env)
             if macro_def is not None:
-                return self.expand_macro(macro_def, app_node.arg_exprs)
+                try:
+                    return self.expand_macro(macro_def, app_node.arg_exprs)
+                except MacroArgumentsDontMatchException as e:
+                    from botlang.parser import BotLangSyntaxError
+                    raise BotLangSyntaxError(
+                        'Expansion of macro {} failed: expected {} arguments, '
+                        'got {}'.format(
+                            app_node.fun_expr.identifier,
+                            e.args_expected,
+                            e.args_received
+                        )
+                    )
         return app_node
 
     def visit_define_syntax(self, define_syntax_node, env):
@@ -39,7 +58,11 @@ class MacroExpander(ASTVisitor):
         :param arguments: List[ASTNode]
         :return: 
         """
-        assert len(macro_definition.pattern.arguments) == len(arguments)
+        if not len(macro_definition.pattern.arguments) == len(arguments):
+            raise MacroArgumentsDontMatchException(
+                len(macro_definition.pattern.arguments),
+                len(arguments)
+            )
 
         identifier_finder = IdentifierFinder()
         for argument in arguments:

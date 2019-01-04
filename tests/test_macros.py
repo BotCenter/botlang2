@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from botlang import BotlangSystem, BotlangErrorException
+from botlang.parser import BotLangSyntaxError
 
 
 class MacrosTestCase(TestCase):
@@ -30,6 +31,27 @@ class MacrosTestCase(TestCase):
         """
         result = BotlangSystem.run(code)
         self.assertEqual(result, 16)
+
+    def test_macro_arguments_error(self):
+
+        code = """
+        (define-syntax-rule (def-fun name args body)
+            (define name (function args body))
+        )
+        (def-fun times-ten (x)
+            (define a 10)
+            (* a x)
+        )
+        (times-ten 4)
+        """
+        with self.assertRaises(BotLangSyntaxError) as cm:
+            BotlangSystem.run(code)
+        self.assertTrue(
+            'Expansion of macro def-fun failed' in cm.exception.args[0]
+        )
+        self.assertTrue(
+            'expected 3 arguments, got 4' in cm.exception.args[0]
+        )
 
     def test_syntax_rule_hygiene(self):
 
