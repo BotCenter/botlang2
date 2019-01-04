@@ -23,8 +23,9 @@ class MacroExpander(ASTVisitor):
                 except MacroArgumentsDontMatchException as e:
                     from botlang.parser import BotLangSyntaxError
                     raise BotLangSyntaxError(
-                        'Expansion of macro {} failed: expected {} arguments, '
-                        'got {}'.format(
+                        'Line {}. Expansion of macro {} failed: expected {} '
+                        'arguments, got {}'.format(
+                            app_node.s_expr.source_reference.start_line,
                             app_node.fun_expr.identifier,
                             e.args_expected,
                             e.args_received

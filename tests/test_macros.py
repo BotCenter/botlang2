@@ -47,6 +47,9 @@ class MacrosTestCase(TestCase):
         with self.assertRaises(BotLangSyntaxError) as cm:
             BotlangSystem.run(code)
         self.assertTrue(
+            'Line 5' in cm.exception.args[0]
+        )
+        self.assertTrue(
             'Expansion of macro def-fun failed' in cm.exception.args[0]
         )
         self.assertTrue(
