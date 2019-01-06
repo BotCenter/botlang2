@@ -6,6 +6,19 @@ from botlang.parser import BotLangSyntaxError
 
 class MacrosTestCase(TestCase):
 
+    @classmethod
+    def macro_arguments_error_code(cls):
+
+        return """
+        (define-syntax-rule (def-fun name args body)
+            (define name (function args body))
+        )
+        (def-fun times-ten (x)
+            (define a 10)
+            (* a x)
+        )
+        """
+
     def test_syntax_rule(self):
 
         code = """
@@ -34,16 +47,7 @@ class MacrosTestCase(TestCase):
 
     def test_macro_arguments_error(self):
 
-        code = """
-        (define-syntax-rule (def-fun name args body)
-            (define name (function args body))
-        )
-        (def-fun times-ten (x)
-            (define a 10)
-            (* a x)
-        )
-        (times-ten 4)
-        """
+        code = '{}(times-ten 4)'.format(self.macro_arguments_error_code())
         with self.assertRaises(BotLangSyntaxError) as cm:
             BotlangSystem.run(code)
         self.assertTrue(
