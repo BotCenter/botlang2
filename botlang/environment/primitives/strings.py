@@ -12,16 +12,6 @@ def simplify_text(text):
         .replace('&', '')
 
 
-def email_censor(value):
-    if '@' not in value:
-        return value
-    start, end = value.split('@')
-    return "{}@{}".format(
-        word_censor(start),
-        word_censor(end)
-    )
-
-
 def word_censor(value):
     if len(value) <= 1:
         return value
@@ -62,7 +52,6 @@ STRING_OPS = {
     'match?': pattern_match,
 
     'divide-text': divide_text,
-    'url-quote': quote,
-    'email-censor': email_censor,
+    'url-quote': quote
 }
 
