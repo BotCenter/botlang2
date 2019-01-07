@@ -1,5 +1,7 @@
-from unittest import TestCase
+from unittest import TestCase, mock
 from urllib.parse import quote
+
+import responses
 
 from botlang import BotlangSystem
 
@@ -15,3 +17,99 @@ class HttpTestCase(TestCase):
 
         self.assertNotEqual(unescaped, expected)
         self.assertEqual(escaped, expected)
+
+    @responses.activate
+    def test_http_responses(self):
+
+        responses.add(
+            responses.GET,
+            'http://example.com',
+            json={'key': 'value'},
+            status=200
+        )
+        response = BotlangSystem.run('(http-get "http://example.com")')
+        self.assertEqual(response['status-code'], 200)
+        self.assertEqual(
+            response['headers']['Content-Type'], 'application/json'
+        )
+        self.assertDictEqual(response['json'], {'key': 'value'})
+        self.assertEqual(response['encoding'], None)
+
+        responses.add(
+            responses.GET,
+            'http://example2.com',
+            body='Hola',
+            status=206
+        )
+        response = BotlangSystem.run('(http-get "http://example2.com")')
+        self.assertEqual(response['status-code'], 206)
+        self.assertEqual(response['headers']['Content-Type'], 'text/plain')
+        self.assertEqual(response['text'], 'Hola')
+
+        responses.add(
+            responses.GET,
+            'http://example3.com',
+            body='Not found',
+            status=404,
+            headers={'X-Hello': 'A value'}
+        )
+        response = BotlangSystem.run('(http-get "http://example3.com")')
+        self.assertEqual(response['status-code'], 404)
+        self.assertEqual(response['headers']['X-Hello'], 'A value')
+        self.assertEqual(response['text'], 'Not found')
+
+    @mock.patch('requests.post')
+    def test_http_post_json_no_headers(self, mock_post):
+
+        payload = '(make-dict (list (cons "key" "value")))'
+        BotlangSystem.run('(http-post "http://some.url" %s)' % payload)
+        post_call_args = mock_post.call_args[0]
+        url = post_call_args[0]
+
+        post_call_kwargs = mock_post.call_args[1]
+        headers = post_call_kwargs['headers']
+        json = post_call_kwargs['json']
+
+        self.assertEqual(url, 'http://some.url')
+        self.assertIsNone(headers)
+        self.assertDictEqual(json, {'key': 'value'})
+
+    @mock.patch('requests.post')
+    def test_http_post_json_with_headers(self, mock_post):
+
+        payload = '(make-dict (list (cons "key" "value")))'
+        headers = '(make-dict (list (cons "a-header" "its-value")))'
+        BotlangSystem.run(
+            '(http-post "http://some.url" %s %s)' % (payload, headers)
+        )
+        post_call_args = mock_post.call_args[0]
+        url = post_call_args[0]
+
+        post_call_kwargs = mock_post.call_args[1]
+        headers = post_call_kwargs['headers']
+        json = post_call_kwargs['json']
+
+        self.assertIsNone(post_call_kwargs.get('data'))
+        self.assertEqual(url, 'http://some.url')
+        self.assertDictEqual(headers, {'a-header': 'its-value'})
+        self.assertDictEqual(json, {'key': 'value'})
+
+    @mock.patch('requests.post')
+    def test_http_post_form(self, mock_post):
+
+        payload = '(make-dict (list (cons "key" "value")))'
+        headers = '(make-dict (list (cons "a-header" "its-value")))'
+        BotlangSystem.run(
+            '(http-post-form "http://some.url" %s %s)' % (payload, headers)
+        )
+        post_call_args = mock_post.call_args[0]
+        url = post_call_args[0]
+
+        post_call_kwargs = mock_post.call_args[1]
+        headers = post_call_kwargs['headers']
+        data = post_call_kwargs['data']
+
+        self.assertIsNone(post_call_kwargs.get('json'))
+        self.assertEqual(url, 'http://some.url')
+        self.assertDictEqual(headers, {'a-header': 'its-value'})
+        self.assertDictEqual(data, {'key': 'value'})

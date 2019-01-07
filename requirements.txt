@@ -3,5 +3,6 @@ chardet==3.0.4
 coverage==4.5.2
 idna==2.6
 requests==2.18.4
+responses==0.10.5
 Unidecode==1.0.22
 urllib3==1.22
