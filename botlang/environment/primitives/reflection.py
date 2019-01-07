@@ -1,4 +1,4 @@
-from botlang.evaluation.values import FunVal
+from botlang.evaluation.values import FunVal, Nil
 
 
 class BotlangReflectionException(Exception):
@@ -28,9 +28,18 @@ def reflect_get_fun(environment, node_id):
     return fun
 
 
+def reflect_fun_name(environment, function):
+
+    name = environment.get_function_name(function)
+    if name is None:
+        return Nil
+    return name
+
+
 REFLECTIVE_PRIMITIVES = {
     'get-node': reflect_get_node,
     'reflect-get': reflect_get,
     'reflect-get-fun': reflect_get_fun,
-    'reflect-get-node': reflect_get_node
+    'reflect-get-node': reflect_get_node,
+    'reflect-fun-name': reflect_fun_name
 }

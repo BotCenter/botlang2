@@ -1,7 +1,7 @@
 import unittest
 
 from botlang import BotlangErrorException
-from botlang.evaluation.values import FunVal
+from botlang.evaluation.values import FunVal, Nil
 from botlang.interpreter import BotlangSystem
 
 
@@ -53,6 +53,20 @@ class BotlangTestCase(unittest.TestCase):
         with self.assertRaises(BotlangErrorException) as cm:
             BotlangSystem.bot_instance().eval_bot(bot_code, 'fun2')
         self.assertTrue("'fun2' is not a function" in str(cm.exception))
+
+    def test_fun_name(self):
+
+        code = """
+        (defun fun6 (a) (+ a 3))
+        (reflect-fun-name fun6)
+        """
+        self.assertEqual(BotlangSystem.run(code), 'fun6')
+
+        code = '(reflect-fun-name (fun (a) (+ a 1)))'
+        self.assertEqual(BotlangSystem.run(code), Nil)
+
+        code = '(reflect-fun-name cos)'
+        self.assertEqual(BotlangSystem.run(code), 'cos')
 
     def test_get_node(self):
 
