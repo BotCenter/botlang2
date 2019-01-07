@@ -95,11 +95,23 @@ class TimeTestCase(unittest.TestCase):
             """)
         self.assertEqual(time_plus30, result)
 
-    def test_time_string(self):
+    def test_time_from_string(self):
         time_parsed_seconds = time.mktime(time.strptime("30 Nov 00", "%d %b %y"))
         time_botlang = BotlangSystem.run("""
-            (time-string "30 Nov 00" "%d %b %y")
+            (time-from-string "30 Nov 00" "%d %b %y")
         """)
         self.assertEqual(time_parsed_seconds, time_botlang)
+
+    def test_time_to_string(self):
+        time = 975553200 # 30 nov 00
+        result = BotlangSystem.run("""
+            (time-to-string """ + str(time) + """ "%d %b %y")
+        """)
+        self.assertEqual("30 Nov 00", result)
+
+
+
+
+
 
 
