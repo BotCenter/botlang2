@@ -65,19 +65,15 @@ class BotlangSystem(object):
 
         return GlobalStorageExtension.apply(self, db_implementation)
 
-    def primitive_eval(self, code_string, evaluator, source_id):
-
-        expanded_asts = Parser.parse(code_string, source_id)
-        return self.primitive_eval_ast(expanded_asts, evaluator)
-
-    def primitive_eval_ast(self, ast_seq, evaluator):
-
-        return self.interpret(ast_seq, evaluator, self.environment)
-
     def eval(self, code_string, source_id=None):
 
+        expanded_asts = Parser.parse(code_string, source_id)
+        return self.eval_ast(expanded_asts)
+
+    def eval_ast(self, ast):
+
         evaluator = Evaluator(module_resolver=self.module_resolver)
-        return self.primitive_eval(code_string, evaluator, source_id)
+        return self.interpret(ast, evaluator, self.environment)
 
     def eval_bot(
             self,
@@ -102,7 +98,7 @@ class BotlangSystem(object):
 
         self.environment.last_input_message = input_msg     # Legacy
         evaluator = Evaluator(module_resolver=self.module_resolver)
-        result = self.primitive_eval_ast(bot_ast, evaluator)
+        result = self.interpret(bot_ast, evaluator, self.environment)
 
         if next_node:
             return self.environment.lookup(next_node).apply(data, input_msg)
