@@ -16,8 +16,6 @@ class BotLangSyntaxError(Exception):
 
 class Parser(object):
 
-    asts_cache = {}
-
     @classmethod
     def parse(cls, code, source_id=None, expand_macros=True):
         """
@@ -26,12 +24,6 @@ class Parser(object):
         :param expand_macros: should expand macros?
         :rtype: list[ASTNode]
         """
-        code_id = cls.generate_string_hash(code)
-        cached_asts = cls.asts_cache.get(code_id)
-
-        if cached_asts is not None:
-            return cached_asts
-
         s_expressions = Parser(code, source_id).s_expressions()
         abstract_syntax_trees = [
             cls.s_expr_to_ast(s_expr) for s_expr in s_expressions
@@ -40,7 +32,6 @@ class Parser(object):
         if expand_macros:
             abstract_syntax_trees = cls.expand_macros(abstract_syntax_trees)
 
-        cls.asts_cache[code_id] = abstract_syntax_trees
         return abstract_syntax_trees
 
     @classmethod
