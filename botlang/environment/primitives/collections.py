@@ -47,21 +47,37 @@ def dict_put_mutate(ordered_dict, key, value):
 
 def get_or_nil(data_struct, key):
     try:
-        return data_struct[key]
+        if isinstance(data_struct, dict):
+            return get_value_in_dict(data_struct, key)
+        else:
+            return data_struct[key]
     except KeyError:
         return Nil
     except IndexError:
         return Nil
 
-
 def dict_or_list_get(data_dict, key):
     try:
-        return data_dict[key]
+        if isinstance(data_dict, dict):
+            return get_value_in_dict(data_dict, key)
+        else:
+            return data_dict[key]
     except (KeyError, IndexError):
         return NativeException('collection',
                                ('The collection doest not '
                                 'have the key/index {}.'
                                 ).format(key))
+
+
+def get_value_in_dict(data, variable):
+    variable = str(variable)
+    access_order = variable.split('.')
+    actual_dict = data
+    for key in access_order:
+        actual_dict = actual_dict.get(key)
+        if actual_dict is None:
+            raise KeyError
+    return actual_dict
 
 
 def dict_remove_mutable(data_dict, key):
