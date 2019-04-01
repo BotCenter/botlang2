@@ -1,8 +1,9 @@
 import operator as op
 
 
-from botlang.environment.primitives import math, http, collections, strings, \
+from botlang.environment.primitives import math, http, collections, \
     compression, base64, random, datetime, reflection, exceptions, oop
+from botlang.environment.primitives.strings import string_functions
 from botlang.evaluation.values import Nil, TerminalNode
 
 
@@ -73,7 +74,7 @@ class BotlangPrimitives(object):
         TYPE_CHECKING,
         TERMINAL_NODES,
 
-        strings.STRING_OPS,
+        string_functions.STRING_OPS,
         collections.COMMON_OPERATIONS,
         collections.DICT_OPERATIONS,
         collections.LIST_OPERATIONS,

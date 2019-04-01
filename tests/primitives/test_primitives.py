@@ -2,7 +2,7 @@ import unittest
 
 import math
 
-from botlang.environment.primitives.strings import divide_text
+from botlang.environment.primitives.strings.string_functions import divide_text
 from botlang.interpreter import BotlangSystem
 
 
