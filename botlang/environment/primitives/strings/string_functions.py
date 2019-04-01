@@ -98,8 +98,9 @@ def string_find_similar(string, list_of_strings, threshold=0.3, lang='ES'):
     clean_strings = remove_same_words([
         remove_stop_words(s, stop_words) for s in list_of_strings
     ])
+    comparison_string = remove_stop_words(string.lower(), stop_words)
     similarities = [
-        (original, string_similarity(string, clean), clean)
+        (original, string_similarity(comparison_string, clean))
         for original, clean in zip(list_of_strings, clean_strings)
     ]
     similarities.sort(key=lambda s: s[1], reverse=True)

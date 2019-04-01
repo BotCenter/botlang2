@@ -80,6 +80,24 @@ class StringPrimitivesTestCase(TestCase):
             ),
             self.list_of_strings[2]
         )
+        self.assertEqual(
+            self.get_similar_string(
+                'me interesan los servicios moviles', self.list_of_strings
+            ),
+            self.list_of_strings[1]
+        )
+        self.assertEqual(
+            self.get_similar_string(
+                'me gustaria contratar un plan', self.list_of_strings
+            ),
+            self.list_of_strings[2]
+        )
+        self.assertEqual(
+            self.get_similar_string(
+                'necesito fibra optica residencial', self.list_of_strings
+            ),
+            self.list_of_strings[0]
+        )
 
         self.assertEqual(
             self.get_similar_string('servicios', self.list_of_strings),
