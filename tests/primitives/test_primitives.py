@@ -2,7 +2,6 @@ import unittest
 
 import math
 
-from botlang.environment.primitives.strings.string_functions import divide_text
 from botlang.interpreter import BotlangSystem
 
 
@@ -72,34 +71,6 @@ class BotlangTestCase(unittest.TestCase):
 
         decoded = BotlangSystem.run('(b64-decode "aMOzbMOh")')
         self.assertEqual(decoded, 'hólá')
-
-    def test_string_operations(self):
-
-        lower = BotlangSystem.run('(lowercase "AbCdEfgH")')
-        self.assertEqual(lower, "abcdefgh")
-
-        upper = BotlangSystem.run('(uppercase "AbCdEfgH")')
-        self.assertEqual(upper, "ABCDEFGH")
-
-        capitalized = BotlangSystem.run('(capitalize "aleluya hmno")')
-        self.assertEqual(capitalized, "Aleluya hmno")
-
-        split = BotlangSystem.run('(split "perro,gato,zapallo" ",")')
-        self.assertEqual(split, ['perro', 'gato', 'zapallo'])
-
-        join = BotlangSystem.run(
-            '(join ", " (list "pollos" "pavos" "iguana"))'
-        )
-        self.assertEqual(join, 'pollos, pavos, iguana')
-
-        plain = BotlangSystem.run('(plain "ÉnTérO BellákO")')
-        self.assertEqual(plain, 'entero bellako')
-
-        replaced = BotlangSystem.run('(replace "muajaja" "j" "h")')
-        self.assertEqual(replaced, 'muahaha')
-
-        trimmed = BotlangSystem.run('(trim "   hola, soy julito  ")')
-        self.assertEqual(trimmed, 'hola, soy julito')
 
     def test_compression(self):
 
@@ -181,19 +152,6 @@ class BotlangTestCase(unittest.TestCase):
             )
         )
 
-    def test_matches(self):
-
-        self.assertTrue(
-            BotlangSystem.run(
-                '(match? ".*pedro.*" "hola pedro, como estas?")'
-            )
-        )
-        self.assertFalse(
-            BotlangSystem.run(
-                '(match? ".*pedro.*" "hola julito, como estas?")'
-            )
-        )
-
     def test_timestamp(self):
 
         t0 = math.floor(BotlangSystem.run('(timestamp)'))
@@ -201,37 +159,6 @@ class BotlangTestCase(unittest.TestCase):
         time.sleep(0.5)
         t1 = round(BotlangSystem.run('(timestamp)'))
         self.assertEqual(t1 - t0, 1)
-
-    def test_divide_text(self):
-
-        medium_text = """
-        Para reembolsar gastos que no fueron bonificados en línea debe enviarlos a la compañía con el siguiente procedimiento:
-
-        1.       Obtener el aporte correspondiente a la Isapre, Fonasa o cualquier otro beneficio de salud que tenga.
-        """
-
-        long_text = """
-        Para reembolsar gastos que no fueron bonificados en línea debe enviarlos a la compañía con el siguiente procedimiento:
-
-        1.       Obtener el aporte correspondiente a la Isapre, Fonasa o cualquier otro beneficio de salud que tenga.
-        
-        2.       Después de la emisión de los documentos contables por parte de Fonasa/Isapre, existe un plazo de 60 días, dependiendo del convenio, para enviar la solicitud con la siguiente información: a) Formulario Solicitud de Reembolso Gastos Médicos. b) Documentos Originales: Facturas o boletas, Copias del Afiliado de bonos, Órdenes de atención / recetas, Programas médicos, el detalle de prestaciones, en caso de hospitalización u otros. 
-         i.      **En el caso de prestaciones no cubiertas por Isapre debe adjuntar boleta original con timbre “sin bonificación” y en caso de Fonasa, indicar que pertenece a Fonasa. 
-        
-        3.       Esta información debe ser enviada a la compañía por intermedio de Recursos Humanos, Servicio a Personas de su empleador o ejecutiva que visite su empresa.
-        """
-
-        split_text = divide_text(500, medium_text)
-        self.assertEqual(len(split_text), 1)
-
-        split_text = divide_text(500, long_text)
-        self.assertEqual(len(split_text), 5)
-        self.assertEqual(
-            split_text[3],
-            'i.      **En el caso de prestaciones no cubiertas por Isapre debe'
-            ' adjuntar boleta original con timbre “sin bonificación” y en caso'
-            ' de Fonasa, indicar que pertenece a Fonasa.'
-        )
 
     def test_type_checking(self):
 

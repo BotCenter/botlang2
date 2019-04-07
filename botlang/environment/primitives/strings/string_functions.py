@@ -17,10 +17,11 @@ def simplify_text(text):
         .replace('&', '')
 
 
-def pattern_match(pattern, message):
-    if re.match(pattern, message):
-        return True
-    return False
+def pattern_match(pattern, message, group=0):
+    match = re.match(pattern, message)
+    if match:
+        return match.group(group)
+    return Nil
 
 
 def divide_text(max_chars, text):
@@ -120,7 +121,8 @@ STRING_OPS = {
     'capitalize': str.capitalize,
     'replace': str.replace,
     'trim': str.strip,
-    'match?': pattern_match,
+    'match': pattern_match,
+    'match?': lambda p, s: pattern_match(p, s) is not Nil,
     'string-find-similar': string_find_similar,
     'divide-text': divide_text,
     'url-quote': quote
