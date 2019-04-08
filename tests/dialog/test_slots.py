@@ -74,6 +74,9 @@ class SlotsTestCase(TestCase):
 
     SLOTS_DIGRESS = SLOTS_EXAMPLE % '[digress (default-behavior c m)]'
     SLOTS_NO_DIGRESS = SLOTS_EXAMPLE % ''
+    SLOTS_WITH_BEFORE = SLOTS_EXAMPLE % '[before (if (equal? "a" m)' \
+                                        ' (put! c "meta" "a")' \
+                                        ' (put! c "meta" "b"))]'
 
     def test_answer_correctly(self):
 
@@ -204,3 +207,11 @@ class SlotsTestCase(TestCase):
         self.assertEqual(r.message, 'No me insultes')
         self.assertEqual(r.next_node, None)
         self.assertEqual(r.bot_state, 'BOT_ENDED')
+
+    def test_before_block(self):
+
+        r = BotlangSystem().eval_bot(self.SLOTS_WITH_BEFORE, 'hola', 'node1')
+        self.assertEqual(r.data['meta'], 'b')
+
+        r = BotlangSystem().eval_bot(self.SLOTS_WITH_BEFORE, 'a', 'node1')
+        self.assertEqual(r.data['meta'], 'a')

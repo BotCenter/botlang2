@@ -243,11 +243,13 @@ class ASTVisitor(object):
 
     def visit_slots_node_body(self, slots_body, env):
         """
-        :param slots_node: ast.BotSlotsNode
+        :param slots_body: ast.SlotsNodeBody
         :param env: Environment
         """
         return SlotsNodeBody(
             slots_body.params,
+            slots_body.before.accept(self, env)
+            if slots_body.before is not None else None,
             slots_body.digress.accept(self, env)
             if slots_body.digress is not None else None,
             [slot.accept(self, env) for slot in slots_body.slots],

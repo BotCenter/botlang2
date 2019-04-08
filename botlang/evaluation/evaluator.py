@@ -221,6 +221,9 @@ class Evaluator(ASTVisitor):
 
     def visit_slots_node_body(self, slots_body, env):
 
+        if slots_body.before is not None:
+            slots_body.before.accept(self, env)
+
         for slot in slots_body.slots:
             result = slot.accept(self, env)
             if result is not None:  # Slot unsatisfied

@@ -446,26 +446,61 @@ class Tree(SExpression):
 
         node_name = self.children[1].token
         args = [identifier.token for identifier in self.children[2].children]
-        i = 3
-        if self.children[i].children[0].token == 'digress':
-            digress = self.children[i].children[1].to_ast()
-            i += 1
-        else:
-            digress = None
 
-        slots = []
-        while self.children[i].children[0].token == 'slot':
-            slots.append(self.children[i].to_slot_ast_node())
-            i += 1
+        blocks = self.children[3:]
+        self.check_slots_node_blocks(blocks)
 
-        then = self.children[i].children[1].to_ast()
+        before = self.get_slots_before(blocks)
+        digress = self.get_slots_digress(blocks)
+        slots = self.get_slots(blocks)
+        then = self.get_slots_then(blocks)
 
         slots_node_body = SlotsNodeBody(
-            args, digress, slots, then
+            args, before, digress, slots, then
         ).add_code_reference(self)
 
         return BotSlotsNode(node_name, args, slots_node_body)\
             .add_code_reference(self)
+
+    @classmethod
+    def get_slots_before(cls, blocks):
+
+        for block in blocks:
+            if block.children[0].token == 'before':
+                return block.children[1].to_ast()
+        return None
+
+    @classmethod
+    def get_slots_digress(cls, blocks):
+
+        for block in blocks:
+            if block.children[0].token == 'digress':
+                return block.children[1].to_ast()
+        return None
+
+    @classmethod
+    def get_slots(cls, blocks):
+
+        return [
+            block.to_slot_ast_node() for block in blocks
+            if block.children[0].token == 'slot'
+        ]
+
+    @classmethod
+    def get_slots_then(cls, blocks):
+
+        for block in blocks:
+            if block.children[0].token == 'then':
+                return block.children[1].to_ast()
+        raise SyntaxError("The 'then' block is required for slot nodes")
+
+    @classmethod
+    def check_slots_node_blocks(cls, blocks):
+
+        for block in blocks:
+            token = block.children[0].token
+            if token not in ['before', 'digress', 'slot', 'then']:
+                raise SyntaxError('Unknown slots node block: %s' % token)
 
     def to_slot_ast_node(self):
 

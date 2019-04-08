@@ -585,9 +585,10 @@ class BotSlotsNode(ASTNode):
 
 class SlotsNodeBody(ASTNode):
 
-    def __init__(self, params, digress, slots, then):
+    def __init__(self, params, before, digress, slots, then):
         super(ASTNode, self).__init__()
         self.params = params
+        self.before = before
         self.digress = digress
         self.slots = slots
         self.then = then
@@ -601,6 +602,7 @@ class SlotsNodeBody(ASTNode):
     def copy(self):
         return SlotsNodeBody(
             copy.copy(self.params),
+            self.before.copy() if self.before is not None else None,
             self.digress.copy() if self.digress is not None else None,
             [slot.copy for slot in self.slots],
             self.then.copy()
