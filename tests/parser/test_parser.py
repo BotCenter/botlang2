@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from botlang import BotlangSystem
 from botlang.parser import Parser, BotLangSyntaxError
 from botlang.parser.bot_definition_checker import InvalidBotDefinitionException
 from botlang.parser.s_expressions import Tree
@@ -56,6 +55,29 @@ class ParserTestCase(unittest.TestCase):
             """).s_expressions()
         self.assertTrue('excess' in cm.exception.args[0])
         self.assertTrue('line 4' in cm.exception.args[0])
+
+    # def test_wrong_double_quotes(self):
+    #
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f ""a)').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f a"")').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f ""a"")').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f "a)').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f a")').s_expressions()
+    #     )
 
     def test_comments(self):
 

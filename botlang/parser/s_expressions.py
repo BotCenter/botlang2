@@ -226,6 +226,9 @@ class Tree(SExpression):
         if first == 'bot-node':
             return self.bot_node()
 
+        if first == 'slots-node':
+            return self.slots_node()
+
         if first == 'node-result':
             return self.bot_result_node()
 
@@ -437,6 +440,41 @@ class Tree(SExpression):
         return BotNode(
             [identifier.code for identifier in self.children[1].children],
             bot_node_body
+        ).add_code_reference(self)
+
+    def slots_node(self):
+
+        node_name = self.children[1].token
+        args = [identifier.token for identifier in self.children[2].children]
+        i = 3
+        if self.children[i].children[0].token == 'digress':
+            digress = self.children[i].children[1].to_ast()
+            i += 1
+        else:
+            digress = None
+
+        slots = []
+        while self.children[i].children[0].token == 'slot':
+            slots.append(self.children[i].to_slot_ast_node())
+            i += 1
+
+        then = self.children[i].children[1].to_ast()
+
+        slots_node_body = SlotsNodeBody(
+            args, digress, slots, then
+        ).add_code_reference(self)
+
+        return BotSlotsNode(node_name, args, slots_node_body)\
+            .add_code_reference(self)
+
+    def to_slot_ast_node(self):
+
+        assert self.children[0].token == 'slot'
+        return SlotDefinition(
+            self.children[1].token,
+            self.children[2].token,
+            self.children[3].to_ast(),
+            self.children[4].to_ast()
         ).add_code_reference(self)
 
     def bot_result_node(self):

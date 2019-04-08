@@ -561,6 +561,76 @@ class BotResult(ASTNode):
         ).add_code_reference(self.s_expr)
 
 
+class BotSlotsNode(ASTNode):
+    """
+    BotNode with slots
+    """
+    def __init__(self, node_name, params, body):
+        super(ASTNode, self).__init__()
+        self.node_name = node_name
+        self.params = params
+        self.body = body
+
+    def accept(self, visitor, environment):
+        return visitor.visit_slots_node(self, environment)
+
+    def print_node_type(self):
+        return 'bot slots node'
+
+    def copy(self):
+        return BotSlotsNode(
+            self.node_name, copy.copy(self.params), self.body.copy()
+        ).add_code_reference(self.s_expr)
+
+
+class SlotsNodeBody(ASTNode):
+
+    def __init__(self, params, digress, slots, then):
+        super(ASTNode, self).__init__()
+        self.params = params
+        self.digress = digress
+        self.slots = slots
+        self.then = then
+
+    def accept(self, visitor, environment):
+        return visitor.visit_slots_node_body(self, environment)
+
+    def print_node_type(self):
+        return 'bot slots node body'
+
+    def copy(self):
+        return SlotsNodeBody(
+            copy.copy(self.params),
+            self.digress.copy() if self.digress is not None else None,
+            [slot.copy for slot in self.slots],
+            self.then.copy()
+        ).add_code_reference(self.s_expr)
+
+
+class SlotDefinition(ASTNode):
+
+    def __init__(self, slot_name, context, match_body, ask_body):
+        super(ASTNode, self).__init__()
+        self.slot_name = slot_name
+        self.context = context
+        self.match_body = match_body
+        self.ask_body = ask_body
+
+    def accept(self, visitor, environment):
+        return visitor.visit_slot_definition(self, environment)
+
+    def print_node_type(self):
+        return 'slot definition'
+
+    def copy(self):
+        return SlotDefinition(
+            copy.copy(self.slot_name),
+            self.context.copy(),
+            self.match_body.copy(),
+            self.ask_body.copy()
+        ).add_code_reference(self.s_expr)
+
+
 class SyntaxPattern(ASTNode):
     """
     A pattern in pattern-based macros

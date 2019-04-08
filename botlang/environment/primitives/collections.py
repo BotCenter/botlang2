@@ -56,6 +56,7 @@ def get_or_nil(data_struct, key):
     except IndexError:
         return Nil
 
+
 def dict_or_list_get(data_dict, key):
     try:
         if isinstance(data_dict, dict):
@@ -63,8 +64,8 @@ def dict_or_list_get(data_dict, key):
         else:
             return data_dict[key]
     except (KeyError, IndexError):
-        return NativeException('collection',
-                               ('The collection doest not '
+        raise NativeException('collection',
+                               ('The collection does not '
                                 'have the key/index {}.'
                                 ).format(key))
 

@@ -34,6 +34,10 @@ class Evaluator(ASTVisitor):
     """
     AST visitor for evaluation
     """
+
+    CURRENT_SLOTS_NODE = '__CURRENT_SLOTS_NODE__'
+    DIGRESSION_RETURN = '__DIGRESSION_RETURN_NODE__'
+
     def __init__(self, module_resolver=None):
 
         if module_resolver is None:
@@ -201,6 +205,76 @@ class Evaluator(ASTVisitor):
         )
         self.execution_stack.pop()
         return bot_result_value
+
+    def visit_slots_node(self, slots_node, env):
+        """
+        Slots node expression evaluation.
+        Returns bot-node closure
+        """
+        self.execution_stack.append(slots_node)
+        slots_value = SlotsNodeValue(slots_node, env, self)
+        env.update({
+            slots_node.node_name: slots_value
+        })
+        self.execution_stack.pop()
+        return slots_value
+
+    def visit_slots_node_body(self, slots_body, env):
+
+        for slot in slots_body.slots:
+            result = slot.accept(self, env)
+            if result is not None:  # Slot unsatisfied
+                return result
+
+        return slots_body.then.accept(self, env)
+
+    def visit_slot_definition(self, slot_def, env):
+
+        matched_value = slot_def.match_body.accept(self, env)
+        context = env.lookup(slot_def.context)
+
+        if matched_value is not Nil and matched_value is not None:
+            context[slot_def.slot_name] = matched_value
+
+        stored_value = context.get(slot_def.slot_name)
+        if stored_value is None:
+            slots_node = env.lookup(self.CURRENT_SLOTS_NODE)
+            digress = slots_node.body.digress
+            if digress is not None:
+                self.start_digression(env)
+                digress_result = slots_node.body.digress.accept(self, env)
+                self.end_digression(env)
+                if digress_result is not Nil:
+                    return self.handle_digression(digress_result, slots_node)
+            return BotResultValue(
+                context,
+                slot_def.ask_body.accept(self, env),
+                slots_node
+            )
+        else:
+            # Slot satisfied. Nothing to do.
+            return None
+
+    def start_digression(self, environment):
+
+        base_env = environment
+        while base_env.previous is not None:
+            base_env = base_env.previous
+        base_env.bindings[self.DIGRESSION_RETURN] = True
+
+    def end_digression(self, environment):
+
+        base_env = environment
+        while base_env.previous is not None:
+            base_env = base_env.previous
+        del base_env.bindings[self.DIGRESSION_RETURN]
+
+    def handle_digression(self, result, slots_node):
+
+        if result.next_node == self.DIGRESSION_RETURN:
+            return BotResultValue(result.data, result.message, slots_node)
+        else:
+            return result
 
     def visit_app(self, app_node, env):
         """

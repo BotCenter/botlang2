@@ -1,6 +1,6 @@
 from botlang.ast import *
 from botlang.ast import ClassDefinition, MethodDefinition, \
-    AttributeDefinition
+    AttributeDefinition, BotSlotsNode, SlotDefinition, SlotsNodeBody
 
 
 class ASTVisitor(object):
@@ -229,3 +229,39 @@ class ASTVisitor(object):
         :param env: Environment
         """
         return define_syntax_node
+
+    def visit_slots_node(self, slots_node, env):
+        """
+        :param slots_node: ast.BotSlotsNode
+        :param env: Environment
+        """
+        return BotSlotsNode(
+            slots_node.node_name,
+            slots_node.params,
+            slots_node.body.accept(self, env)
+        ).add_code_reference(slots_node.s_expr)
+
+    def visit_slots_node_body(self, slots_body, env):
+        """
+        :param slots_node: ast.BotSlotsNode
+        :param env: Environment
+        """
+        return SlotsNodeBody(
+            slots_body.params,
+            slots_body.digress.accept(self, env)
+            if slots_body.digress is not None else None,
+            [slot.accept(self, env) for slot in slots_body.slots],
+            slots_body.then.accept(self, env)
+        ).add_code_reference(slots_body.s_expr)
+
+    def visit_slot_definition(self, slot_def, env):
+        """
+        :param slot_def: ast.SlotDefinition
+        :param env: Environment
+        """
+        return SlotDefinition(
+            slot_def.slot_name,
+            slot_def.context,
+            slot_def.match_body.accept(self, env),
+            slot_def.ask_body.accept(self, env)
+        ).add_code_reference(slot_def.s_expr)

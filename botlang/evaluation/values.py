@@ -105,7 +105,16 @@ class Closure(FunVal):
         return '<function {0} at {1}>'.format(name, hex(id(self)))
 
 
-class BotNodeValue(Closure):
+class DialogNode(object):
+
+    def is_terminal(self):
+        raise NotImplementedError
+
+    def is_digression_return(self):
+        return False
+
+
+class BotNodeValue(Closure, DialogNode):
     """
     Bot node (also a lexical closure)
     """
@@ -129,12 +138,46 @@ class BotNodeValue(Closure):
         return False
 
 
-class TerminalNode(object):
+class SlotsNodeValue(BotNodeValue):
+    """
+    Slots node
+    """
+    def __init__(self, slots_node, env, evaluator):
+        from botlang import Evaluator
+        env = env.new_environment({Evaluator.CURRENT_SLOTS_NODE: self})
+        super(SlotsNodeValue, self).__init__(slots_node, env, evaluator)
+
+    def __repr__(self):
+        name = self.name()
+        if name is None:
+            return '<anonymous slots-node>'
+
+        return '<slots-node {0} at {1}>'.format(name, hex(id(self)))
+
+
+class TerminalNode(DialogNode):
 
     def __init__(self, state):
         self.state = state
 
     def is_terminal(self):
+        return True
+
+    def name(self):
+        return None
+
+
+class ReturnNode(DialogNode):
+    """
+    Node used for returning to a slot node after a digression.
+    """
+    def __init__(self, inner_node):
+        self.inner_node = inner_node
+
+    def is_terminal(self):
+        return False
+
+    def is_digression_return(self):
         return True
 
 
@@ -154,6 +197,14 @@ class BotResultValue(object):
         if next_node.is_terminal():
             self.next_node = None
             self.bot_state = next_node.state
+        elif next_node.is_digression_return():
+            from botlang import Evaluator
+            self.next_node = Evaluator.DIGRESSION_RETURN
         else:
             self.next_node = next_node.name()
             self.bot_state = self.BOT_WAITING_INPUT
+
+    def __repr__(self):
+        return 'BotResult({}, {}, {})'.format(
+            self.data, self.message, self.next_node
+        )
