@@ -64,8 +64,8 @@ def dict_or_list_get(data_dict, key):
         else:
             return data_dict[key]
     except (KeyError, IndexError):
-        raise NativeException('collection',
-                               ('The collection does not '
+        return NativeException('collection',
+                               ('The collection doest not '
                                 'have the key/index {}.'
                                 ).format(key))
 
