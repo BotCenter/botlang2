@@ -15,6 +15,30 @@ class SlotsTestCase(TestCase):
             [else nil]
         )
     )
+    
+    (slots-node node3 (c m)
+        [slot confirm c
+            (cond
+                [(match? "si" m) #t]
+                [(match? "no" m) #f]
+                [else nil]
+            )
+            "¿Confirmas tu pedido?"
+        ]
+        [then (if (get c "confirm")
+            (node-result c "Confirmado" end-node)
+            (node-result
+                (begin
+                    (remove! c "type")
+                    (remove! c "size")
+                    (remove! c "with-cream")
+                    (remove! c "confirm")
+                )
+                "Bueno, ¿qué café quieres?"
+                node1
+            )
+        )]
+    )
 
     (bot node2 (c m) (default-behavior c m))
 
@@ -40,9 +64,9 @@ class SlotsTestCase(TestCase):
             (node-result c
                 (append
                     "Tu pedido es un " (get c "type") " " (get c "size") " "
-                    (if (get c "with-cream") "con crema" "sin crema")
+                    (if (get c "with-cream") "con crema?" "sin crema?")
                 )
-                end-node
+                node3
             )
         ]
     )
@@ -72,11 +96,18 @@ class SlotsTestCase(TestCase):
         self.assertEqual(r3.next_node, 'node1')
 
         r4 = BotlangSystem().eval_bot(
-            self.SLOTS_DIGRESS, 'no', r2.next_node, r2.data
+            self.SLOTS_DIGRESS, 'no', r3.next_node, r3.data
         )
-        self.assertEqual(r4.message, 'Tu pedido es un latte mediano sin crema')
+        self.assertEqual(r4.message, 'Tu pedido es un latte mediano sin crema?')
         self.assertEqual(r4.data.get('with-cream'), False)
-        self.assertEqual(r4.next_node, None)
+        self.assertEqual(r4.next_node, 'node3')
+
+        r5 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'si', r4.next_node, r4.data
+        )
+        self.assertEqual(r5.message, 'Confirmado')
+        self.assertEqual(r5.data.get('confirm'), True)
+        self.assertEqual(r5.next_node, None)
 
     def test_give_partial_information(self):
 
@@ -92,9 +123,27 @@ class SlotsTestCase(TestCase):
         r2 = BotlangSystem().eval_bot(
             self.SLOTS_DIGRESS, 'si', r1.next_node, r1.data
         )
-        self.assertEqual(r2.message, 'Tu pedido es un mocha grande con crema')
+        self.assertEqual(r2.message, 'Tu pedido es un mocha grande con crema?')
         self.assertEqual(r2.data.get('with-cream'), True)
-        self.assertEqual(r2.next_node, None)
+        self.assertEqual(r2.next_node, 'node3')
+
+        r3 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'no', r2.next_node, r2.data
+        )
+        self.assertEqual(r3.message, 'Bueno, ¿qué café quieres?')
+        self.assertEqual(r3.next_node, 'node1')
+
+        r4 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'un latte grande', r3.next_node, r3.data
+        )
+        self.assertEqual(r4.message, '¿Lo quieres con crema?')
+        self.assertEqual(r4.next_node, 'node1')
+
+        r5 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'si', r4.next_node, r4.data
+        )
+        self.assertEqual(r5.message, 'Tu pedido es un latte grande con crema?')
+        self.assertEqual(r5.next_node, 'node3')
 
     def test_answer_incorrectly_no_digress(self):
 
@@ -115,9 +164,9 @@ class SlotsTestCase(TestCase):
             self.SLOTS_NO_DIGRESS, 'no', r2.next_node, r2.data
         )
         self.assertEqual(
-            r3.message, 'Tu pedido es un americano chico sin crema'
+            r3.message, 'Tu pedido es un americano chico sin crema?'
         )
-        self.assertEqual(r3.next_node, None)
+        self.assertEqual(r3.next_node, 'node3')
 
     def test_digression(self):
 
