@@ -1,4 +1,10 @@
-class Nil(object):
+class NilMetaclass(type):
+
+    def __bool__(self):
+        return False
+
+
+class Nil(metaclass=NilMetaclass):
     pass
 
 

@@ -445,3 +445,8 @@ class BotlangTestCase(unittest.TestCase):
         """
         result = BotlangSystem.run(code)
         self.assertTrue(result)
+
+    def test_nil_truth_value(self):
+
+        result = BotlangSystem.run('(if nil #t #f)')
+        self.assertEqual(result, False)
