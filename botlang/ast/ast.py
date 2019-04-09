@@ -629,7 +629,7 @@ class SlotDefinition(ASTNode):
             copy.copy(self.slot_name),
             self.context.copy(),
             self.match_body.copy(),
-            self.ask_body.copy()
+            self.ask_body.copy() if self.ask_body is not None else None
         ).add_code_reference(self.s_expr)
 
 

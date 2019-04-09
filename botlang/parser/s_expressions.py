@@ -509,7 +509,7 @@ class Tree(SExpression):
             self.children[1].token,
             self.children[2].token,
             self.children[3].to_ast(),
-            self.children[4].to_ast()
+            self.children[4].to_ast() if len(self.children) > 4 else None
         ).add_code_reference(self)
 
     def bot_result_node(self):

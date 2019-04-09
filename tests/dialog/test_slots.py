@@ -39,7 +39,13 @@ class SlotsTestCase(TestCase):
             "¿Confirmas tu pedido?"
         ]
         [then (if (get c "confirm")
-            (node-result c "Confirmado" end-node)
+            (node-result c
+                (if (get-or-nil c "discount")
+                    "Confirmado. Te saldrá gratis :)"
+                    "Confirmado"
+                )
+                end-node
+            )
             (node-result
                 (reset-context c)
                 "Bueno, ¿qué café quieres?"
@@ -60,6 +66,7 @@ class SlotsTestCase(TestCase):
             (match ".*(chico|mediano|grande).*" m 1)
             "¿De qué tamaño quieres tu café?"
         ]
+        [slot discount c (match "descuento\\s(\\d+)" m 1)]
         [slot with-cream c
             (cond
                 [(match? "si(\\s.*)?" m) #t]
@@ -243,3 +250,21 @@ class SlotsTestCase(TestCase):
 
         r2 = BotlangSystem().eval_bot(self.SLOTS_DIGRESS, 'digress?', 'node2')
         self.assertEqual(r2.message, 'No')
+
+    def test_optional_slot(self):
+
+        r1 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'descuento 123 para mocha chico', 'node1'
+        )
+        self.assertEqual(r1.data.get('discount'), '123')
+        self.assertEqual(r1.message, '¿Lo quieres con crema?')
+
+        r2 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'si', r1.next_node, r1.data
+        )
+        self.assertEqual(r2.message, 'Tu pedido es un mocha chico con crema?')
+
+        r3 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'si', r2.next_node, r2.data
+        )
+        self.assertEqual(r3.message, 'Confirmado. Te saldrá gratis :)')

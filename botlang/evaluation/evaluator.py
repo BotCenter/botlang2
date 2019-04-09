@@ -237,7 +237,14 @@ class Evaluator(ASTVisitor):
             context[slot_def.slot_name] = matched_value
 
         stored_value = context.get(slot_def.slot_name)
-        if stored_value is None:
+        if stored_value is not None:
+            # Slot satisfied. Nothing to do.
+            return None
+        elif slot_def.ask_body is None:
+            # Optional slot. Won't force nor digress.
+            return None
+        else:
+            # Handle non-optional unsatisfied slot
             slots_node = env.lookup(Slots.CURRENT_SLOTS_NODE)
             digress = slots_node.body.digress
             if digress is not None and not Slots.digression_started(env):
@@ -251,9 +258,6 @@ class Evaluator(ASTVisitor):
                 slot_def.ask_body.accept(self, env),
                 slots_node
             )
-        else:
-            # Slot satisfied. Nothing to do.
-            return None
 
     def handle_digression(self, result, slots_node):
 

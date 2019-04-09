@@ -266,4 +266,5 @@ class ASTVisitor(object):
             slot_def.context,
             slot_def.match_body.accept(self, env),
             slot_def.ask_body.accept(self, env)
+            if slot_def.ask_body is not None else None
         ).add_code_reference(slot_def.s_expr)
