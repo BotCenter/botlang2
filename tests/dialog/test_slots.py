@@ -12,7 +12,17 @@ class SlotsTestCase(TestCase):
                 (node-result c "No me insultes" (return end-node))
             ]
             [(match? "chao" m) (node-result c "Adiós" end-node)]
+            [(match? "coffee" m) (node1 (reset-context c) m)]
             [else nil]
+        )
+    )
+    
+    (defun reset-context (c)
+        (begin
+            (remove! c "type")
+            (remove! c "size")
+            (remove! c "with-cream")
+            (remove! c "confirm")
         )
     )
     
@@ -28,12 +38,7 @@ class SlotsTestCase(TestCase):
         [then (if (get c "confirm")
             (node-result c "Confirmado" end-node)
             (node-result
-                (begin
-                    (remove! c "type")
-                    (remove! c "size")
-                    (remove! c "with-cream")
-                    (remove! c "confirm")
-                )
+                (reset-context c)
                 "Bueno, ¿qué café quieres?"
                 node1
             )
@@ -215,3 +220,15 @@ class SlotsTestCase(TestCase):
 
         r = BotlangSystem().eval_bot(self.SLOTS_WITH_BEFORE, 'a', 'node1')
         self.assertEqual(r.data['meta'], 'a')
+
+    def test_recursive_digression(self):
+
+        r1 = BotlangSystem().eval_bot(self.SLOTS_DIGRESS, 'mocha', 'node1')
+        self.assertEqual(r1.message, '¿De qué tamaño quieres tu café?')
+        self.assertEqual(r1.next_node, 'node1')
+
+        r2 = BotlangSystem().eval_bot(
+            self.SLOTS_DIGRESS, 'coffee', r1.next_node, r1.data
+        )
+        self.assertEqual(r2.message, '¿De qué tipo quieres tu café?')
+        self.assertEqual(r2.next_node, 'node1')

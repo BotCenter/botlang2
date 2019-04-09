@@ -243,7 +243,7 @@ class Evaluator(ASTVisitor):
         if stored_value is None:
             slots_node = env.lookup(self.CURRENT_SLOTS_NODE)
             digress = slots_node.body.digress
-            if digress is not None:
+            if digress is not None and not self.digression_started(env):
                 self.start_digression(env)
                 digress_result = slots_node.body.digress.accept(self, env)
                 self.end_digression(env)
@@ -258,18 +258,26 @@ class Evaluator(ASTVisitor):
             # Slot satisfied. Nothing to do.
             return None
 
-    def start_digression(self, environment):
+    def get_base_environment(self, environment):
 
         base_env = environment
         while base_env.previous is not None:
             base_env = base_env.previous
+        return base_env
+
+    def digression_started(self, environment):
+
+        base_env = self.get_base_environment(environment)
+        return base_env.bindings.get(self.DIGRESSION_RETURN, False)
+
+    def start_digression(self, environment):
+
+        base_env = self.get_base_environment(environment)
         base_env.bindings[self.DIGRESSION_RETURN] = True
 
     def end_digression(self, environment):
 
-        base_env = environment
-        while base_env.previous is not None:
-            base_env = base_env.previous
+        base_env = self.get_base_environment(environment)
         del base_env.bindings[self.DIGRESSION_RETURN]
 
     def handle_digression(self, result, slots_node):
