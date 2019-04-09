@@ -1,6 +1,7 @@
 from functools import reduce
 from botlang.ast.ast_visitor import ASTVisitor
 from botlang.evaluation.oop import OopHelper
+from botlang.evaluation.slots import Slots
 from botlang.evaluation.values import *
 
 
@@ -34,10 +35,6 @@ class Evaluator(ASTVisitor):
     """
     AST visitor for evaluation
     """
-
-    CURRENT_SLOTS_NODE = '__CURRENT_SLOTS_NODE__'
-    DIGRESSION_RETURN = '__DIGRESSION_RETURN_NODE__'
-
     def __init__(self, module_resolver=None):
 
         if module_resolver is None:
@@ -241,12 +238,12 @@ class Evaluator(ASTVisitor):
 
         stored_value = context.get(slot_def.slot_name)
         if stored_value is None:
-            slots_node = env.lookup(self.CURRENT_SLOTS_NODE)
+            slots_node = env.lookup(Slots.CURRENT_SLOTS_NODE)
             digress = slots_node.body.digress
-            if digress is not None and not self.digression_started(env):
-                self.start_digression(env)
+            if digress is not None and not Slots.digression_started(env):
+                Slots.start_digression(env)
                 digress_result = slots_node.body.digress.accept(self, env)
-                self.end_digression(env)
+                Slots.end_digression(env)
                 if digress_result is not Nil:
                     return self.handle_digression(digress_result, slots_node)
             return BotResultValue(
@@ -258,31 +255,9 @@ class Evaluator(ASTVisitor):
             # Slot satisfied. Nothing to do.
             return None
 
-    def get_base_environment(self, environment):
-
-        base_env = environment
-        while base_env.previous is not None:
-            base_env = base_env.previous
-        return base_env
-
-    def digression_started(self, environment):
-
-        base_env = self.get_base_environment(environment)
-        return base_env.bindings.get(self.DIGRESSION_RETURN, False)
-
-    def start_digression(self, environment):
-
-        base_env = self.get_base_environment(environment)
-        base_env.bindings[self.DIGRESSION_RETURN] = True
-
-    def end_digression(self, environment):
-
-        base_env = self.get_base_environment(environment)
-        del base_env.bindings[self.DIGRESSION_RETURN]
-
     def handle_digression(self, result, slots_node):
 
-        if result.next_node == self.DIGRESSION_RETURN:
+        if result.next_node == Slots.DIGRESSION_RETURN:
             return BotResultValue(result.data, result.message, slots_node)
         else:
             return result

@@ -143,8 +143,8 @@ class SlotsNodeValue(BotNodeValue):
     Slots node
     """
     def __init__(self, slots_node, env, evaluator):
-        from botlang import Evaluator
-        env = env.new_environment({Evaluator.CURRENT_SLOTS_NODE: self})
+        from botlang.evaluation.slots import Slots
+        env = env.new_environment({Slots.CURRENT_SLOTS_NODE: self})
         super(SlotsNodeValue, self).__init__(slots_node, env, evaluator)
 
     def __repr__(self):
@@ -198,8 +198,8 @@ class BotResultValue(object):
             self.next_node = None
             self.bot_state = next_node.state
         elif next_node.is_digression_return():
-            from botlang import Evaluator
-            self.next_node = Evaluator.DIGRESSION_RETURN
+            from botlang.evaluation.slots import Slots
+            self.next_node = Slots.DIGRESSION_RETURN
         else:
             self.next_node = next_node.name()
             self.bot_state = self.BOT_WAITING_INPUT

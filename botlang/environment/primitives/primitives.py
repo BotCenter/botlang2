@@ -4,17 +4,8 @@ import operator as op
 from botlang.environment.primitives import math, http, collections, \
     compression, base64, random, datetime, reflection, exceptions, oop
 from botlang.environment.primitives.strings import string_functions
-from botlang.evaluation.values import Nil, TerminalNode, ReturnNode
-
-
-def return_node(environment, inner_node):
-    from botlang import Evaluator
-    try:
-        environment.lookup(Evaluator.DIGRESSION_RETURN)
-    except NameError:
-        return inner_node
-    else:
-        return ReturnNode(inner_node)
+from botlang.evaluation.slots import Slots
+from botlang.evaluation.values import Nil, TerminalNode
 
 
 def make_terminal_node(end_state):
@@ -111,8 +102,6 @@ class BotlangPrimitives(object):
             'input-message': environment.get_last_input_message     # Legacy
         })
         environment.add_reflective_primitives(reflection.REFLECTIVE_PRIMITIVES)
-        environment.add_reflective_primitives({
-            'return': return_node
-        })
+        environment.add_reflective_primitives(Slots.SLOTS_FUNCTIONS)
 
         return environment
