@@ -113,18 +113,18 @@ def string_find_similar(string, list_of_strings, threshold=0.3, lang='ES'):
 
 
 STRING_OPS = {
-    'split': str.split,
-    'join': str.join,
-    'plain': simplify_text,
-    'uppercase': str.upper,
-    'lowercase': str.lower,
     'capitalize': str.capitalize,
-    'replace': str.replace,
-    'trim': str.strip,
+    'divide-text': divide_text,
+    'format': str.format,
+    'join': str.join,
+    'lowercase': str.lower,
     'match': pattern_match,
     'match?': lambda p, s: pattern_match(p, s) is not Nil,
+    'plain': simplify_text,
+    'replace': str.replace,
+    'split': str.split,
     'string-find-similar': string_find_similar,
-    'divide-text': divide_text,
+    'trim': str.strip,
+    'uppercase': str.upper,
     'url-quote': quote
 }
-
