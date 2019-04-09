@@ -10,12 +10,17 @@ def return_node(environment, inner_node):
         return ReturnNode(inner_node)
 
 
+def is_disgression(environment):
+    return Slots.digression_started(environment)
+
+
 class Slots(object):
 
     CURRENT_SLOTS_NODE = '__CURRENT_SLOTS_NODE__'
     DIGRESSION_RETURN = '__DIGRESSION_RETURN_NODE__'
 
     SLOTS_FUNCTIONS = {
+        'digression?': is_disgression,
         'return': return_node
     }
 

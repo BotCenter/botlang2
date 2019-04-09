@@ -11,6 +11,9 @@ class SlotsTestCase(TestCase):
             [(match? "ctm" m)
                 (node-result c "No me insultes" (return end-node))
             ]
+            [(match? "digress?" m)
+                (node-result c (if (digression?) "Sí" "No") (return end-node))
+            ]
             [(match? "chao" m) (node-result c "Adiós" end-node)]
             [(match? "coffee" m) (node1 (reset-context c) m)]
             [else nil]
@@ -232,3 +235,11 @@ class SlotsTestCase(TestCase):
         )
         self.assertEqual(r2.message, '¿De qué tipo quieres tu café?')
         self.assertEqual(r2.next_node, 'node1')
+
+    def test_in_disgression_check(self):
+
+        r1 = BotlangSystem().eval_bot(self.SLOTS_DIGRESS, 'digress?', 'node1')
+        self.assertEqual(r1.message, 'Sí')
+
+        r2 = BotlangSystem().eval_bot(self.SLOTS_DIGRESS, 'digress?', 'node2')
+        self.assertEqual(r2.message, 'No')
