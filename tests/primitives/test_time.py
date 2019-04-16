@@ -123,6 +123,17 @@ class TimeTestCase(unittest.TestCase):
         )
         self.assertEqual('30 Nov 00 00:00', result)
 
+        t = time_from_string('2019-04-16T01')
+        result = BotlangSystem.run(
+            '(time-to-string {} "%d %H:%M")'.format(t)
+        )
+        self.assertEqual(result, '16 01:00')
+
+        result = BotlangSystem.run(
+            '(time-to-string {} "%d %H:%M" "America/Santiago")'.format(t)
+        )
+        self.assertEqual(result, '15 21:00')
+
     def test_time_localize(self):
         t = time_from_string('14 Apr 19 18:00')
         self.assertEqual(datetime.fromtimestamp(t, tz=pytz.utc).hour, 18)
