@@ -43,8 +43,8 @@ def time_from_string(string):
     return calendar.timegm(dt.utctimetuple())
 
 
-def time_to_string(time_to_convert, format):
-    return time.strftime(format, time.gmtime(time_to_convert))
+def time_to_string(time_to_convert, format, tz_string='UTC'):
+    return time_localize(time_to_convert, tz_string).strftime(format)
 
 
 def time_localize(time_to_localize, tz_string='UTC'):

@@ -112,11 +112,16 @@ class TimeTestCase(unittest.TestCase):
         self.assertEqual(time_parsed_seconds, time_botlang)
 
     def test_time_to_string(self):
-        time = 975553200  # 30 nov 00
-        result = BotlangSystem.run("""
-            (time-to-string """ + str(time) + """ "%d %b %y")
-        """)
-        self.assertEqual("30 Nov 00", result)
+        t = 975553200  # 30 nov 00
+        result = BotlangSystem.run(
+            '(time-to-string {} "%d %b %y %H:%M")'.format(t)
+        )
+        self.assertEqual('30 Nov 00 03:00', result)
+
+        result = BotlangSystem.run(
+            '(time-to-string {} "%d %b %y %H:%M" "America/Santiago")'.format(t)
+        )
+        self.assertEqual('30 Nov 00 00:00', result)
 
     def test_time_localize(self):
         t = time_from_string('14 Apr 19 18:00')
