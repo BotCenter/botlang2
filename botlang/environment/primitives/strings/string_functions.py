@@ -77,16 +77,22 @@ def remove_same_words(strings_list):
                 tokens2 = strings_list[j].split(' ')
                 for token in tokens1:
                     if token in tokens2:
+                        # Add to words_to_remove set.
                         words_to_remove.add(token)
+                        # Remove some variations too
+                        if len(token) > 6:
+                            words_to_remove.add(token[:-1])
 
+        # Remove longest words first
+        words_to_remove = sorted(list(words_to_remove), reverse=True)
         return [
             reduce(
                 lambda acc, n: acc.replace(n, ''), words_to_remove, string
             ).strip()
             for string in strings_list
-        ]
+        ], words_to_remove
     else:
-        return strings_list
+        return strings_list, []
 
 
 def string_find_similar(string, list_of_strings, threshold=0.3, lang='ES'):
@@ -96,13 +102,23 @@ def string_find_similar(string, list_of_strings, threshold=0.3, lang='ES'):
     else:
         raise Exception('Language not supported')
 
-    clean_strings = remove_same_words([
+    clean_strings, words_removed = remove_same_words([
         remove_stop_words(s, stop_words) for s in list_of_strings
     ])
-    comparison_string = remove_stop_words(string.lower(), stop_words)
+    words_to_remove = [unidecode(s.lower()) for s in words_removed]
+
+    comparison_string = remove_stop_words(string, stop_words)
+    for to_remove in words_to_remove:
+        comparison_string = comparison_string.replace(to_remove, '')
+    comparison_string = ' '.join(w for w in comparison_string.split(' ') if w)
+
+    if len(comparison_string) == 0:
+        return Nil
+
+    simple_strings = [unidecode(s.lower()) for s in clean_strings]
     similarities = [
         (original, string_similarity(comparison_string, clean))
-        for original, clean in zip(list_of_strings, clean_strings)
+        for original, clean in zip(list_of_strings, simple_strings)
     ]
     similarities.sort(key=lambda s: s[1], reverse=True)
     most_similar = similarities[0]

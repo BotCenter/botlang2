@@ -17,6 +17,12 @@ class StringPrimitivesTestCase(TestCase):
         'Interesado En Contratar O Renovar'
     ]
 
+    test_strings2 = [
+        'Teléfonos móviles',
+        'Teléfonos fijos',
+        'Computadores'
+    ]
+
     def test_string_similarity(self):
 
         self.assertEqual(string_similarity('hola', 'hola'), 1)
@@ -28,7 +34,7 @@ class StringPrimitivesTestCase(TestCase):
 
     def test_remove_same_words(self):
 
-        list_without_duplicates = remove_same_words(self.list_of_strings)
+        list_without_duplicates, _ = remove_same_words(self.list_of_strings)
         self.assertSequenceEqual(
             [
                 'Residenciales',
@@ -113,6 +119,25 @@ class StringPrimitivesTestCase(TestCase):
                 'no quiero na', self.list_of_strings
             ),
             Nil
+        )
+
+        self.assertEqual(
+            self.get_similar_string(
+                'computador', self.test_strings2
+            ),
+            self.test_strings2[2]
+        )
+        self.assertEqual(
+            self.get_similar_string(
+                'telefono movil', self.test_strings2
+            ),
+            self.test_strings2[0]
+        )
+        self.assertEqual(
+            self.get_similar_string(
+                'fijo', self.test_strings2
+            ),
+            self.test_strings2[1]
         )
 
     def test_matches(self):
