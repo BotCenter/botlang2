@@ -93,3 +93,19 @@ class CollectionsTestCase(TestCase):
             (get a_list 10 "chao")
         """)
         self.assertEqual("chao", value)
+
+    def test_extend(self):
+
+        value = BotlangSystem.run('(extend (list 1 2 3) (list 4 5 6))')
+        self.assertSequenceEqual(value, [1, 2, 3, 4, 5, 6])
+
+        value = BotlangSystem.run('(extend (list 1 2 3) 4)')
+        self.assertSequenceEqual(value, [1, 2, 3, 4])
+
+    def test_find(self):
+
+        value = BotlangSystem.run('(find (fun (e) (> e 3)) (list 1 2 3 4 5))')
+        self.assertEqual(value, 4)
+
+        value = BotlangSystem.run('(find (fun (e) (> e 5)) (list 1 2 3 4 5))')
+        self.assertEqual(value, Nil)
