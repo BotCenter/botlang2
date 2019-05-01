@@ -44,7 +44,8 @@ class StringPrimitivesTestCase(TestCase):
             list_without_duplicates
         )
 
-    def get_similar_string(self, test, strings_list):
+    @classmethod
+    def get_similar_string(cls, test, strings_list):
 
         botlang_list = '(list {})'.format(
             reduce(

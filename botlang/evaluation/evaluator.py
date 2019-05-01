@@ -259,7 +259,8 @@ class Evaluator(ASTVisitor):
                 slots_node
             )
 
-    def handle_digression(self, result, slots_node):
+    @classmethod
+    def handle_digression(cls, result, slots_node):
 
         if result.next_node == Slots.DIGRESSION_RETURN:
             return BotResultValue(result.data, result.message, slots_node)

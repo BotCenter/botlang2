@@ -19,14 +19,20 @@ class SExpression(object):
     def copy(self):
         raise NotImplementedError
 
-    def is_tree(self):
+    @classmethod
+    def is_tree(cls):
         return False
 
-    def is_atom(self):
+    @classmethod
+    def is_atom(cls):
         return False
 
 
 class Atom(SExpression):
+
+    @classmethod
+    def is_atom(cls):
+        return True
 
     def __init__(self, token, source_reference):
 
@@ -46,9 +52,6 @@ class Atom(SExpression):
     @property
     def token(self):
         return self.code
-
-    def is_atom(self):
-        return True
 
     def to_ast(self, quoted_parent=False):
 
@@ -157,6 +160,10 @@ class Atom(SExpression):
 
 class Tree(SExpression):
 
+    @classmethod
+    def is_tree(cls):
+        return True
+
     def __init__(self, children, code, source_reference, quoted=False):
 
         self.children = children
@@ -179,9 +186,6 @@ class Tree(SExpression):
             self.source_reference,
             self.quoted
         )
-
-    def is_tree(self):
-        return True
 
     def as_quoted(self):
 

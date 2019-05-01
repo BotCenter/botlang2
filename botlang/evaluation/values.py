@@ -27,7 +27,8 @@ class FunVal(object):
     def apply(self, *args):
         raise NotImplementedError('Must implement apply(*args)')
 
-    def is_reflective(self):
+    @classmethod
+    def is_reflective(cls):
         return False
 
 
@@ -55,7 +56,8 @@ class ReflectivePrimitive(Primitive):
     def apply(self, evaluation_env, *args):
         return self.proc(evaluation_env, *args)
 
-    def is_reflective(self):
+    @classmethod
+    def is_reflective(cls):
         return True
 
 
@@ -107,10 +109,12 @@ class Closure(FunVal):
 
 class DialogNode(object):
 
-    def is_terminal(self):
+    @classmethod
+    def is_terminal(cls):
         raise NotImplementedError
 
-    def is_digression_return(self):
+    @classmethod
+    def is_digression_return(cls):
         return False
 
 
@@ -134,7 +138,8 @@ class BotNodeValue(Closure, DialogNode):
     def name(self):
         return self.env.get_function_name(self)
 
-    def is_terminal(self):
+    @classmethod
+    def is_terminal(cls):
         return False
 
 
@@ -160,10 +165,12 @@ class TerminalNode(DialogNode):
     def __init__(self, state):
         self.state = state
 
-    def is_terminal(self):
+    @classmethod
+    def is_terminal(cls):
         return True
 
-    def name(self):
+    @classmethod
+    def name(cls):
         return None
 
 
@@ -174,10 +181,12 @@ class ReturnNode(DialogNode):
     def __init__(self, inner_node):
         self.inner_node = inner_node
 
-    def is_terminal(self):
+    @classmethod
+    def is_terminal(cls):
         return False
 
-    def is_digression_return(self):
+    @classmethod
+    def is_digression_return(cls):
         return True
 
 
