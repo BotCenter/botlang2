@@ -188,7 +188,7 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(BotlangSystem().eval('(list? "#f")'))
 
     def test_random(self):
-        iterations = 1000
-        for index in range(iterations):
+        iterations = 100
+        for _ in range(iterations):
             value = BotlangSystem().eval('(random 0 5)')
             self.assertTrue(0 <= value <= 5)

@@ -242,6 +242,8 @@ class BotlangClassesTestCase(TestCase):
         self.assertEqual(p1['name'], 'Producto 1')
         self.assertEqual(p1['price'], 1000)
         self.assertEqual(p1[CLASS_REFERENCE_KEY], 'Product')
+        self.assertEqual(p2['price'], 3000)
+        self.assertEqual(p3['price'], 2000)
 
     def test_super(self):
         # TODO: still broken in some cases. Test that and then fix.

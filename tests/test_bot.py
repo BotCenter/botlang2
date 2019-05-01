@@ -178,7 +178,7 @@ class TestBots(unittest.TestCase):
         self.assertEqual(r3.message, 3)
 
         r = r3
-        for i in range(0, 10):
+        for _ in range(0, 10):
             r = BotlangSystem.bot_instance().eval_bot(
                 code, '', r.next_node, r.data
             )

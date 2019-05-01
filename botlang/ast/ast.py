@@ -5,9 +5,14 @@ class ASTNode(object):
     """
     Language expression
     """
-    def accept(self, visitor, environment):
+    def accept(self, visitor, env):
+        """
+        :param visitor: an ASTVisitor
+        :param env: an Environment
+        :return:
+        """
         raise NotImplementedError(
-            'Must implement accept(visitor, environment)'
+            'Must implement accept(visitor, env)'
         )
 
     def __init__(self):
@@ -36,7 +41,7 @@ class Val(ASTNode):
         """
         :param value: any 
         """
-        super(ASTNode, self).__init__()
+        super(Val, self).__init__()
         self.value = value
 
     def accept(self, visitor, env):
@@ -57,7 +62,7 @@ class ListVal(ASTNode):
         """
         :param elements: List[Val]
         """
-        super(ASTNode, self).__init__()
+        super(ListVal, self).__init__()
         self.elements = elements
 
     def accept(self, visitor, env):
@@ -81,7 +86,7 @@ class If(ASTNode):
         :param if_true: ASTNode
         :param if_false: ASTNode
         """
-        super(ASTNode, self).__init__()
+        super(If, self).__init__()
         self.cond = cond
         self.if_true = if_true
         self.if_false = if_false
@@ -105,11 +110,11 @@ class Cond(ASTNode):
         """
         :param cond_clauses: List[CondPredicateClause*, CondElseClause]
         """
-        super(ASTNode, self).__init__()
+        super(Cond, self).__init__()
         self.cond_clauses = cond_clauses
 
-    def accept(self, visitor, environment):
-        return visitor.visit_cond(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_cond(self, env)
 
     def print_node_type(self):
         return 'cond node'
@@ -128,12 +133,12 @@ class CondPredicateClause(ASTNode):
         :param predicate: ASTNode
         :param then_body: ASTNode
         """
-        super(ASTNode, self).__init__()
+        super(CondPredicateClause, self).__init__()
         self.predicate = predicate
         self.then_body = then_body
 
-    def accept(self, visitor, environment):
-        return visitor.visit_cond_predicate_clause(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_cond_predicate_clause(self, env)
 
     def print_node_type(self):
         return 'cond clause'
@@ -153,11 +158,11 @@ class CondElseClause(ASTNode):
         """
         :param then_body: ASTNode 
         """
-        super(ASTNode, self).__init__()
+        super(CondElseClause, self).__init__()
         self.then_body = then_body
 
-    def accept(self, visitor, environment):
-        return visitor.visit_cond_else_clause(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_cond_else_clause(self, env)
 
     def print_node_type(self):
         return 'else clause'
@@ -176,7 +181,7 @@ class And(ASTNode):
         :param cond1: ASTNode 
         :param cond2: ASTNode
         """
-        super(ASTNode, self).__init__()
+        super(And, self).__init__()
         self.cond1 = cond1
         self.cond2 = cond2
 
@@ -200,7 +205,7 @@ class Or(ASTNode):
         :param cond1: ASTNode 
         :param cond2: ASTNode
         """
-        super(ASTNode, self).__init__()
+        super(Or, self).__init__()
         self.cond1 = cond1
         self.cond2 = cond2
 
@@ -223,7 +228,7 @@ class Id(ASTNode):
         """
         :param identifier: string 
         """
-        super(ASTNode, self).__init__()
+        super(Id, self).__init__()
         self.identifier = identifier
 
     def accept(self, visitor, env):
@@ -245,7 +250,7 @@ class Fun(ASTNode):
         :param params: List[string]
         :param body: BodySequence
         """
-        super(ASTNode, self).__init__()
+        super(Fun, self).__init__()
         self.params = params
         self.body = body
 
@@ -271,7 +276,7 @@ class App(ASTNode):
         :param fun_expr: ASTNode 
         :param arg_exprs: List[ASTNode]
         """
-        super(ASTNode, self).__init__()
+        super(App, self).__init__()
         self.fun_expr = fun_expr
         self.arg_exprs = arg_exprs
 
@@ -296,7 +301,7 @@ class BodySequence(ASTNode):
         """
         :param expressions: List[ASTNode] 
         """
-        super(ASTNode, self).__init__()
+        super(BodySequence, self).__init__()
         self.expressions = expressions
 
     def accept(self, visitor, env):
@@ -330,7 +335,7 @@ class ClassDefinition(ASTNode):
         :param class_attributes: List[InstanceAttributeDefinition]
         :param class_methods: List[MethodDefinition]
         """
-        super(ASTNode, self).__init__()
+        super(ClassDefinition, self).__init__()
         self.name = class_name
         self.superclass = superclass_name
         self.attributes = attributes
@@ -362,7 +367,7 @@ class AttributeDefinition(ASTNode):
         :param identifier: string
         :param attribute_definition: ASTNode
         """
-        super(ASTNode, self).__init__()
+        super(AttributeDefinition, self).__init__()
         self.identifier = identifier
         self.definition = attribute_definition
 
@@ -386,7 +391,7 @@ class MethodDefinition(ASTNode):
         :param identifier: string
         :param function_definition: Fun
         """
-        super(ASTNode, self).__init__()
+        super(MethodDefinition, self).__init__()
         self.identifier = identifier
         self.definition = function_definition
 
@@ -408,12 +413,12 @@ class ModuleDefinition(ASTNode):
     Module definition
     """
     def __init__(self, name, body):
-        super(ASTNode, self).__init__()
+        super(ModuleDefinition, self).__init__()
         self.name = name
         self.body = body
 
-    def accept(self, visitor, environment):
-        return visitor.visit_module_definition(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_module_definition(self, env)
 
     def print_node_type(self):
         return 'module definition'
@@ -428,11 +433,11 @@ class ModuleFunctionExport(ASTNode):
     Module function's export
     """
     def __init__(self, identifiers_to_export):
-        super(ASTNode, self).__init__()
+        super(ModuleFunctionExport, self).__init__()
         self.identifiers_to_export = identifiers_to_export
 
-    def accept(self, visitor, environment):
-        return visitor.visit_module_function_export(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_module_function_export(self, env)
 
     def print_node_type(self):
         return 'module function export'
@@ -448,11 +453,11 @@ class ModuleImport(ASTNode):
     Module import
     """
     def __init__(self, module_name):
-        super(ASTNode, self).__init__()
+        super(ModuleImport, self).__init__()
         self.module_name = module_name
 
-    def accept(self, visitor, environment):
-        return visitor.visit_module_import(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_module_import(self, env)
 
     def print_node_type(self):
         return 'module import'
@@ -470,7 +475,7 @@ class Definition(ASTNode):
         :param name: string 
         :param expr: ASTNode
         """
-        super(ASTNode, self).__init__()
+        super(Definition, self).__init__()
         self.name = name
         self.expr = expr
 
@@ -494,7 +499,7 @@ class Local(ASTNode):
         :param definitions: List[Definition]
         :param body: BodySequence
         """
-        super(ASTNode, self).__init__()
+        super(Local, self).__init__()
         self.definitions = definitions
         self.body = body
 
@@ -520,7 +525,7 @@ class BotNode(ASTNode):
         :param params: List[string] 
         :param body: BodySequence
         """
-        super(ASTNode, self).__init__()
+        super(BotNode, self).__init__()
         self.params = params
         self.body = body
 
@@ -542,7 +547,7 @@ class BotResult(ASTNode):
     Bot node computation result.
     """
     def __init__(self, data, message, next_node):
-        super(ASTNode, self).__init__()
+        super(BotResult, self).__init__()
         self.data = data
         self.message = message
         self.next_node = next_node
@@ -566,13 +571,13 @@ class BotSlotsNode(ASTNode):
     BotNode with slots
     """
     def __init__(self, node_name, params, body):
-        super(ASTNode, self).__init__()
+        super(BotSlotsNode, self).__init__()
         self.node_name = node_name
         self.params = params
         self.body = body
 
-    def accept(self, visitor, environment):
-        return visitor.visit_slots_node(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_slots_node(self, env)
 
     def print_node_type(self):
         return 'bot slots node'
@@ -586,15 +591,15 @@ class BotSlotsNode(ASTNode):
 class SlotsNodeBody(ASTNode):
 
     def __init__(self, params, before, digress, slots, then):
-        super(ASTNode, self).__init__()
+        super(SlotsNodeBody, self).__init__()
         self.params = params
         self.before = before
         self.digress = digress
         self.slots = slots
         self.then = then
 
-    def accept(self, visitor, environment):
-        return visitor.visit_slots_node_body(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_slots_node_body(self, env)
 
     def print_node_type(self):
         return 'bot slots node body'
@@ -612,14 +617,14 @@ class SlotsNodeBody(ASTNode):
 class SlotDefinition(ASTNode):
 
     def __init__(self, slot_name, context, match_body, ask_body):
-        super(ASTNode, self).__init__()
+        super(SlotDefinition, self).__init__()
         self.slot_name = slot_name
         self.context = context
         self.match_body = match_body
         self.ask_body = ask_body
 
-    def accept(self, visitor, environment):
-        return visitor.visit_slot_definition(self, environment)
+    def accept(self, visitor, env):
+        return visitor.visit_slot_definition(self, env)
 
     def print_node_type(self):
         return 'slot definition'
@@ -642,7 +647,7 @@ class SyntaxPattern(ASTNode):
         :param identifier: string 
         :param arguments: List[string]
         """
-        super(ASTNode, self).__init__()
+        super(SyntaxPattern, self).__init__()
         self.identifier = identifier
         self.arguments = arguments
 
@@ -669,7 +674,7 @@ class DefineSyntax(ASTNode):
         :param pattern: SyntaxPattern
         :param template: SExpr
         """
-        super(ASTNode, self).__init__()
+        super(DefineSyntax, self).__init__()
         self.pattern = pattern
         self.template = template
 

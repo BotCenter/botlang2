@@ -504,7 +504,6 @@ class Tree(SExpression):
 
     def to_slot_ast_node(self):
 
-        assert self.children[0].token == 'slot'
         return SlotDefinition(
             self.children[1].token,
             self.children[2].token,
