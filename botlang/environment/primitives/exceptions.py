@@ -19,9 +19,9 @@ def try_catch_complete(process, failure, after_execution=None, prod=True):
             if prod:
                 exception = NativeException('system', 'system')
             else:
-                exception = NativeException('system',
-                                            r"""Exception:
-                                            {}""".format(python_exception))
+                exception = NativeException(
+                    'system', '{}'.format(python_exception)
+                )
         return failure(exception)
 
     finally:

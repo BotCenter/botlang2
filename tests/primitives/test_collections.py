@@ -70,4 +70,26 @@ class CollectionsTestCase(TestCase):
         """)
         self.assertEqual(Nil, value)
 
+    def test_get_default(self):
 
+        value = BotlangSystem.run("""
+            (define a_dict (make-dict))
+            (get a_dict "uno" 1)
+        """)
+        self.assertEqual(1, value)
+
+        value = BotlangSystem.run("""
+            (define a_dict (make-dict))
+            (define another_dict (make-dict))
+            (put! another_dict "uno" 1)
+            (put! another_dict "dos" 2)
+            (put! a_dict "another_dict" another_dict)
+            (get a_dict "another_dict.tres" nil)
+        """)
+        self.assertEqual(value, Nil)
+
+        value = BotlangSystem.run("""
+            (define a_list (list "hola" "como" "estas"))
+            (get a_list 10 "chao")
+        """)
+        self.assertEqual("chao", value)

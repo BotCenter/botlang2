@@ -9,10 +9,15 @@ class ExceptionsTestCase(TestCase):
 
         self.assertFalse(BotlangSystem().eval('(exception? #t)'))
         self.assertFalse(BotlangSystem().eval('(exception? nil)'))
-        self.assertTrue(
-            BotlangSystem().eval('(exception? (get (make-dict (list)) 1))'))
-        self.assertFalse(BotlangSystem().eval('(exception? (get (list 1) 0))'))
-        self.assertTrue(BotlangSystem().eval('(exception? (get (list 1) 1))'))
+        self.assertTrue(BotlangSystem().eval(
+            '(exception? (try-catch (fun () (get (make-dict) 1)) (fun (e) e)))'
+        ))
+        self.assertFalse(BotlangSystem().eval(
+            '(exception? (try-catch (fun () (get (list 1) 0)) (fun (e) e)))'
+        ))
+        self.assertTrue(BotlangSystem().eval(
+            '(exception? (try-catch (fun () (get (list 1) 1)) (fun (e) e)))'
+        ))
 
     def test_success(self):
 
@@ -48,10 +53,10 @@ class ExceptionsTestCase(TestCase):
         """
 
         result = BotlangSystem.run(complex_botlang)
-        self.assertEqual(result.name, 'collection')
-        self.assertEqual(result.description, ('The collection doest not '
-                                              'have the key/index {}.'
-                                              ).format('1'))
+        self.assertEqual(result.name, 'system')
+        self.assertEqual(
+            result.description, 'Collection does not have key/index %s' % '1'
+        )
 
         # Python errors
         complex_botlang = r"""
@@ -74,7 +79,6 @@ class ExceptionsTestCase(TestCase):
                 """
         result = BotlangSystem.run(complex_botlang)
         self.assertEqual(result.name, 'system')
-        self.assertRegex(result.description, 'Exception')
         self.assertRegex(result.description, 'division by zero')
 
         # Catch returns a value
@@ -100,7 +104,6 @@ class ExceptionsTestCase(TestCase):
         error = result.get('error')
         finally_result = result.get('success')
         self.assertEqual(error.name, 'system')
-        self.assertRegex(error.description, 'Exception')
         self.assertRegex(error.description, 'division by zero')
         self.assertEqual(finally_result, 'Finally called')
 
