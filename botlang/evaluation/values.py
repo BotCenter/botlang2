@@ -16,12 +16,6 @@ class NativeException(object):
         self.name = name
         self.description = description
 
-    def get_type(self):
-        return self.name
-
-    def description(self):
-        return self.description
-
 
 class FunVal(object):
     """
@@ -68,7 +62,7 @@ class ReflectivePrimitive(Primitive):
 class InvalidArgumentsException(Exception):
 
     def __init__(self, expected, given):
-        super(Exception, self).__init__(
+        super(InvalidArgumentsException, self).__init__(
             'function expects {0} arguments, {1} given'.format(
                 expected,
                 given

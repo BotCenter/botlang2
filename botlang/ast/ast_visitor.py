@@ -114,16 +114,16 @@ class ASTVisitor(object):
             bot_node.body.accept(self, env)
         ).add_code_reference(bot_node.s_expr)
 
-    def visit_bot_result(self, bot_result, env):
+    def visit_bot_result(self, bot_result_node, env):
         """
-        :param bot_result: ast.BotResult
+        :param bot_result_node: ast.BotResult
         :param env: Environment 
         """
         return BotResult(
-            bot_result.data.accept(self, env),
-            bot_result.message.accept(self, env),
-            bot_result.next_node.accept(self, env)
-        ).add_code_reference(bot_result.s_expr)
+            bot_result_node.data.accept(self, env),
+            bot_result_node.message.accept(self, env),
+            bot_result_node.next_node.accept(self, env)
+        ).add_code_reference(bot_result_node.s_expr)
 
     def visit_app(self, app_node, env):
         """

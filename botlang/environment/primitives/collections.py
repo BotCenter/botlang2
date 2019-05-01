@@ -112,7 +112,7 @@ LIST_OPERATIONS = {
     'length': len,
     'list': lambda *x: list(x),
     'map': lambda f, l: list(map(f, l)),
-    'reduce': lambda f, l: reduce(f, l),
+    'reduce': reduce,
     'fold': lambda v, f, l: reduce(f, l, v),
     'filter': lambda f, l: list(filter(f, l)),
     'sort': sort_function,
