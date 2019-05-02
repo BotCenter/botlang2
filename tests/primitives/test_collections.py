@@ -94,6 +94,20 @@ class CollectionsTestCase(TestCase):
         """)
         self.assertEqual("chao", value)
 
+    def test_key_exists(self):
+
+        value = BotlangSystem.run("""
+        (define a (make-dict (list (cons "a" "b"))))
+        (exists? a "a")
+        """)
+        self.assertTrue(value)
+
+        value = BotlangSystem.run("""
+        (define d (make-dict (list (cons "a" "b"))))
+        (exists? d "b")
+        """)
+        self.assertFalse(value)
+
     def test_extend(self):
 
         value = BotlangSystem.run('(extend (list 1 2 3) (list 4 5 6))')
@@ -109,3 +123,23 @@ class CollectionsTestCase(TestCase):
 
         value = BotlangSystem.run('(find (fun (e) (> e 5)) (list 1 2 3 4 5))')
         self.assertEqual(value, Nil)
+
+    def test_empty_list(self):
+
+        value = BotlangSystem.run('(empty? (list))')
+        self.assertTrue(value)
+
+        value = BotlangSystem.run('(empty? (list 1))')
+        self.assertFalse(value)
+
+        value = BotlangSystem.run('(empty? (list 1 2 3 4))')
+        self.assertFalse(value)
+
+        value = BotlangSystem.run('(not-empty? (list))')
+        self.assertFalse(value)
+
+        value = BotlangSystem.run('(not-empty? (list 1))')
+        self.assertTrue(value)
+
+        value = BotlangSystem.run('(not-empty? (list 1 2 3 4))')
+        self.assertTrue(value)

@@ -439,12 +439,17 @@ class BotlangTestCase(unittest.TestCase):
 
     def test_nil(self):
 
-        code = """
+        result = BotlangSystem.run("""
             [define value nil]
             (nil? value)
-        """
-        result = BotlangSystem.run(code)
+        """)
         self.assertTrue(result)
+
+        result = BotlangSystem.run('(not-nil? nil)')
+        self.assertFalse(result)
+
+        result = BotlangSystem.run('(nil? #f)')
+        self.assertFalse(result)
 
     def test_nil_truth_value(self):
 

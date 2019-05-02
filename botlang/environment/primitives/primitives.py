@@ -55,6 +55,7 @@ class BotlangPrimitives(object):
 
     TYPE_CHECKING = {
         'nil?': lambda v: v is Nil or v is None,
+        'not-nil?': lambda v: v is not Nil and v is not None,
         'bool?': lambda b: isinstance(b, bool),
         'str?': lambda s: isinstance(s, str),
         'num?': lambda n:

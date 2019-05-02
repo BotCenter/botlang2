@@ -34,6 +34,10 @@ def cons(head, tail):
     return [head, tail]
 
 
+def is_list_empty(lst):
+    return len(lst) == 0
+
+
 def dict_put(ordered_dict, key, value):
     return OrderedDict(
         list(ordered_dict.items()) + [(key, value)]
@@ -98,7 +102,8 @@ DICT_OPERATIONS = {
     'put!': dict_put_mutate,
     'associations': lambda d: list(d.items()),
     'keys': lambda d: list(d.keys()),
-    'values': lambda d: list(d.values())
+    'values': lambda d: list(d.values()),
+    'exists?': lambda d, k: d.get(k) is not None
 }
 
 
@@ -122,5 +127,7 @@ LIST_OPERATIONS = {
     'cons': cons,
     'reverse': lambda l: l[::-1],
     'enumerate': lambda l: list(enumerate(l)),
-    'sum': sum
+    'sum': sum,
+    'empty?': is_list_empty,
+    'not-empty?': lambda l: not is_list_empty(l)
 }
