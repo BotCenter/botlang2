@@ -157,3 +157,7 @@ class CollectionsTestCase(TestCase):
         list1, list2 = BotlangSystem.run('(split-n (list 1 2 3 4 5 6) 0)')
         self.assertSequenceEqual(list1, [])
         self.assertSequenceEqual(list2, [1, 2, 3, 4, 5, 6])
+
+        list1, list2 = BotlangSystem.run('(split-n (list) 5)')
+        self.assertSequenceEqual(list1, [])
+        self.assertSequenceEqual(list2, [])
