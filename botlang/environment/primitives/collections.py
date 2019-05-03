@@ -89,6 +89,10 @@ def make_dict(bindings=None):
     return OrderedDict(bindings)
 
 
+def split_n(lst, n):
+    return [lst[:n], lst[n:]]
+
+
 COMMON_OPERATIONS = {
     'get': dict_or_list_get,
     'get-or-nil': get_or_nil,
@@ -114,6 +118,7 @@ LIST_OPERATIONS = {
     'tail': lambda x: x[1:],
     'init': lambda x: x[:-1],
     'last': lambda x: x[-1],
+    'split-n': split_n,
     'length': len,
     'list': lambda *x: list(x),
     'map': lambda f, l: list(map(f, l)),

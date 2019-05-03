@@ -143,3 +143,17 @@ class CollectionsTestCase(TestCase):
 
         value = BotlangSystem.run('(not-empty? (list 1 2 3 4))')
         self.assertTrue(value)
+
+    def test_split_n(self):
+
+        list1, list2 = BotlangSystem.run('(split-n (list 1 2 3 4 5 6) 2)')
+        self.assertSequenceEqual(list1, [1, 2])
+        self.assertSequenceEqual(list2, [3, 4, 5, 6])
+
+        list1, list2 = BotlangSystem.run('(split-n (list 1 2 3 4 5 6) 10)')
+        self.assertSequenceEqual(list1, [1, 2, 3, 4, 5, 6])
+        self.assertSequenceEqual(list2, [])
+
+        list1, list2 = BotlangSystem.run('(split-n (list 1 2 3 4 5 6) 0)')
+        self.assertSequenceEqual(list1, [])
+        self.assertSequenceEqual(list2, [1, 2, 3, 4, 5, 6])
