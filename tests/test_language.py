@@ -4,7 +4,7 @@ from collections import OrderedDict
 from botlang import BotlangErrorException
 from botlang.interpreter import BotlangSystem
 from botlang.evaluation.evaluator import Primitive
-from botlang.evaluation.values import BotResultValue
+from botlang.evaluation.values import BotResultValue, Nil
 
 
 class BotlangTestCase(unittest.TestCase):
@@ -40,6 +40,8 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('(if #t 2 3)'), 2)
         self.assertEqual(BotlangSystem.run('(if #f 2 3)'), 3)
         self.assertEqual(BotlangSystem.run('(if (> 4 5) 100 200)'), 200)
+        self.assertEqual(BotlangSystem.run('(if #t 2)'), 2)
+        self.assertEqual(BotlangSystem.run('(if #f 2)'), Nil)
 
     def test_cond(self):
 

@@ -1,6 +1,7 @@
 import ast as python_ast
 from botlang.ast.ast import *
 from botlang.evaluation.oop import OopHelper
+from botlang.evaluation.values import Nil
 
 
 class SExpression(object):
@@ -278,7 +279,7 @@ class Tree(SExpression):
         return If(
             self.children[1].to_ast(),
             self.children[2].to_ast(),
-            self.children[3].to_ast()
+            self.children[3].to_ast() if len(self.children) > 3 else Val(Nil)
         ).add_code_reference(self)
 
     def cond_node(self):
