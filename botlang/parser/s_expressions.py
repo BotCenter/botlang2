@@ -387,15 +387,13 @@ class Tree(SExpression):
     def and_node(self):
 
         return And(
-            self.children[1].to_ast(),
-            self.children[2].to_ast()
+            [child.to_ast() for child in self.children[1:]]
         ).add_code_reference(self)
 
     def or_node(self):
 
         return Or(
-            self.children[1].to_ast(),
-            self.children[2].to_ast()
+            [child.to_ast() for child in self.children[1:]]
         ).add_code_reference(self)
 
     def define_node(self):

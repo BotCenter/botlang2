@@ -176,14 +176,12 @@ class And(ASTNode):
     """
     Logical 'and'
     """
-    def __init__(self, cond1, cond2):
+    def __init__(self, conditions):
         """
-        :param cond1: ASTNode 
-        :param cond2: ASTNode
+        :param conditions: List[ASTNode]
         """
         super(And, self).__init__()
-        self.cond1 = cond1
-        self.cond2 = cond2
+        self.conditions = conditions
 
     def accept(self, visitor, env):
         return visitor.visit_and(self, env)
@@ -192,7 +190,7 @@ class And(ASTNode):
         return 'and node'
 
     def copy(self):
-        return And(self.cond1.copy(), self.cond2.copy())\
+        return And([cond.copy() for cond in self.conditions])\
             .add_code_reference(self.s_expr)
 
 
@@ -200,14 +198,13 @@ class Or(ASTNode):
     """
     Logical 'or'
     """
-    def __init__(self, cond1, cond2):
+
+    def __init__(self, conditions):
         """
-        :param cond1: ASTNode 
-        :param cond2: ASTNode
+        :param conditions: List[ASTNode]
         """
         super(Or, self).__init__()
-        self.cond1 = cond1
-        self.cond2 = cond2
+        self.conditions = conditions
 
     def accept(self, visitor, env):
         return visitor.visit_or(self, env)
@@ -216,7 +213,7 @@ class Or(ASTNode):
         return 'or node'
 
     def copy(self):
-        return Or(self.cond1.copy(), self.cond2.copy())\
+        return Or([cond.copy() for cond in self.conditions])\
             .add_code_reference(self.s_expr)
 
 

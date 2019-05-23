@@ -156,7 +156,7 @@ class BotlangTestCase(unittest.TestCase):
 
         t0 = math.floor(BotlangSystem.run('(timestamp)'))
         import time
-        time.sleep(0.5)
+        time.sleep(0.51)
         t1 = round(BotlangSystem.run('(timestamp)'))
         self.assertEqual(t1 - t0, 1)
 

@@ -141,8 +141,12 @@ class Evaluator(ASTVisitor):
         Logical 'and' evaluation
         """
         self.execution_stack.append(and_node)
-        left_branch = and_node.cond1.accept(self, env)
-        result = left_branch and and_node.cond2.accept(self, env)
+        result = True
+        for branch in and_node.conditions:
+            condition = branch.accept(self, env)
+            if not condition:
+                result = False
+                break
         self.execution_stack.pop()
         return result
 
@@ -151,8 +155,12 @@ class Evaluator(ASTVisitor):
         Logical 'or' evaluation
         """
         self.execution_stack.append(or_node)
-        left_branch = or_node.cond1.accept(self, env)
-        result = left_branch or or_node.cond2.accept(self, env)
+        result = False
+        for branch in or_node.conditions:
+            condition = branch.accept(self, env)
+            if condition:
+                result = True
+                break
         self.execution_stack.pop()
         return result
 

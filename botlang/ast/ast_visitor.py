@@ -73,8 +73,7 @@ class ASTVisitor(object):
         :param env: Environment
         """
         return And(
-            and_node.cond1.accept(self, env),
-            and_node.cond2.accept(self, env)
+            [cond.accept(self, env) for cond in and_node.conditions]
         ).add_code_reference(and_node.s_expr)
 
     def visit_or(self, or_node, env):
@@ -83,8 +82,7 @@ class ASTVisitor(object):
         :param env: Environment
         """
         return Or(
-            or_node.cond1.accept(self, env),
-            or_node.cond2.accept(self, env)
+            [cond.accept(self, env) for cond in or_node.conditions]
         ).add_code_reference(or_node.s_expr)
 
     def visit_id(self, id_node, env):

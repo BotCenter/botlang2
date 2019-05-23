@@ -27,6 +27,9 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(
             BotlangSystem.run('(and (not (nil? nil)) (equal? (length nil) 1))')
         )
+        self.assertTrue(BotlangSystem.run('(and #t #t #t)'))
+        self.assertFalse(BotlangSystem.run('(and #t #t #f)'))
+        self.assertFalse(BotlangSystem.run('(and #t #f (/ 1 0))'))
 
     def test_or(self):
 
@@ -34,6 +37,9 @@ class BotlangTestCase(unittest.TestCase):
         self.assertTrue(BotlangSystem.run('(or #t #f)'))
         self.assertTrue(BotlangSystem.run('(or #f #t)'))
         self.assertFalse(BotlangSystem.run('(or #f #f)'))
+
+        self.assertTrue(BotlangSystem.run('(or #f #f #t)'))
+        self.assertTrue(BotlangSystem.run('(or #f #t (/ 1 0))'))
 
     def test_if(self):
 
