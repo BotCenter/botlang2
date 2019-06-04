@@ -1,3 +1,4 @@
+import base64
 from urllib.parse import quote
 
 import requests
@@ -17,6 +18,12 @@ def build_response_dict(request_response):
         pass
 
     return response_dict
+
+
+def http_get_img(url, headers=None):
+    response = requests.get(url, headers=headers)
+    binary = response.content
+    return base64.b64encode(binary).decode('utf-8')
 
 
 def http_get(url, headers=None):
@@ -49,5 +56,6 @@ HTTP_PRIMITIVES = {
     'http-get': http_get,
     'http-post': http_post,
     'http-post-form': http_post_form,
-    'uri-escape': uri_escape
+    'uri-escape': uri_escape,
+    'http-get-img': http_get_img
 }
