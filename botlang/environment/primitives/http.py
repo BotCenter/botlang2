@@ -1,3 +1,4 @@
+import base64
 from urllib.parse import quote
 
 import requests
@@ -17,6 +18,12 @@ def build_response_dict(request_response):
         pass
 
     return response_dict
+
+
+def http_get_img(url, headers=None):
+    response = requests.get(url, headers=headers)
+    binary = response.content
+    return base64.b64encode(binary).decode('utf-8')
 
 
 def http_get(url, headers=None):
