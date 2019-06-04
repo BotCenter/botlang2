@@ -56,5 +56,6 @@ HTTP_PRIMITIVES = {
     'http-get': http_get,
     'http-post': http_post,
     'http-post-form': http_post_form,
-    'uri-escape': uri_escape
+    'uri-escape': uri_escape,
+    'http-get-img': http_get_img
 }
