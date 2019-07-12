@@ -45,7 +45,7 @@ class BotlangTestCase(unittest.TestCase):
         self.assertTrue(BotlangSystem.run('(or #f #t (/ 1 0))'))
 
         self.assertTrue(BotlangSystem.run('(or #t)'))
-        self.assertTrue(BotlangSystem.run('(or)'))
+        self.assertFalse(BotlangSystem.run('(or)'))
 
     def test_if(self):
 
