@@ -31,6 +31,9 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(BotlangSystem.run('(and #t #t #f)'))
         self.assertFalse(BotlangSystem.run('(and #t #f (/ 1 0))'))
 
+        self.assertTrue(BotlangSystem.run('(and #t)'))
+        self.assertTrue(BotlangSystem.run('(and)'))
+
     def test_or(self):
 
         self.assertTrue(BotlangSystem.run('(or #t #t)'))
@@ -40,6 +43,9 @@ class BotlangTestCase(unittest.TestCase):
 
         self.assertTrue(BotlangSystem.run('(or #f #f #t)'))
         self.assertTrue(BotlangSystem.run('(or #f #t (/ 1 0))'))
+
+        self.assertTrue(BotlangSystem.run('(or #t)'))
+        self.assertTrue(BotlangSystem.run('(or)'))
 
     def test_if(self):
 
