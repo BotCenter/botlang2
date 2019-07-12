@@ -4,6 +4,12 @@ from botlang.evaluation.oop import OopHelper
 from botlang.evaluation.values import Nil
 
 
+class BotLangSyntaxError(Exception):
+
+    def __init__(self, message):
+        super(BotLangSyntaxError, self).__init__(message)
+
+
 class SExpression(object):
     """
     https://en.wikipedia.org/wiki/S-expression
@@ -253,14 +259,17 @@ class Tree(SExpression):
 
     def module_definition_node(self):
 
-        module_body = BodySequence(
-            [s_expr.to_ast() for s_expr in self.children[2:]]
-        ).add_code_reference(self)
+        try:
+            module_body = BodySequence(
+                [s_expr.to_ast() for s_expr in self.children[2:]]
+            ).add_code_reference(self)
 
-        return ModuleDefinition(
-            self.children[1].to_ast(),
-            module_body
-        ).add_code_reference(self)
+            return ModuleDefinition(
+                self.children[1].to_ast(),
+                module_body
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A module definition requires a name and a body")
 
     def module_export_node(self):
 
@@ -269,18 +278,23 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def module_import_node(self):
-
-        return ModuleImport(
-            self.children[1].to_ast()
-        ).add_code_reference(self)
+        try:
+            return ModuleImport(
+                self.children[1].to_ast()
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("An import requires the name of the module being imported.")
 
     def if_node(self):
 
-        return If(
-            self.children[1].to_ast(),
-            self.children[2].to_ast(),
-            self.children[3].to_ast() if len(self.children) > 3 else Val(Nil)
-        ).add_code_reference(self)
+        try:
+            return If(
+                self.children[1].to_ast(),
+                self.children[2].to_ast(),
+                self.children[3].to_ast() if len(self.children) > 3 else Val(Nil)
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError('An if statement requires at least 3 parameters')
 
     def cond_node(self):
 
@@ -303,24 +317,26 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def class_definition_node(self):
+        try:
+            properties = self.children[2:]
+            superclass = self.get_superclass(properties)
 
-        properties = self.children[2:]
-        superclass = self.get_superclass(properties)
+            attributes = self.get_instance_attributes(properties)
+            class_attributes = self.get_class_attributes(properties)
 
-        attributes = self.get_instance_attributes(properties)
-        class_attributes = self.get_class_attributes(properties)
+            methods = self.get_instance_methods(properties)
+            class_methods = self.get_class_methods(properties)
 
-        methods = self.get_instance_methods(properties)
-        class_methods = self.get_class_methods(properties)
-
-        return ClassDefinition(
-            self.children[1].code,
-            superclass,
-            attributes,
-            methods,
-            class_attributes,
-            class_methods
-        ).add_code_reference(self)
+            return ClassDefinition(
+                self.children[1].code,
+                superclass,
+                attributes,
+                methods,
+                class_attributes,
+                class_methods
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A class definition requires, at the very least, a name")
 
     @classmethod
     def get_superclass(cls, properties):
@@ -397,11 +413,13 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def define_node(self):
-
-        return Definition(
-            self.children[1].code,
-            self.children[2].to_ast()
-        ).add_code_reference(self)
+        try:
+            return Definition(
+                self.children[1].code,
+                self.children[2].to_ast()
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A define requires a name and a body")
 
     def local_node(self):
 
@@ -425,45 +443,56 @@ class Tree(SExpression):
 
     def function_node(self, children):
 
-        function_body = BodySequence(
-            [s_expr.to_ast() for s_expr in children[2:]]
-        ).add_code_reference(self)
+        try:
+            function_body = BodySequence(
+                [s_expr.to_ast() for s_expr in children[2:]]
+            ).add_code_reference(self)
 
-        return Fun(
-            [identifier.code for identifier in children[1].children],
-            function_body
-        ).add_code_reference(self)
+            return Fun(
+                [identifier.code for identifier in children[1].children],
+                function_body
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A function declaration requires a name and a body.")
 
     def bot_node(self):
 
-        bot_node_body = BodySequence(
-            [s_expr.to_ast() for s_expr in self.children[2:]]
-        ).add_code_reference(self)
+        try:
+            bot_node_body = BodySequence(
+                [s_expr.to_ast() for s_expr in self.children[2:]]
+            ).add_code_reference(self)
 
-        return BotNode(
-            [identifier.code for identifier in self.children[1].children],
-            bot_node_body
-        ).add_code_reference(self)
+            return BotNode(
+                [identifier.code for identifier in self.children[1].children],
+                bot_node_body
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A bot-node must provide identifiers for the received context and message, "
+                                     "plus a body")
 
     def slots_node(self):
 
-        node_name = self.children[1].token
-        args = [identifier.token for identifier in self.children[2].children]
+        try:
+            node_name = self.children[1].token
+            args = [identifier.token for identifier in self.children[2].children]
 
-        blocks = self.children[3:]
-        self.check_slots_node_blocks(blocks)
+            blocks = self.children[3:]
+            self.check_slots_node_blocks(blocks)
 
-        before = self.get_slots_before(blocks)
-        digress = self.get_slots_digress(blocks)
-        slots = self.get_slots(blocks)
-        then = self.get_slots_then(blocks)
+            before = self.get_slots_before(blocks)
+            digress = self.get_slots_digress(blocks)
+            slots = self.get_slots(blocks)
+            then = self.get_slots_then(blocks)
 
-        slots_node_body = SlotsNodeBody(
-            args, before, digress, slots, then
-        ).add_code_reference(self)
+            slots_node_body = SlotsNodeBody(
+                args, before, digress, slots, then
+            ).add_code_reference(self)
 
-        return BotSlotsNode(node_name, args, slots_node_body)\
-            .add_code_reference(self)
+            return BotSlotsNode(node_name, args, slots_node_body)\
+                .add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A slots-node requires a name, to receive the context and message being passed to "
+                                     "it, and a number of slot blocks.")
 
     @classmethod
     def get_slots_before(cls, blocks):
@@ -495,7 +524,7 @@ class Tree(SExpression):
         for block in blocks:
             if block.children[0].token == 'then':
                 return block.children[1].to_ast()
-        raise SyntaxError("The 'then' block is required for slot nodes")
+        raise BotLangSyntaxError("The 'then' block is required for slot nodes")
 
     @classmethod
     def check_slots_node_blocks(cls, blocks):
@@ -503,7 +532,7 @@ class Tree(SExpression):
         for block in blocks:
             token = block.children[0].token
             if token not in ['before', 'digress', 'slot', 'then']:
-                raise SyntaxError('Unknown slots node block: %s' % token)
+                raise BotLangSyntaxError('Unknown slots node block: %s' % token)
 
     def to_slot_ast_node(self):
 
@@ -515,12 +544,15 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def bot_result_node(self):
-
-        return BotResult(
-            self.children[1].to_ast(),
-            self.children[2].to_ast(),
-            self.children[3].to_ast()
-        ).add_code_reference(self)
+        try:
+            return BotResult(
+                self.children[1].to_ast(),
+                self.children[2].to_ast(),
+                self.children[3].to_ast()
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A node-result requires three parameters (the new context, the message to send "
+                                     "and the next node to execute.")
 
     def application_node(self):
 
@@ -530,10 +562,14 @@ class Tree(SExpression):
         ).add_code_reference(self)
 
     def define_syntax_rule_node(self):
-
-        pattern = self.children[1].children
-        pattern_node = SyntaxPattern(pattern[0], pattern[1:])
-        return DefineSyntax(
-            pattern_node.add_code_reference(pattern_node),
-            self.children[2]
-        ).add_code_reference(self)
+        try:
+            pattern = self.children[1].children
+            pattern_node = SyntaxPattern(pattern[0], pattern[1:])
+            return DefineSyntax(
+                pattern_node.add_code_reference(pattern_node),
+                self.children[2]
+            ).add_code_reference(self)
+        except IndexError:
+            raise BotLangSyntaxError("A define-syntax-rule requires two arguments: first, the pattern node, which must "
+                                     "have an identifier (and optionally, arguments); second, the corresponding "
+                                     "template.")
