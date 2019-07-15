@@ -14,7 +14,9 @@ class StringPrimitivesTestCase(TestCase):
     list_of_strings = [
         'Servicios Residenciales',
         'Servicios Móviles',
-        'Interesado En Contratar O Renovar'
+        'Interesado En Contratar O Renovar',
+        'Otro',
+        'De otro'
     ]
 
     test_strings2 = [
@@ -31,6 +33,10 @@ class StringPrimitivesTestCase(TestCase):
             string_similarity('hola', 'holi'),
             string_similarity('hola', 'chao')
         )
+
+        self.assertEqual(string_similarity('', ''), 1)
+        self.assertEqual(string_similarity('', 'foo'), 0)
+        self.assertEqual(string_similarity('foo', ''), 0)
 
     def test_remove_same_words(self):
 
@@ -124,6 +130,27 @@ class StringPrimitivesTestCase(TestCase):
 
         self.assertEqual(
             self.get_similar_string(
+                'otrop', self.list_of_strings
+            ),
+            self.list_of_strings[3]
+        )
+
+        self.assertEqual(
+            self.get_similar_string(
+                'quiero otro', self.list_of_strings
+            ),
+            self.list_of_strings[3]
+        )
+
+        self.assertEqual(
+            self.get_similar_string(
+                'quiero de otro', self.list_of_strings
+            ),
+            self.list_of_strings[4]
+        )
+
+        self.assertEqual(
+            self.get_similar_string(
                 'computador', self.test_strings2
             ),
             self.test_strings2[2]
@@ -140,6 +167,7 @@ class StringPrimitivesTestCase(TestCase):
             ),
             self.test_strings2[1]
         )
+
 
     def test_matches(self):
 
