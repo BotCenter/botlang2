@@ -41,7 +41,8 @@ class StringPrimitivesTestCase(TestCase):
             [
                 'Residenciales',
                 'Móviles',
-                'Interesado En Contratar O Renovar'
+                'Interesado En Contratar O Renovar',
+                'Otro'
             ],
             list_without_duplicates
         )
