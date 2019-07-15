@@ -10,13 +10,11 @@ from botlang.environment.primitives.strings.string_functions import divide_text
 
 
 class StringPrimitivesTestCase(TestCase):
-
     list_of_strings = [
         'Servicios Residenciales',
         'Servicios Móviles',
         'Interesado En Contratar O Renovar',
-        'Otro',
-        'De otro'
+        'Otro'
     ]
 
     test_strings2 = [
@@ -26,7 +24,6 @@ class StringPrimitivesTestCase(TestCase):
     ]
 
     def test_string_similarity(self):
-
         self.assertEqual(string_similarity('hola', 'hola'), 1)
         self.assertEqual(string_similarity('hola', 'HoLá'), 1)
         self.assertGreater(
@@ -39,7 +36,6 @@ class StringPrimitivesTestCase(TestCase):
         self.assertEqual(string_similarity('foo', ''), 0)
 
     def test_remove_same_words(self):
-
         list_without_duplicates, _ = remove_same_words(self.list_of_strings)
         self.assertSequenceEqual(
             [
@@ -52,7 +48,6 @@ class StringPrimitivesTestCase(TestCase):
 
     @classmethod
     def get_similar_string(cls, test, strings_list):
-
         botlang_list = '(list {})'.format(
             reduce(
                 lambda acc, s: '{} "{}"'.format(acc, s),
@@ -65,7 +60,6 @@ class StringPrimitivesTestCase(TestCase):
         )
 
     def test_find_similar_string(self):
-
         self.assertEqual(
             self.get_similar_string('residencial', self.list_of_strings),
             self.list_of_strings[0]
@@ -137,16 +131,9 @@ class StringPrimitivesTestCase(TestCase):
 
         self.assertEqual(
             self.get_similar_string(
-                'quiero otro', self.list_of_strings
+                'de otro', self.list_of_strings
             ),
             self.list_of_strings[3]
-        )
-
-        self.assertEqual(
-            self.get_similar_string(
-                'quiero de otro', self.list_of_strings
-            ),
-            self.list_of_strings[4]
         )
 
         self.assertEqual(
@@ -168,9 +155,7 @@ class StringPrimitivesTestCase(TestCase):
             self.test_strings2[1]
         )
 
-
     def test_matches(self):
-
         self.assertTrue(
             BotlangSystem.run(
                 '(match? ".*pedro.*" "hola pedro, como estas?")'
@@ -187,7 +172,6 @@ class StringPrimitivesTestCase(TestCase):
         )
 
     def test_divide_text(self):
-
         medium_text = """
         Para reembolsar gastos que no fueron bonificados en línea debe enviarlos a la compañía con el siguiente procedimiento:
 
@@ -218,7 +202,6 @@ class StringPrimitivesTestCase(TestCase):
         )
 
     def test_string_operations(self):
-
         lower = BotlangSystem.run('(lowercase "AbCdEfgH")')
         self.assertEqual(lower, "abcdefgh")
 

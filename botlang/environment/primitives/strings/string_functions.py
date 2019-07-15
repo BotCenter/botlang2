@@ -66,9 +66,16 @@ def string_similarity(string1, string2):
 def remove_stop_words(string, stop_words):
 
     clean_string = string
+
+    # If the string is made up of stop words, we don't remove anything.
+
+    if all(x in stop_words for x in string.lower().split(' ')):
+        return string
+
     for word in string.split(' '):
         if word.lower() in stop_words:
             clean_string = re.sub(r'\s+', ' ', clean_string.replace(word, ''))
+
     return clean_string
 
 
@@ -89,7 +96,7 @@ def remove_same_words(strings_list):
                         if len(token) > 6:
                             words_to_remove.add(token[:-1])
 
-        # Remove longest words first
+        # Remove longest words first.
         words_to_remove = sorted(list(words_to_remove), reverse=True)
         return [
             reduce(
