@@ -15,8 +15,7 @@ class StringPrimitivesTestCase(TestCase):
         'Servicios Residenciales',
         'Servicios Móviles',
         'Interesado En Contratar O Renovar',
-        'Otro',
-        'De otro'
+        'Otro'
     ]
 
     test_strings2 = [
@@ -137,16 +136,9 @@ class StringPrimitivesTestCase(TestCase):
 
         self.assertEqual(
             self.get_similar_string(
-                'quiero otro', self.list_of_strings
+                'de otro', self.list_of_strings
             ),
             self.list_of_strings[3]
-        )
-
-        self.assertEqual(
-            self.get_similar_string(
-                'quiero de otro', self.list_of_strings
-            ),
-            self.list_of_strings[4]
         )
 
         self.assertEqual(
