@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from botlang import BotlangSystem
 from botlang.parser import Parser, BotLangSyntaxError
 from botlang.parser.bot_definition_checker import InvalidBotDefinitionException
 from botlang.parser.s_expressions import Tree
@@ -56,6 +55,162 @@ class ParserTestCase(unittest.TestCase):
             """).s_expressions()
         self.assertTrue('excess' in cm.exception.args[0])
         self.assertTrue('line 4' in cm.exception.args[0])
+
+    # def test_wrong_double_quotes(self):
+    #
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f ""a)').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f a"")').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f ""a"")').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f "a)').s_expressions()
+    #     )
+    #     self.assertRaises(
+    #         BotLangSyntaxError,
+    #         lambda: Parser('(f a")').s_expressions()
+    #     )
+
+    def test_ill_formed_statements(self):
+        code = """
+            (if)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (module)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (node-result)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (fun)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (define)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (function)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+              (bot-node)
+          """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (slots-node)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (require)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+        code = """
+            (defclass)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (define-syntax-rule)
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+    def test_ill_formed_slot(self):
+
+        code = """
+            (slots-node sample (c m)
+                [digress]
+            )
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+
+        code = """
+            (slots-node sample (c m)
+                [then]
+            )
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
+        code = """
+            (slots-node sample (c m)
+                [slot]
+            )
+        """
+
+        self.assertRaises(
+            BotLangSyntaxError,
+            lambda: Parser.parse(code, None)
+        )
 
     def test_comments(self):
 

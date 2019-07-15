@@ -1,4 +1,6 @@
 from botlang.ast import *
+from botlang.ast import ClassDefinition, MethodDefinition, \
+    AttributeDefinition, BotSlotsNode, SlotDefinition, SlotsNodeBody
 
 
 class ASTVisitor(object):
@@ -71,8 +73,7 @@ class ASTVisitor(object):
         :param env: Environment
         """
         return And(
-            and_node.cond1.accept(self, env),
-            and_node.cond2.accept(self, env)
+            [cond.accept(self, env) for cond in and_node.conditions]
         ).add_code_reference(and_node.s_expr)
 
     def visit_or(self, or_node, env):
@@ -81,8 +82,7 @@ class ASTVisitor(object):
         :param env: Environment
         """
         return Or(
-            or_node.cond1.accept(self, env),
-            or_node.cond2.accept(self, env)
+            [cond.accept(self, env) for cond in or_node.conditions]
         ).add_code_reference(or_node.s_expr)
 
     def visit_id(self, id_node, env):
@@ -112,16 +112,16 @@ class ASTVisitor(object):
             bot_node.body.accept(self, env)
         ).add_code_reference(bot_node.s_expr)
 
-    def visit_bot_result(self, bot_result, env):
+    def visit_bot_result(self, bot_result_node, env):
         """
-        :param bot_result: ast.BotResult
+        :param bot_result_node: ast.BotResult
         :param env: Environment 
         """
         return BotResult(
-            bot_result.data.accept(self, env),
-            bot_result.message.accept(self, env),
-            bot_result.next_node.accept(self, env)
-        ).add_code_reference(bot_result.s_expr)
+            bot_result_node.data.accept(self, env),
+            bot_result_node.message.accept(self, env),
+            bot_result_node.next_node.accept(self, env)
+        ).add_code_reference(bot_result_node.s_expr)
 
     def visit_app(self, app_node, env):
         """
@@ -162,6 +162,41 @@ class ASTVisitor(object):
             local_node.body.accept(self, env)
         ).add_code_reference(local_node.s_expr)
 
+    def visit_class_definition(self, class_node, env):
+        """
+        :param class_node: ast.ClassDefinition
+        :param env: Environment
+        """
+        return ClassDefinition(
+            class_node.name,
+            class_node.superclass,
+            [attr.accept(self, env) for attr in class_node.attributes],
+            [method.accept(self, env) for method in class_node.methods],
+            [attr.accept(self, env) for attr in class_node.class_attributes],
+            [method.accept(self, env) for method in class_node.class_methods]
+        )
+
+    def visit_instance_attribute(self, attribute_node, env):
+        """
+        :param attribute_node: ast.InstanceAttributeDefinition
+        :param env: Environment
+        """
+        definition_ast = attribute_node.definition
+        return AttributeDefinition(
+            attribute_node.identifier,
+            definition_ast.accept(self, env) if definition_ast else None
+        )
+
+    def visit_method_definition(self, method_node, env):
+        """
+        :param method_node: ast.MethodDefinition
+        :param env: Environment
+        """
+        return MethodDefinition(
+            method_node.identifier,
+            method_node.definition.accept(self, env)
+        )
+
     def visit_module_definition(self, module_node, env):
         """
         :param module_node: ast.ModuleDefinition 
@@ -192,3 +227,42 @@ class ASTVisitor(object):
         :param env: Environment
         """
         return define_syntax_node
+
+    def visit_slots_node(self, slots_node, env):
+        """
+        :param slots_node: ast.BotSlotsNode
+        :param env: Environment
+        """
+        return BotSlotsNode(
+            slots_node.node_name,
+            slots_node.params,
+            slots_node.body.accept(self, env)
+        ).add_code_reference(slots_node.s_expr)
+
+    def visit_slots_node_body(self, slots_body, env):
+        """
+        :param slots_body: ast.SlotsNodeBody
+        :param env: Environment
+        """
+        return SlotsNodeBody(
+            slots_body.params,
+            slots_body.before.accept(self, env)
+            if slots_body.before is not None else None,
+            slots_body.digress.accept(self, env)
+            if slots_body.digress is not None else None,
+            [slot.accept(self, env) for slot in slots_body.slots],
+            slots_body.then.accept(self, env)
+        ).add_code_reference(slots_body.s_expr)
+
+    def visit_slot_definition(self, slot_def, env):
+        """
+        :param slot_def: ast.SlotDefinition
+        :param env: Environment
+        """
+        return SlotDefinition(
+            slot_def.slot_name,
+            slot_def.context,
+            slot_def.match_body.accept(self, env),
+            slot_def.ask_body.accept(self, env)
+            if slot_def.ask_body is not None else None
+        ).add_code_reference(slot_def.s_expr)

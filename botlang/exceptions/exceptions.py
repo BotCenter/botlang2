@@ -8,13 +8,7 @@ class BotlangErrorException(BotlangException):
 
     def __init__(self, exception, execution_stack):
 
-        # Disgusting trick for compatibility with Python 2 and 3
-        try:
-            message = exception.args[0]
-        except IndexError:
-            message = exception.message
-
-        super(BotlangErrorException, self).__init__(message)
+        super(BotlangErrorException, self).__init__(exception.args[0])
         self.wrapped = exception
         self.stack = execution_stack
 

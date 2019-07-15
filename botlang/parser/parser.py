@@ -2,41 +2,41 @@ import base64
 import hashlib
 import re
 
+from botlang.macros.macro_expander import MacroExpander
 from botlang.parser.bot_definition_checker import BotDefinitionChecker
 from botlang.parser.s_expressions import *
 from botlang.parser.source_reference import SourceReference
 
 
-class BotLangSyntaxError(Exception):
-
-    def __init__(self, message):
-        super(Exception, self).__init__(message)
-
-
 class Parser(object):
 
-    asts_cache = {}
-
     @classmethod
-    def parse(cls, code, source_id=None):
+    def parse(cls, code, source_id=None, expand_macros=True):
         """
         :param code: Botlang code string to parse
         :param source_id: source code identifier (e.g.: filename)
+        :param expand_macros: should expand macros?
         :rtype: list[ASTNode]
         """
-        code_id = cls.generate_string_hash(code)
-        cached_asts = cls.asts_cache.get(code_id)
-
-        if cached_asts is not None:
-            return cached_asts
-
         s_expressions = Parser(code, source_id).s_expressions()
         abstract_syntax_trees = [
             cls.s_expr_to_ast(s_expr) for s_expr in s_expressions
         ]
-        cls.asts_cache[code_id] = abstract_syntax_trees
+
+        if expand_macros:
+            abstract_syntax_trees = cls.expand_macros(abstract_syntax_trees)
 
         return abstract_syntax_trees
+
+    @classmethod
+    def expand_macros(cls, ast_seq):
+
+        from botlang.macros.default_macros import DefaultMacros
+        macro_environment = DefaultMacros.get_environment()
+        expanded_asts = [
+            ast.accept(MacroExpander(), macro_environment) for ast in ast_seq
+        ]
+        return expanded_asts
 
     @classmethod
     def s_expr_to_ast(cls, s_expr):

@@ -32,10 +32,10 @@ class BotDefinitionChecker(ASTVisitor):
         self.depth -= 1
         return r
 
-    def visit_cond(self, visit_cond, env):
+    def visit_cond(self, cond_node, env):
 
         self.depth += 1
-        r = super(BotDefinitionChecker, self).visit_cond(visit_cond, env)
+        r = super(BotDefinitionChecker, self).visit_cond(cond_node, env)
         self.depth -= 1
         return r
 

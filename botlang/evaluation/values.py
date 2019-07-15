@@ -1,4 +1,10 @@
-class Nil(object):
+class NilMetaclass(type):
+
+    def __bool__(self):
+        return False
+
+
+class Nil(metaclass=NilMetaclass):
     pass
 
 
@@ -9,12 +15,6 @@ class NativeException(object):
     def __init__(self, name='Exception', description='exception'):
         self.name = name
         self.description = description
-
-    def get_type(self):
-        return self.name
-
-    def description(self):
-        return self.description
 
 
 class FunVal(object):
@@ -27,7 +27,8 @@ class FunVal(object):
     def apply(self, *args):
         raise NotImplementedError('Must implement apply(*args)')
 
-    def is_reflective(self):
+    @classmethod
+    def is_reflective(cls):
         return False
 
 
@@ -55,14 +56,15 @@ class ReflectivePrimitive(Primitive):
     def apply(self, evaluation_env, *args):
         return self.proc(evaluation_env, *args)
 
-    def is_reflective(self):
+    @classmethod
+    def is_reflective(cls):
         return True
 
 
 class InvalidArgumentsException(Exception):
 
     def __init__(self, expected, given):
-        super(Exception, self).__init__(
+        super(InvalidArgumentsException, self).__init__(
             'function expects {0} arguments, {1} given'.format(
                 expected,
                 given
@@ -105,7 +107,18 @@ class Closure(FunVal):
         return '<function {0} at {1}>'.format(name, hex(id(self)))
 
 
-class BotNodeValue(Closure):
+class DialogNode(object):
+
+    @classmethod
+    def is_terminal(cls):
+        raise NotImplementedError
+
+    @classmethod
+    def is_digression_return(cls):
+        return False
+
+
+class BotNodeValue(Closure, DialogNode):
     """
     Bot node (also a lexical closure)
     """
@@ -125,16 +138,55 @@ class BotNodeValue(Closure):
     def name(self):
         return self.env.get_function_name(self)
 
-    def is_terminal(self):
+    @classmethod
+    def is_terminal(cls):
         return False
 
 
-class TerminalNode(object):
+class SlotsNodeValue(BotNodeValue):
+    """
+    Slots node
+    """
+    def __init__(self, slots_node, env, evaluator):
+        from botlang.evaluation.slots import Slots
+        env = env.new_environment({Slots.CURRENT_SLOTS_NODE: self})
+        super(SlotsNodeValue, self).__init__(slots_node, env, evaluator)
+
+    def __repr__(self):
+        name = self.name()
+        if name is None:
+            return '<anonymous slots-node>'
+
+        return '<slots-node {0} at {1}>'.format(name, hex(id(self)))
+
+
+class TerminalNode(DialogNode):
 
     def __init__(self, state):
         self.state = state
 
-    def is_terminal(self):
+    @classmethod
+    def is_terminal(cls):
+        return True
+
+    @classmethod
+    def name(cls):
+        return None
+
+
+class ReturnNode(DialogNode):
+    """
+    Node used for returning to a slot node after a digression.
+    """
+    def __init__(self, inner_node):
+        self.inner_node = inner_node
+
+    @classmethod
+    def is_terminal(cls):
+        return False
+
+    @classmethod
+    def is_digression_return(cls):
         return True
 
 
@@ -154,6 +206,14 @@ class BotResultValue(object):
         if next_node.is_terminal():
             self.next_node = None
             self.bot_state = next_node.state
+        elif next_node.is_digression_return():
+            from botlang.evaluation.slots import Slots
+            self.next_node = Slots.DIGRESSION_RETURN
         else:
             self.next_node = next_node.name()
             self.bot_state = self.BOT_WAITING_INPUT
+
+    def __repr__(self):
+        return 'BotResult({}, {}, {})'.format(
+            self.data, self.message, self.next_node
+        )

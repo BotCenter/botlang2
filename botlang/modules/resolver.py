@@ -39,7 +39,7 @@ class ModuleResolver(object):
 
     def load_modules(self, root_path):
 
-        for root, subdirs, files in os.walk(root_path):
+        for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith('.botlang'):
                     path = os.path.join(root, file)

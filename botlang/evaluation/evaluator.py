@@ -1,5 +1,7 @@
 from functools import reduce
 from botlang.ast.ast_visitor import ASTVisitor
+from botlang.evaluation.oop import OopHelper
+from botlang.evaluation.slots import Slots
 from botlang.evaluation.values import *
 
 
@@ -99,13 +101,52 @@ class Evaluator(ASTVisitor):
         self.execution_stack.pop()
         return value
 
+    def visit_class_definition(self, class_node, env):
+
+        self.execution_stack.append(class_node)
+        superclass_obj = OopHelper.class_lookup(class_node.superclass, env)
+        methods = {
+            member.identifier: member.definition.accept(self, env)
+            for member in class_node.methods
+        }
+        attributes = {
+            attr.identifier: attr.definition.accept(self, env)
+            if attr.definition else Nil
+            for attr in class_node.attributes
+        }
+        class_attributes = {
+            attr.identifier: attr.definition.accept(self, env)
+            if attr.definition else Nil
+            for attr in class_node.class_attributes
+        }
+        class_methods = {
+            member.identifier: member.definition.accept(self, env)
+            for member in class_node.class_methods
+        }
+        class_obj = OopHelper.build_class(
+            class_node.name,
+            superclass_obj,
+            attributes,
+            methods,
+            class_attributes,
+            class_methods
+        )
+        env.update(
+            {class_node.name: class_obj}
+        )
+        self.execution_stack.pop()
+
     def visit_and(self, and_node, env):
         """
         Logical 'and' evaluation
         """
         self.execution_stack.append(and_node)
-        left_branch = and_node.cond1.accept(self, env)
-        result = left_branch and and_node.cond2.accept(self, env)
+        result = True
+        for branch in and_node.conditions:
+            condition = branch.accept(self, env)
+            if not condition:
+                result = False
+                break
         self.execution_stack.pop()
         return result
 
@@ -114,8 +155,12 @@ class Evaluator(ASTVisitor):
         Logical 'or' evaluation
         """
         self.execution_stack.append(or_node)
-        left_branch = or_node.cond1.accept(self, env)
-        result = left_branch or or_node.cond2.accept(self, env)
+        result = False
+        for branch in or_node.conditions:
+            condition = branch.accept(self, env)
+            if condition:
+                result = True
+                break
         self.execution_stack.pop()
         return result
 
@@ -165,6 +210,70 @@ class Evaluator(ASTVisitor):
         )
         self.execution_stack.pop()
         return bot_result_value
+
+    def visit_slots_node(self, slots_node, env):
+        """
+        Slots node expression evaluation.
+        Returns bot-node closure
+        """
+        self.execution_stack.append(slots_node)
+        slots_value = SlotsNodeValue(slots_node, env, self)
+        env.update({
+            slots_node.node_name: slots_value
+        })
+        self.execution_stack.pop()
+        return slots_value
+
+    def visit_slots_node_body(self, slots_body, env):
+
+        if slots_body.before is not None:
+            slots_body.before.accept(self, env)
+
+        for slot in slots_body.slots:
+            result = slot.accept(self, env)
+            if result is not None:  # Slot unsatisfied
+                return result
+
+        return slots_body.then.accept(self, env)
+
+    def visit_slot_definition(self, slot_def, env):
+
+        matched_value = slot_def.match_body.accept(self, env)
+        context = env.lookup(slot_def.context)
+
+        if matched_value is not Nil and matched_value is not None:
+            context[slot_def.slot_name] = matched_value
+
+        stored_value = context.get(slot_def.slot_name)
+        if stored_value is not None:
+            # Slot satisfied. Nothing to do.
+            return None
+        elif slot_def.ask_body is None:
+            # Optional slot. Won't force nor digress.
+            return None
+        else:
+            # Handle non-optional unsatisfied slot
+            slots_node = env.lookup(Slots.CURRENT_SLOTS_NODE)
+            digress = slots_node.body.digress
+            if digress is not None and not Slots.digression_started(env):
+                Slots.start_digression(env)
+                digress_result = slots_node.body.digress.accept(self, env)
+                Slots.end_digression(env)
+                if digress_result is not Nil:
+                    return self.handle_digression(digress_result, slots_node)
+            return BotResultValue(
+                context,
+                slot_def.ask_body.accept(self, env),
+                slots_node
+            )
+
+    @classmethod
+    def handle_digression(cls, result, slots_node):
+
+        if result.next_node == Slots.DIGRESSION_RETURN:
+            return BotResultValue(result.data, result.message, slots_node)
+        else:
+            return result
 
     def visit_app(self, app_node, env):
         """

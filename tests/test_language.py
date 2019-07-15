@@ -4,7 +4,7 @@ from collections import OrderedDict
 from botlang import BotlangErrorException
 from botlang.interpreter import BotlangSystem
 from botlang.evaluation.evaluator import Primitive
-from botlang.evaluation.values import BotResultValue
+from botlang.evaluation.values import BotResultValue, Nil
 
 
 class BotlangTestCase(unittest.TestCase):
@@ -27,6 +27,12 @@ class BotlangTestCase(unittest.TestCase):
         self.assertFalse(
             BotlangSystem.run('(and (not (nil? nil)) (equal? (length nil) 1))')
         )
+        self.assertTrue(BotlangSystem.run('(and #t #t #t)'))
+        self.assertFalse(BotlangSystem.run('(and #t #t #f)'))
+        self.assertFalse(BotlangSystem.run('(and #t #f (/ 1 0))'))
+
+        self.assertTrue(BotlangSystem.run('(and #t)'))
+        self.assertTrue(BotlangSystem.run('(and)'))
 
     def test_or(self):
 
@@ -35,11 +41,19 @@ class BotlangTestCase(unittest.TestCase):
         self.assertTrue(BotlangSystem.run('(or #f #t)'))
         self.assertFalse(BotlangSystem.run('(or #f #f)'))
 
+        self.assertTrue(BotlangSystem.run('(or #f #f #t)'))
+        self.assertTrue(BotlangSystem.run('(or #f #t (/ 1 0))'))
+
+        self.assertTrue(BotlangSystem.run('(or #t)'))
+        self.assertFalse(BotlangSystem.run('(or)'))
+
     def test_if(self):
 
         self.assertEqual(BotlangSystem.run('(if #t 2 3)'), 2)
         self.assertEqual(BotlangSystem.run('(if #f 2 3)'), 3)
         self.assertEqual(BotlangSystem.run('(if (> 4 5) 100 200)'), 200)
+        self.assertEqual(BotlangSystem.run('(if #t 2)'), 2)
+        self.assertEqual(BotlangSystem.run('(if #f 2)'), Nil)
 
     def test_cond(self):
 
@@ -129,6 +143,11 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(another_list, [1, 2, 3])
 
     def test_dictionaries(self):
+
+        self.assertEqual(
+            BotlangSystem.run('(make-dict)'),
+            OrderedDict([])
+        )
 
         computed_dict = BotlangSystem.run("""
         (make-dict '[
@@ -434,9 +453,19 @@ class BotlangTestCase(unittest.TestCase):
 
     def test_nil(self):
 
-        code = """
+        result = BotlangSystem.run("""
             [define value nil]
             (nil? value)
-        """
-        result = BotlangSystem.run(code)
+        """)
         self.assertTrue(result)
+
+        result = BotlangSystem.run('(not-nil? nil)')
+        self.assertFalse(result)
+
+        result = BotlangSystem.run('(nil? #f)')
+        self.assertFalse(result)
+
+    def test_nil_truth_value(self):
+
+        result = BotlangSystem.run('(if nil #t #f)')
+        self.assertEqual(result, False)

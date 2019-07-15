@@ -1,8 +1,10 @@
 import operator as op
 
 
-from botlang.environment.primitives import math, http, collections, strings, \
-    compression, base64, random, datetime, reflection, exceptions
+from botlang.environment.primitives import math, http, collections, \
+    compression, base64, random, datetime, reflection, exceptions, oop
+from botlang.environment.primitives.strings import string_functions
+from botlang.evaluation.slots import Slots
 from botlang.evaluation.values import Nil, TerminalNode
 
 
@@ -53,6 +55,7 @@ class BotlangPrimitives(object):
 
     TYPE_CHECKING = {
         'nil?': lambda v: v is Nil or v is None,
+        'not-nil?': lambda v: v is not Nil and v is not None,
         'bool?': lambda b: isinstance(b, bool),
         'str?': lambda s: isinstance(s, str),
         'num?': lambda n:
@@ -73,7 +76,7 @@ class BotlangPrimitives(object):
         TYPE_CHECKING,
         TERMINAL_NODES,
 
-        strings.STRING_OPS,
+        string_functions.STRING_OPS,
         collections.COMMON_OPERATIONS,
         collections.DICT_OPERATIONS,
         collections.LIST_OPERATIONS,
@@ -83,7 +86,8 @@ class BotlangPrimitives(object):
         http.HTTP_PRIMITIVES,
         base64.EXPORT_FUNCTIONS,
         compression.EXPORT_FUNCTIONS,
-        exceptions.EXCEPTION_PRIMITIVES
+        exceptions.EXCEPTION_PRIMITIVES,
+        oop.OOP_PRIMITIVES
     ]
 
     @classmethod
@@ -99,5 +103,6 @@ class BotlangPrimitives(object):
             'input-message': environment.get_last_input_message     # Legacy
         })
         environment.add_reflective_primitives(reflection.REFLECTIVE_PRIMITIVES)
+        environment.add_reflective_primitives(Slots.SLOTS_FUNCTIONS)
 
         return environment
