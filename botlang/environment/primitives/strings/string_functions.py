@@ -43,6 +43,12 @@ def string_similarity(string1, string2):
     str1 = simplify_text(string1)
     str2 = simplify_text(string2)
 
+    # Some of the algorithms below misbehave in the presence of empty strings. So we treat these cases beforehand.
+    if str1 == "" and str2 == "":
+        return 1.0
+    elif str1 == "" or str2 == "":
+        return 0.0
+
     sequence_based_distance = textdistance.lcsstr.normalized_similarity(
         str1, str2
     )
