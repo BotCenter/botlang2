@@ -43,6 +43,12 @@ def string_similarity(string1, string2):
     str1 = simplify_text(string1)
     str2 = simplify_text(string2)
 
+    # Some of the algorithms below misbehave in the presence of empty strings. So we treat these cases beforehand.
+    if str1 == "" and str2 == "":
+        return 1.0
+    elif str1 == "" or str2 == "":
+        return 0.0
+
     sequence_based_distance = textdistance.lcsstr.normalized_similarity(
         str1, str2
     )
@@ -60,9 +66,16 @@ def string_similarity(string1, string2):
 def remove_stop_words(string, stop_words):
 
     clean_string = string
+
+    # If the string is made up of stop words, we don't remove anything.
+
+    if all(x in stop_words for x in string.lower().split(' ')):
+        return string
+
     for word in string.split(' '):
         if word.lower() in stop_words:
             clean_string = re.sub(r'\s+', ' ', clean_string.replace(word, ''))
+
     return clean_string
 
 
@@ -83,7 +96,7 @@ def remove_same_words(strings_list):
                         if len(token) > 6:
                             words_to_remove.add(token[:-1])
 
-        # Remove longest words first
+        # Remove longest words first.
         words_to_remove = sorted(list(words_to_remove), reverse=True)
         return [
             reduce(
