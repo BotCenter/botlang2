@@ -76,8 +76,8 @@ class MacroExpander(ASTVisitor):
         hygienic_template = template.accept(hygienizer)
 
         sexpr_mappings = {}
-        for i in range(0, len(arguments)):
-            sexpr_mappings[pattern.arguments[i].token] = arguments[i].s_expr
+        for i, arg in enumerate(arguments):
+            sexpr_mappings[pattern.arguments[i].token] = arg.s_expr
 
         expanded = hygienic_template.accept(SExprExpander(sexpr_mappings))
         return expanded.to_ast()

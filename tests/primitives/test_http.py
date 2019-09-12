@@ -113,3 +113,20 @@ class HttpTestCase(TestCase):
         self.assertEqual(url, 'http://some.url')
         self.assertDictEqual(headers, {'a-header': 'its-value'})
         self.assertDictEqual(data, {'key': 'value'})
+
+    @mock.patch('requests.delete')
+    def test_http_delete(self, mock_delete):
+
+        headers = '(make-dict (list (cons "a-header" "its-value")))'
+        BotlangSystem.run(
+            '(http-delete "http://some.url" %s)' % headers
+        )
+        call_args = mock_delete.call_args[0]
+        url = call_args[0]
+
+        call_kwargs = mock_delete.call_args[1]
+        headers = call_kwargs['headers']
+
+        self.assertIsNone(call_kwargs.get('json'))
+        self.assertEqual(url, 'http://some.url')
+        self.assertDictEqual(headers, {'a-header': 'its-value'})

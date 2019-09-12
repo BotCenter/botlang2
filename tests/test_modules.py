@@ -4,6 +4,8 @@ from botlang import Evaluator
 from botlang.interpreter import BotlangSystem
 from botlang.modules.module import ExternalModule
 from botlang.modules.resolver import ModuleResolver
+from botlang.parser import BotLangSyntaxError
+from tests.test_macros import MacrosTestCase
 
 
 class ModulesTestCase(unittest.TestCase):
@@ -45,6 +47,17 @@ class ModulesTestCase(unittest.TestCase):
         """
         result = BotlangSystem.run(code, module_resolver=module_resolver)
         self.assertEqual(result, "i like cats")
+        #
+        # code = """
+        # (require "my-module")
+        # (say-i-like)
+        # """
+        # result = BotlangSystem.run(code, module_resolver=module_resolver)
+        # self.assertTrue('not defined' in result)
+
+    def test_class_defined_in_module(self):
+
+        pass
 
     def test_modules_resolver(self):
 
@@ -80,3 +93,29 @@ class ModulesTestCase(unittest.TestCase):
             module_resolver=resolver
         )
         self.assertEqual(meow, 'mew')
+
+    # def test_circular_dependencies(self):
+    #
+    #     module_resolver = ModuleResolver(BotlangSystem.base_environment())
+    #     BotlangSystem.run("""
+    #     (module "mod1"
+    #         (require "mod2")
+    #         [define say-cats (function () "cats")]
+    #         (provide say-cats)
+    #     )
+    #     """, module_resolver=module_resolver)
+    #
+    #     BotlangSystem.run("""
+    #     (module "mod2"
+    #         (require "mod1")
+    #         [define say-dogs (function () "dogs")]
+    #         (provide say-dogs)
+    #     )
+    #     """, module_resolver=module_resolver)
+    #
+    #     bot_code = '(require "mod1") (say-cats)'
+    #
+    #     self.assertEqual(
+    #         BotlangSystem.run(bot_code, module_resolver=module_resolver),
+    #         'cats'
+    #     )
