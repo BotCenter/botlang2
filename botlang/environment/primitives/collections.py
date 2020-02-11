@@ -1,3 +1,4 @@
+import json
 import operator as op
 from collections import OrderedDict
 from functools import reduce, cmp_to_key
@@ -96,6 +97,7 @@ def split_n(lst, n):
 COMMON_OPERATIONS = {
     'get': dict_or_list_get,
     'get-or-nil': get_or_nil,
+    'to-json': lambda c: json.dumps(c, sort_keys=True)
 }
 
 

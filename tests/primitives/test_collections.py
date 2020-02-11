@@ -1,3 +1,4 @@
+import json
 from unittest import TestCase
 
 from botlang import BotlangSystem
@@ -161,3 +162,10 @@ class CollectionsTestCase(TestCase):
         list1, list2 = BotlangSystem.run('(split-n (list) 5)')
         self.assertSequenceEqual(list1, [])
         self.assertSequenceEqual(list2, [])
+
+    def test_to_json(self):
+
+        str_dict = BotlangSystem.run(
+            '(to-json (make-dict (list (cons "a" 1))))'
+        )
+        self.assertEqual(str_dict, json.dumps({'a': 1}))
