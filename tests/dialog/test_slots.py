@@ -5,7 +5,7 @@ from botlang import BotlangSystem
 
 class SlotsTestCase(TestCase):
 
-    SLOTS_EXAMPLE = """
+    SLOTS_EXAMPLE = r"""
     (defun default-behavior (c m)
         (cond
             [(match? "ctm" m)
@@ -66,11 +66,11 @@ class SlotsTestCase(TestCase):
             (match ".*(chico|mediano|grande).*" m 1)
             "¿De qué tamaño quieres tu café?"
         ]
-        [slot discount c (match "descuento\\s(\\d+)" m 1)]
+        [slot discount c (match "descuento\s(\d+)" m 1)]
         [slot with-cream c
             (cond
-                [(match? "si(\\s.*)?" m) #t]
-                [(match? "no(\\s.*)?" m) #f]
+                [(match? "si(\s.*)?" m) #t]
+                [(match? "no(\s.*)?" m) #f]
                 [else nil]
             )
             "¿Lo quieres con crema?"

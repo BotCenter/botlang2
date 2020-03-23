@@ -74,7 +74,7 @@ class Parser(object):
             str_hash = self.generate_string_hash(string)
             identifier = '__STR__{0}'.format(str_hash)
             self.strings[identifier] = string
-            pattern = '(^|\s|\(|\[)({})(\s|$|\)|\])'.format(re.escape(string))
+            pattern = r'(^|\s|\(|\[)({})(\s|$|\)|\])'.format(re.escape(string))
             self.code = re.sub(
                 pattern,
                 lambda m: '{}{}{}'.format(m.group(1), identifier, m.group(3)),
