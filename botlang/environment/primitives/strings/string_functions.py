@@ -52,7 +52,7 @@ def string_similarity(string1, string2):
     sequence_based_distance = textdistance.lcsstr.normalized_similarity(
         str1, str2
     )
-    edit_based_distance = textdistance.smith_waterman.normalized_similarity(
+    edit_based_distance = textdistance.jaro.normalized_similarity(
         str1, str2
     )
     token_based_distance = textdistance.cosine.normalized_similarity(

@@ -169,7 +169,7 @@ class StringPrimitivesTestCase(TestCase):
         )
         self.assertEqual(
             'juan',
-            BotlangSystem.run('(match "hola\\s(\\w+).*" "hola juan!!" 1)')
+            BotlangSystem.run(r'(match "hola\s(\w+).*" "hola juan!!" 1)')
         )
 
     def test_divide_text(self):
