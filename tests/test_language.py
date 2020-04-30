@@ -12,7 +12,9 @@ class BotlangTestCase(unittest.TestCase):
     def test_primitive_values(self):
 
         self.assertTrue(BotlangSystem.run('#t'))
+        self.assertTrue(BotlangSystem.run('true'))
         self.assertFalse(BotlangSystem.run('#f'))
+        self.assertFalse(BotlangSystem.run('false'))
         self.assertEqual(BotlangSystem.run('2'), 2)
         self.assertEqual(BotlangSystem.run('3.14'), 3.14)
         self.assertEqual(BotlangSystem.run('"hola"'), "hola")

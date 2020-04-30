@@ -37,6 +37,9 @@ class SExpression(object):
 
 class Atom(SExpression):
 
+    TRUE_TOKENS = ['#t', 'true']
+    FALSE_TOKENS = ['#f', 'false']
+
     @classmethod
     def is_atom(cls):
         return True
@@ -87,7 +90,7 @@ class Atom(SExpression):
 
     def is_boolean(self):
 
-        return self.code == '#t' or self.code == '#f'
+        return self.code in self.TRUE_TOKENS + self.FALSE_TOKENS
 
     def is_integer(self):
 
@@ -121,10 +124,10 @@ class Atom(SExpression):
 
     def as_boolean_value(self):
 
-        if self.code == '#t':
+        if self.code in self.TRUE_TOKENS:
             return Val(True).add_code_reference(self)
 
-        if self.code == '#f':
+        if self.code in self.FALSE_TOKENS:
             return Val(False).add_code_reference(self)
 
         raise ValueError
