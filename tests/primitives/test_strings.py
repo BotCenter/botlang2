@@ -250,7 +250,7 @@ class StringPrimitivesTestCase(TestCase):
         runtime = BotlangSystem()
         runtime.environment.update({'python-dict': python_dict})
         json_dict = runtime.eval('(to-json python-dict)')
-        self.assertEqual(json_dict, json.dumps(python_dict))
+        self.assertEqual(json_dict, json.dumps(python_dict, sort_keys=True))
 
     def test_from_json(self):
 
@@ -268,4 +268,4 @@ class StringPrimitivesTestCase(TestCase):
         runtime.environment.update({'json-dict': json_dict})
         python_dict = runtime.eval('(from-json json-dict)')
 
-        self.assertEqual(json.loads(json_dict), python_dict)
+        self.assertDictEqual(json.loads(json_dict), python_dict)

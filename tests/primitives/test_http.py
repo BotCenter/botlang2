@@ -33,7 +33,7 @@ class HttpTestCase(TestCase):
             response['headers']['Content-Type'], 'application/json'
         )
         self.assertDictEqual(response['json'], {'key': 'value'})
-        self.assertEqual(response['encoding'], None)
+        self.assertEqual(response['encoding'], 'utf-8')
 
         responses.add(
             responses.GET,
