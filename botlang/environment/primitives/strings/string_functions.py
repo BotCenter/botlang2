@@ -1,3 +1,4 @@
+import json
 import re
 from functools import reduce
 from urllib.parse import quote
@@ -145,6 +146,7 @@ STRING_OPS = {
     'capitalize': str.capitalize,
     'divide-text': divide_text,
     'format': str.format,
+    'from-json': lambda s: json.loads(s),
     'join': str.join,
     'lowercase': str.lower,
     'match': pattern_match,

@@ -1,3 +1,4 @@
+import json
 from functools import reduce
 
 from coverage.backunittest import TestCase
@@ -228,3 +229,43 @@ class StringPrimitivesTestCase(TestCase):
 
         trimmed = BotlangSystem.run('(trim "   hola, soy julito  ")')
         self.assertEqual(trimmed, 'hola, soy julito')
+
+    def test_to_json(self):
+
+        json_list = BotlangSystem.run('(to-json (list 1 2 3))')
+        self.assertEqual(json_list, "[1, 2, 3]")
+
+        json_dict = BotlangSystem.run(
+            '(to-json (make-dict (list (cons "a" 2))))'
+        )
+        self.assertEqual(json_dict, '{"a": 2}')
+
+        python_dict = {
+            'a': None,
+            'b': 'hola',
+            'c': 12,
+            'd': True,
+            'e': False
+        }
+        runtime = BotlangSystem()
+        runtime.environment.update({'python-dict': python_dict})
+        json_dict = runtime.eval('(to-json python-dict)')
+        self.assertEqual(json_dict, json.dumps(python_dict))
+
+    def test_from_json(self):
+
+        python_list = BotlangSystem.run('(from-json "[1, 2, 3]")')
+        self.assertEqual(python_list, [1, 2, 3])
+
+        json_dict = json.dumps({
+            'a': None,
+            'b': 'hola',
+            'c': 12,
+            'd': True,
+            'e': False
+        })
+        runtime = BotlangSystem()
+        runtime.environment.update({'json-dict': json_dict})
+        python_dict = runtime.eval('(from-json json-dict)')
+
+        self.assertEqual(json.loads(json_dict), python_dict)
