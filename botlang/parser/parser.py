@@ -133,88 +133,93 @@ class Parser(object):
 
         return char == '\''
 
-    def s_expressions_from_string(self, s_expr_string, current_line=1):
+    def add_atom(self, state, token):
+        state.s_expressions.append(
+            Atom(
+                self.restore_token(token),
+                SourceReference(
+                    self.source_id,
+                    state.current_line,
+                    state.current_line
+                )
+            )
+        )
+        return state
 
-        s_expressions = []
-        parens_stack = []
-        last_index = 0
-        current_index = 0
+    def parse_next_char(self, state, index, char):
 
-        for index, char in enumerate(s_expr_string):
+        if char in [' ', '\t', '\n'] and len(state.parens_stack) == 0:
+            token = state.s_expr_string[state.last_index:index].strip()
+            if len(token) > 0:
+                self.add_atom(state, token)
+                state.last_index = index + 1
 
-            if char in [' ', '\t', '\n'] and len(parens_stack) == 0:
-                token = s_expr_string[last_index:index].strip()
+        if char == '\n':
+            state.current_line += 1
 
-                if len(token) > 0:
-                    s_expressions.append(
-                        Atom(
-                            self.restore_token(token),
-                            SourceReference(
-                                self.source_id,
-                                current_line,
-                                current_line
-                            )
-                        )
-                    )
-                    last_index = index + 1
+        if char in SExpression.OPENING_PARENS:
+            state.parens_stack.append((index, state.current_line, char))
 
-            if char == '\n':
-                current_line += 1
-
-            if char in SExpression.OPENING_PARENS:
-                parens_stack.append((index, current_line, char))
-
-            if char in SExpression.CLOSING_PARENS:
-                try:
-                    start_index, start_line, paren = parens_stack.pop()
-                    if not self.parens_match(paren, char):
-                        self.raise_unbalanced_parens(
-                            "opening and closing symbols don't match",
-                            current_line
-                        )
-                except IndexError:
+        if char in SExpression.CLOSING_PARENS:
+            try:
+                start_index, start_line, paren = state.parens_stack.pop()
+                if not self.parens_match(paren, char):
                     self.raise_unbalanced_parens(
-                        'excess closing symbol',
-                        current_line
+                        "opening and closing symbols don't match",
+                        state.current_line
                     )
-
-                if len(parens_stack) == 0:
+            except IndexError:
+                self.raise_unbalanced_parens(
+                    'excess closing symbol',
+                    state.current_line
+                )
+            else:
+                if len(state.parens_stack) == 0:
                     code = self.restore_code(
-                        s_expr_string[start_index:index+1].strip()
+                        state.s_expr_string[start_index:index + 1].strip()
                     )
                     s_expr = Tree(
                         self.s_expressions_from_string(
-                            s_expr_string[start_index+1:index],
+                            state.s_expr_string[start_index + 1:index],
                             start_line
                         ),
                         code,
                         SourceReference(
                             self.source_id,
                             start_line,
-                            current_line
+                            state.current_line
                         ),
-                        quoted=self.is_quoted(s_expr_string, start_index)
+                        quoted=self.is_quoted(state.s_expr_string, start_index)
                     )
-                    s_expressions.append(s_expr)
-                    last_index = index + 1
+                    state.s_expressions.append(s_expr)
+                    state.last_index = index + 1
 
-            current_index = index + 1
+        state.current_index = index + 1
 
-        if current_index > last_index:
-            token = s_expr_string[last_index:].strip()
+    def s_expressions_from_string(self, s_expr_string, current_line=1):
+
+        state = ParsingState(s_expr_string, current_line)
+
+        for current_index, current_char in enumerate(s_expr_string):
+            self.parse_next_char(state, current_index, current_char)
+
+        if state.current_index > state.last_index:
+            token = s_expr_string[state.last_index:].strip()
             if len(token) > 0:
-                s_expressions.append(
-                    Atom(
-                        self.restore_token(token),
-                        SourceReference(
-                            self.source_id,
-                            current_line,
-                            current_line
-                        )
-                    )
-                )
+                self.add_atom(state, token)
 
-        if len(parens_stack) > 0:
-            self.raise_unbalanced_parens('not closed', current_line)
+        if len(state.parens_stack) > 0:
+            self.raise_unbalanced_parens('not closed', state.current_line)
 
-        return s_expressions
+        return state.s_expressions
+
+
+class ParsingState(object):
+
+    def __init__(self, s_expr_string, current_line):
+        self.s_expr_string = s_expr_string
+        self.current_line = current_line
+        self.s_expressions = []
+        self.parens_stack = []
+        self.last_index = 0
+        self.current_index = 0
