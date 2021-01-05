@@ -57,7 +57,7 @@ class BotlangTestCase(unittest.TestCase):
         self.assertEqual(BotlangSystem.run('(if #t 2)'), 2)
         self.assertEqual(BotlangSystem.run('(if #f 2)'), Nil)
 
-    def test_cond(self):
+    def test_cond_results(self):
 
         test_code = """
             (cond
@@ -91,7 +91,9 @@ class BotlangTestCase(unittest.TestCase):
             3
         )
 
-        another_test_code = """
+    def test_cond_branches_evaluation(self):
+
+        test_code = """
             (define dict (make-dict (list)))
             (cond
                 [(equal? sup 1) (put! dict "sup" 1)]
@@ -102,13 +104,23 @@ class BotlangTestCase(unittest.TestCase):
         environment = BotlangSystem.base_environment().update(
             {'sup': 1, 'dawg': 2}
         )
-        self.assertEqual(
-            BotlangSystem(environment).eval(another_test_code).get('sup'),
-            1
+        result = BotlangSystem(environment).eval(test_code)
+        self.assertEqual(result.get('sup'), 1)
+        self.assertIsNone(result.get('dawg'))
+
+        environment = BotlangSystem.base_environment().update(
+            {'sup': 0, 'dawg': 1}
         )
-        self.assertIsNone(
-            BotlangSystem(environment).eval(another_test_code).get('dawg')
+        result = BotlangSystem(environment).eval(test_code)
+        self.assertIsNone(result.get('sup'))
+        self.assertEqual(result.get('dawg'), 2)
+
+        environment = BotlangSystem.base_environment().update(
+            {'sup': 0, 'dawg': -1}
         )
+        result = BotlangSystem(environment).eval(test_code)
+        self.assertIsNone(result.get('sup'))
+        self.assertIsNone(result.get('dawg'))
 
     def test_primitive_application(self):
 
