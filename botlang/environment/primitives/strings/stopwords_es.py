@@ -276,7 +276,6 @@ STOPWORDS_ES = set(json.loads("""[
     "fuéramos",
     "fuésemos",
     "g",
-    "general",
     "gran",
     "grandes",
     "gueno",
