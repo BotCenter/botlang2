@@ -109,12 +109,26 @@ def remove_same_words(strings_list):
         return strings_list, []
 
 
-def string_find_similar(string, list_of_strings, threshold=0.3, lang='ES'):
-
+def get_stop_words(lang):
     if lang == 'ES':
-        stop_words = STOPWORDS_ES
+        return STOPWORDS_ES
     else:
         raise Exception('Language not supported')
+
+
+def get_exact_match(string, list_of_strings):
+    for option in list_of_strings:
+        if option.strip() == string.strip():
+            return string
+
+
+def string_find_similar(string, list_of_strings, threshold=0.3, lang='ES'):
+
+    stop_words = get_stop_words(lang)
+
+    exact_match = get_exact_match(string, list_of_strings)
+    if exact_match is not None:
+        return exact_match
 
     clean_strings, words_removed = remove_same_words([
         remove_stop_words(s, stop_words) for s in list_of_strings

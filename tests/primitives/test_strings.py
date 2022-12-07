@@ -1,16 +1,16 @@
 import json
 from functools import reduce
 
-from coverage.backunittest import TestCase
+import unittest
 
 from botlang import BotlangSystem
 from botlang.environment.primitives.strings.string_functions import string_similarity, \
-    remove_same_words
+    remove_same_words, string_find_similar
 from botlang.evaluation.values import Nil
 from botlang.environment.primitives.strings.string_functions import divide_text
 
 
-class StringPrimitivesTestCase(TestCase):
+class StringPrimitivesTestCase(unittest.TestCase):
     list_of_strings = [
         'Servicios Residenciales',
         'Servicios Móviles',
@@ -269,3 +269,21 @@ class StringPrimitivesTestCase(TestCase):
         python_dict = runtime.eval('(from-json json-dict)')
 
         self.assertDictEqual(json.loads(json_dict), python_dict)
+
+    def test_string_find_similar(self):
+
+        choice = 'Postventa Comercial'
+
+        departments_list = [
+            "Atención Técnica",	
+            "Ventas Y Contrataciones",		
+            "Postventa Comercial",	
+            "Ventas Negocios",
+            "Postventa Comercial Negocios",
+            "Atención Técnica Negocios",
+            "Atención General",
+        ]
+
+        result = string_find_similar('Postventa Comercial', departments_list, 0.4)
+
+        self.assertEqual(result, choice)
